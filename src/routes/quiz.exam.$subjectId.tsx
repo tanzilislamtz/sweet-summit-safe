@@ -305,11 +305,12 @@ function PaperPreview({
         >
           <div className="px-8 pt-8">
             <div className="text-center">
-              <p className="text-xs uppercase tracking-[0.3em] text-neutral-600">Board of Intermediate and Secondary Education</p>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight">{contextLabel}</h1>
-              <p className="mt-1 text-sm">Secondary School Certificate (SSC) Examination</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-neutral-600">{paperEyebrow}</p>
+              <h1 className="mt-1 text-2xl font-bold tracking-tight">{subjectName}</h1>
+              <p className="mt-1 text-sm">{contextLabel}</p>
               <div className="mt-3 flex items-center justify-center gap-4 text-sm">
-                <span><b>Subject:</b> {subjectName}</span>
+                <span><b>Subject:</b> {subjectLine}</span>
+
                 <span>·</span>
                 <span><b>Time:</b> 25 minutes</span>
                 <span>·</span>
