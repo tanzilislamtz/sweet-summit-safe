@@ -230,7 +230,7 @@ function Crumbs({ subjectId, current }: { subjectId: string; current: string }) 
 
 function HeroStat({ top, label, pct }: { top: string; label: string; pct: number }) {
   return (
-    <div className="min-w-[150px]">
+    <div className="min-w-0">
       <p className="text-sm font-semibold tabular-nums">{top}</p>
       <p className="text-[11px] text-primary-foreground/65">{label}</p>
       <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-primary-foreground/20">
