@@ -403,7 +403,7 @@ const kindConfig: Record<
     chip: "bg-amber-500/20 text-amber-900",
     ring: "ring-amber-500/60",
     frame:
-      "border-2 border-dashed border-amber-500/60 bg-[linear-gradient(135deg,#fff7db_0%,#fef3c7_45%,#ffe4b5_100%)]",
+      "border border-violet-300/70 bg-[linear-gradient(135deg,#fbf8ff_0%,#f3ecff_55%,#ece5ff_100%)]",
   },
   "seeking-tutor": {
     label: "Seeking Tutor",
