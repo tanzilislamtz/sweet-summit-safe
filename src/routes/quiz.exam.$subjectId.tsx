@@ -262,16 +262,21 @@ function Meta({ label, value }: { label: string; value: string }) {
 function PaperPreview({
   subjectName,
   contextLabel,
+  paperEyebrow,
+  subjectLine,
   questions,
   onBack,
   onStart,
 }: {
   subjectName: string;
   contextLabel: string;
+  paperEyebrow: string;
+  subjectLine: string;
   questions: Question[];
   onBack: () => void;
   onStart: () => void;
 }) {
+
   return (
     <main className="min-h-screen bg-muted/30 pb-28 text-foreground print:bg-white">
       <div className="mx-auto max-w-3xl px-5 pt-6">
