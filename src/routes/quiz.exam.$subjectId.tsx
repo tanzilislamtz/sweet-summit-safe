@@ -115,8 +115,23 @@ function ExamFlow() {
       else wrongIds.push(q.id);
     });
     setResult({ correct, wrongIds });
+    // Feed the MCQ score into the shared progress store.
+    if (subject && paper.length > 0) {
+      saveAttempt({
+        mode: "mcq",
+        subjectId,
+        subjectName: subject.name,
+        chapterName: chapterMeta?.name,
+        topicName: topicMeta?.name,
+        correct,
+        partial: 0,
+        total: paper.length,
+        seconds: Math.max(0, 25 * 60 - time),
+      });
+    }
     goto("result");
   }
+
 
   const isTopicRun = Boolean(chapterMeta && topicMeta);
 
