@@ -20,6 +20,8 @@ import { getChapters } from "@/data/practice";
 import { getTopicQuestions } from "@/data/topic-questions";
 import { explainAnswer } from "@/lib/ai-explain.functions";
 import { QuestionFigure } from "@/components/QuestionFigure";
+import { saveAttempt } from "@/lib/practice-results";
+
 
 
 const searchSchema = z.object({
@@ -115,8 +117,23 @@ function ExamFlow() {
       else wrongIds.push(q.id);
     });
     setResult({ correct, wrongIds });
+    // Feed the MCQ score into the shared progress store.
+    if (subject && paper.length > 0) {
+      saveAttempt({
+        mode: "mcq",
+        subjectId,
+        subjectName: subject.name,
+        chapterName: chapterMeta?.name,
+        topicName: topicMeta?.name,
+        correct,
+        partial: 0,
+        total: paper.length,
+        seconds: Math.max(0, 25 * 60 - time),
+      });
+    }
     goto("result");
   }
+
 
   const isTopicRun = Boolean(chapterMeta && topicMeta);
 
