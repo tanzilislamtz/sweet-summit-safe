@@ -35,6 +35,7 @@ import { Route as QuizExamSubjectIdRouteImport } from './routes/quiz.exam.$subje
 import { Route as QuizCqSubjectIdRouteImport } from './routes/quiz.cq.$subjectId'
 import { Route as MessageRequestRequestIdRouteImport } from './routes/message.request.$requestId'
 import { Route as QuizSubjectSubjectIdCategoryRouteImport } from './routes/quiz.subject.$subjectId_.$category'
+import { Route as QuizMockTestCategoryCategoryIdRouteImport } from './routes/quiz.mock-test_.category.$categoryId'
 import { Route as QuizMockTestTestIdRunRouteImport } from './routes/quiz.mock-test_.$testId_.run'
 import { Route as QuizSubjectSubjectIdCategoryChapterIdRouteImport } from './routes/quiz.subject.$subjectId_.$category_.$chapterId'
 
@@ -169,6 +170,12 @@ const QuizSubjectSubjectIdCategoryRoute =
     path: '/subject/$subjectId/$category',
     getParentRoute: () => QuizRoute,
   } as any)
+const QuizMockTestCategoryCategoryIdRoute =
+  QuizMockTestCategoryCategoryIdRouteImport.update({
+    id: '/mock-test_/category/$categoryId',
+    path: '/mock-test/category/$categoryId',
+    getParentRoute: () => QuizRoute,
+  } as any)
 const QuizMockTestTestIdRunRoute = QuizMockTestTestIdRunRouteImport.update({
   id: '/mock-test_/$testId_/run',
   path: '/mock-test/$testId/run',
@@ -208,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/quiz/subject/$subjectId': typeof QuizSubjectSubjectIdRoute
   '/quiz/written/$subjectId': typeof QuizWrittenSubjectIdRoute
   '/quiz/mock-test/$testId/run': typeof QuizMockTestTestIdRunRoute
+  '/quiz/mock-test/category/$categoryId': typeof QuizMockTestCategoryCategoryIdRoute
   '/quiz/subject/$subjectId/$category': typeof QuizSubjectSubjectIdCategoryRoute
   '/quiz/subject/$subjectId/$category/$chapterId': typeof QuizSubjectSubjectIdCategoryChapterIdRoute
 }
@@ -237,6 +245,7 @@ export interface FileRoutesByTo {
   '/quiz/subject/$subjectId': typeof QuizSubjectSubjectIdRoute
   '/quiz/written/$subjectId': typeof QuizWrittenSubjectIdRoute
   '/quiz/mock-test/$testId/run': typeof QuizMockTestTestIdRunRoute
+  '/quiz/mock-test/category/$categoryId': typeof QuizMockTestCategoryCategoryIdRoute
   '/quiz/subject/$subjectId/$category': typeof QuizSubjectSubjectIdCategoryRoute
   '/quiz/subject/$subjectId/$category/$chapterId': typeof QuizSubjectSubjectIdCategoryChapterIdRoute
 }
@@ -268,6 +277,7 @@ export interface FileRoutesById {
   '/quiz/subject/$subjectId': typeof QuizSubjectSubjectIdRoute
   '/quiz/written/$subjectId': typeof QuizWrittenSubjectIdRoute
   '/quiz/mock-test_/$testId_/run': typeof QuizMockTestTestIdRunRoute
+  '/quiz/mock-test_/category/$categoryId': typeof QuizMockTestCategoryCategoryIdRoute
   '/quiz/subject/$subjectId_/$category': typeof QuizSubjectSubjectIdCategoryRoute
   '/quiz/subject/$subjectId_/$category_/$chapterId': typeof QuizSubjectSubjectIdCategoryChapterIdRoute
 }
@@ -300,6 +310,7 @@ export interface FileRouteTypes {
     | '/quiz/subject/$subjectId'
     | '/quiz/written/$subjectId'
     | '/quiz/mock-test/$testId/run'
+    | '/quiz/mock-test/category/$categoryId'
     | '/quiz/subject/$subjectId/$category'
     | '/quiz/subject/$subjectId/$category/$chapterId'
   fileRoutesByTo: FileRoutesByTo
@@ -329,6 +340,7 @@ export interface FileRouteTypes {
     | '/quiz/subject/$subjectId'
     | '/quiz/written/$subjectId'
     | '/quiz/mock-test/$testId/run'
+    | '/quiz/mock-test/category/$categoryId'
     | '/quiz/subject/$subjectId/$category'
     | '/quiz/subject/$subjectId/$category/$chapterId'
   id:
@@ -359,6 +371,7 @@ export interface FileRouteTypes {
     | '/quiz/subject/$subjectId'
     | '/quiz/written/$subjectId'
     | '/quiz/mock-test_/$testId_/run'
+    | '/quiz/mock-test_/category/$categoryId'
     | '/quiz/subject/$subjectId_/$category'
     | '/quiz/subject/$subjectId_/$category_/$chapterId'
   fileRoutesById: FileRoutesById
@@ -560,6 +573,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuizSubjectSubjectIdCategoryRouteImport
       parentRoute: typeof QuizRoute
     }
+    '/quiz/mock-test_/category/$categoryId': {
+      id: '/quiz/mock-test_/category/$categoryId'
+      path: '/mock-test/category/$categoryId'
+      fullPath: '/quiz/mock-test/category/$categoryId'
+      preLoaderRoute: typeof QuizMockTestCategoryCategoryIdRouteImport
+      parentRoute: typeof QuizRoute
+    }
     '/quiz/mock-test_/$testId_/run': {
       id: '/quiz/mock-test_/$testId_/run'
       path: '/mock-test/$testId/run'
@@ -606,6 +626,7 @@ interface QuizRouteChildren {
   QuizSubjectSubjectIdRoute: typeof QuizSubjectSubjectIdRoute
   QuizWrittenSubjectIdRoute: typeof QuizWrittenSubjectIdRoute
   QuizMockTestTestIdRunRoute: typeof QuizMockTestTestIdRunRoute
+  QuizMockTestCategoryCategoryIdRoute: typeof QuizMockTestCategoryCategoryIdRoute
   QuizSubjectSubjectIdCategoryRoute: typeof QuizSubjectSubjectIdCategoryRoute
   QuizSubjectSubjectIdCategoryChapterIdRoute: typeof QuizSubjectSubjectIdCategoryChapterIdRoute
 }
@@ -624,6 +645,7 @@ const QuizRouteChildren: QuizRouteChildren = {
   QuizSubjectSubjectIdRoute: QuizSubjectSubjectIdRoute,
   QuizWrittenSubjectIdRoute: QuizWrittenSubjectIdRoute,
   QuizMockTestTestIdRunRoute: QuizMockTestTestIdRunRoute,
+  QuizMockTestCategoryCategoryIdRoute: QuizMockTestCategoryCategoryIdRoute,
   QuizSubjectSubjectIdCategoryRoute: QuizSubjectSubjectIdCategoryRoute,
   QuizSubjectSubjectIdCategoryChapterIdRoute:
     QuizSubjectSubjectIdCategoryChapterIdRoute,
