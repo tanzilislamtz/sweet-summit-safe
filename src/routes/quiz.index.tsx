@@ -263,7 +263,7 @@ function HeroRing({ value }: { value: number }) {
           initial={{ strokeDashoffset: c }}
           animate={{ strokeDashoffset: c - (c * value) / 100 }}
           transition={{ duration: 0.9, ease: "easeOut" }}
-          className="stroke-secondary"
+          className="stroke-primary-foreground"
         />
       </svg>
       <div className="absolute inset-0 grid place-items-center">
