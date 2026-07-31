@@ -468,6 +468,7 @@ export function getTopicQuestions({
       options: raw.options,
       answer: raw.answer,
       explanation: raw.explanation,
+      figure: raw.figure,
       difficulty: i < count * 0.4 ? "easy" : i < count * 0.8 ? "medium" : "hard",
     });
   }
@@ -485,6 +486,7 @@ export function getTopicQuestions({
       options: raw.options,
       answer: raw.answer,
       explanation: raw.explanation,
+      figure: raw.figure,
       difficulty: i < count * 0.4 ? "easy" : i < count * 0.8 ? "medium" : "hard",
     });
   }
