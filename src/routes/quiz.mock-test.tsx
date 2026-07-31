@@ -1,28 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   ArrowRight,
   Award,
   BarChart3,
-  CheckCircle2,
   Clock,
   Flame,
   ListChecks,
   Play,
   Sparkles,
-  Timer,
   Trophy,
-  Users,
 } from "lucide-react";
-import { subjects } from "@/data/quiz";
-import {
-  getMockStats,
-  listMockTests,
-  mockCategories,
-  type MockCategoryId,
-  type MockTest,
-} from "@/data/mock-tests";
+import { getMockStats, listMockTests, mockCategories } from "@/data/mock-tests";
 
 export const Route = createFileRoute("/quiz/mock-test")({
   head: () => ({
@@ -47,13 +37,7 @@ export const Route = createFileRoute("/quiz/mock-test")({
 
 function MockTestHub() {
   const stats = getMockStats();
-  const [category, setCategory] = useState<MockCategoryId>("model");
-  const [subjectId, setSubjectId] = useState<string | "all">("all");
 
-  const tests = useMemo(() => {
-    const all = listMockTests(category, subjectId === "all" ? undefined : subjectId);
-    return all.slice(0, subjectId === "all" ? 12 : 8);
-  }, [category, subjectId]);
 
   const recommended = useMemo(() => listMockTests("model").slice(0, 2), []);
   const lastTest = recommended[0];
