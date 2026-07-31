@@ -1,9 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
-  ArrowRight,
   BookOpenCheck,
   CheckCircle2,
   ChevronRight,
@@ -11,14 +10,18 @@ import {
   EyeOff,
   ListChecks,
   PenLine,
-  Save,
+  RotateCcw,
+  Send,
   Sparkles,
+  Timer as TimerIcon,
+  XCircle,
 } from "lucide-react";
 import { z } from "zod";
 import { subjects } from "@/data/quiz";
 import { getChapters } from "@/data/practice";
 import { getTopicCqQuestions, type CqPart, type CqQuestion } from "@/data/topic-cq";
 import { QuestionFigure } from "@/components/QuestionFigure";
+import { saveAttempt } from "@/lib/practice-results";
 import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({
@@ -33,9 +36,32 @@ export const Route = createFileRoute("/quiz/cq/$subjectId")({
 });
 
 type Draft = Record<string, string>;
-type Checked = Record<string, boolean>;
+
+/** Verdict for a single written part after submission. */
+type PartVerdict = "correct" | "partial" | "wrong";
 
 const wordCount = (s: string) => (s.trim() ? s.trim().split(/\s+/).length : 0);
+
+const keywordHits = (part: CqPart, value: string) =>
+  part.keywords.filter((k) => value.toLowerCase().includes(k.toLowerCase()));
+
+/**
+ * CQ answers are free text, so grading is heuristic: an answer counts as
+ * correct when it is long enough AND covers at least ~60% of the expected
+ * keywords; anything that shows partial understanding counts as partial.
+ */
+function gradePart(part: CqPart, value: string): PartVerdict {
+  const words = wordCount(value);
+  if (words === 0) return "wrong";
+  const ratio = part.keywords.length ? keywordHits(part, value).length / part.keywords.length : 0;
+  const longEnough = words >= part.minWords;
+  if (ratio >= 0.6 && longEnough) return "correct";
+  if (ratio >= 0.3 || longEnough) return "partial";
+  return "wrong";
+}
+
+const fmtClock = (s: number) =>
+  `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
 function CqPractice() {
   const { subjectId } = Route.useParams();
@@ -58,10 +84,66 @@ function CqPractice() {
     });
   }, [subjectId, chapter, topic, mode]);
 
-  const [index, setIndex] = useState(0);
   const [drafts, setDrafts] = useState<Draft>({});
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
-  const [selfChecked, setSelfChecked] = useState<Checked>({});
+  const [submitted, setSubmitted] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+  const savedRef = useRef(false);
+
+  // Timer keeps running until the paper is submitted.
+  useEffect(() => {
+    if (submitted) return;
+    const t = setInterval(() => setElapsed((s) => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [submitted]);
+
+  const totalParts = paper.length * 4;
+  const writtenParts = Object.values(drafts).filter((v) => wordCount(v) > 0).length;
+  const progress = totalParts ? Math.round((writtenParts / totalParts) * 100) : 0;
+
+  const verdicts = useMemo(() => {
+    const map: Record<string, PartVerdict> = {};
+    for (const q of paper) {
+      for (const p of q.parts) {
+        const key = `${q.id}-${p.label}`;
+        map[key] = gradePart(p, drafts[key] ?? "");
+      }
+    }
+    return map;
+  }, [paper, drafts]);
+
+  const score = useMemo(() => {
+    const values = Object.values(verdicts);
+    const correct = values.filter((v) => v === "correct").length;
+    const partial = values.filter((v) => v === "partial").length;
+    const wrong = values.filter((v) => v === "wrong").length;
+    const total = values.length || 1;
+    return {
+      correct,
+      partial,
+      wrong,
+      total: values.length,
+      percent: Math.round(((correct + partial * 0.5) / total) * 100),
+    };
+  }, [verdicts]);
+
+  // Persist once, right after submit, so the progress screens pick it up.
+  useEffect(() => {
+    if (!submitted || savedRef.current || !subject || !chapter || !topic) return;
+    savedRef.current = true;
+    saveAttempt({
+      mode,
+      subjectId,
+      subjectName: subject.name,
+      chapterName: chapter.name,
+      topicName: topic.name,
+      correct: score.correct,
+      partial: score.partial,
+      total: score.total,
+      seconds: elapsed,
+    });
+  }, [submitted, subject, chapter, topic, mode, subjectId, score, elapsed]);
 
   if (!subject || !chapter || !topic || paper.length === 0) {
     return (
@@ -74,16 +156,19 @@ function CqPractice() {
     );
   }
 
-  const q = paper[index];
-  const totalParts = paper.length * 4;
-  const writtenParts = Object.values(drafts).filter((v) => wordCount(v) > 0).length;
-  const progress = Math.round((writtenParts / totalParts) * 100);
+  const setDraft = (key: string, value: string) => setDrafts((d) => ({ ...d, [key]: value }));
 
-  const setDraft = (key: string, value: string) =>
-    setDrafts((d) => ({ ...d, [key]: value }));
+  const retry = () => {
+    setDrafts({});
+    setRevealed({});
+    setSubmitted(false);
+    setElapsed(0);
+    savedRef.current = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
-    <section className="space-y-5 pb-6">
+    <section className="space-y-5 pb-32">
       {/* Breadcrumb */}
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
         <button
@@ -102,7 +187,7 @@ function CqPractice() {
           Practice
         </Link>
         <ChevronRight className="h-3 w-3" />
-        <span className="hover:text-primary">{subject.name}</span>
+        <span>{subject.name}</span>
         <ChevronRight className="h-3 w-3" />
         <span className="truncate font-medium text-foreground">{topic.name}</span>
       </div>
@@ -124,138 +209,201 @@ function CqPractice() {
               {subject.name} · Chapter {chapter.index}: {chapter.name}
             </p>
           </div>
-          <div className="flex items-center gap-3 rounded-2xl bg-primary-foreground/10 px-4 py-3 ring-1 ring-primary-foreground/15">
-            <div>
-              <p className="text-sm font-semibold tabular-nums">
-                {paper.length} × 10 marks
-              </p>
-              <p className="text-[11px] text-primary-foreground/65">
-                {writtenParts}/{totalParts} answers written
-              </p>
-              <div className="mt-1.5 h-1.5 w-36 overflow-hidden rounded-full bg-primary-foreground/20">
-                <motion.div
-                  className="h-full rounded-full bg-primary-foreground"
-                  animate={{ width: `${progress}%` }}
-                />
-              </div>
+          <div className="rounded-2xl bg-primary-foreground/10 px-4 py-3 ring-1 ring-primary-foreground/15">
+            <p className="inline-flex items-center gap-1.5 text-sm font-semibold tabular-nums">
+              <TimerIcon className="h-4 w-4 opacity-80" /> {fmtClock(elapsed)}
+            </p>
+            <p className="text-[11px] text-primary-foreground/65">
+              {paper.length} × 10 marks · {writtenParts}/{totalParts} written
+            </p>
+            <div className="mt-1.5 h-1.5 w-36 overflow-hidden rounded-full bg-primary-foreground/20">
+              <motion.div
+                className="h-full rounded-full bg-primary-foreground"
+                animate={{ width: `${progress}%` }}
+              />
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* Question navigator */}
-      <div className="flex flex-wrap items-center gap-2">
-        {paper.map((item, i) => {
-          const done = item.parts.every((p) => wordCount(drafts[`${item.id}-${p.label}`] ?? "") > 0);
-          return (
-            <button
-              key={item.id}
-              onClick={() => setIndex(i)}
-              className={cn(
-                "h-9 w-9 rounded-xl text-xs font-semibold ring-1 transition",
-                i === index
-                  ? "bg-primary text-primary-foreground ring-primary"
-                  : done
-                    ? "bg-secondary/15 text-secondary-foreground ring-secondary/30"
-                    : "bg-surface text-muted-foreground ring-border hover:text-primary",
-              )}
-            >
-              {i + 1}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Question card */}
-      <AnimatePresence mode="wait">
-        <motion.article
-          key={q.id}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
-        >
-          {/* Stimulus */}
-          <div className="border-b border-border bg-primary/5 px-5 py-4">
-            <div className="flex items-center gap-2">
-              <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary text-xs font-bold text-primary-foreground">
-                {index + 1}
-              </span>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
-                উদ্দীপক · Stimulus
-              </p>
-              <span className="ml-auto rounded-full bg-secondary/15 px-2.5 py-1 text-[11px] font-semibold text-secondary-foreground">
-                {q.totalMarks} marks
-              </span>
+      {/* Result summary */}
+      <AnimatePresence>
+        {submitted && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="overflow-hidden rounded-3xl border border-border bg-surface p-5 shadow-sm"
+          >
+            <div className="flex flex-wrap items-center gap-5">
+              <ScoreRing value={score.percent} />
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg font-semibold text-foreground">
+                  {score.percent >= 70
+                    ? "দারুণ লিখেছো! 🎉"
+                    : score.percent >= 40
+                      ? "ভালো চেষ্টা — আরও গুছিয়ে লেখো"
+                      : "আরেকবার প্র্যাকটিস করা দরকার"}
+                </h2>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {score.total} parts · {fmtClock(elapsed)} spent · saved to your progress
+                </p>
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  <Tally label="Correct" value={score.correct} tone="pos" />
+                  <Tally label="Partial" value={score.partial} tone="mid" />
+                  <Tally label="Wrong" value={score.wrong} tone="neg" />
+                </div>
+              </div>
+              <div className="flex w-full gap-2 sm:w-auto sm:flex-col">
+                <button
+                  onClick={retry}
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-border px-3.5 py-2 text-xs font-semibold transition hover:border-primary/40 hover:text-primary"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" /> Retry
+                </button>
+                <Link
+                  to="/quiz/progress"
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground transition hover:opacity-95"
+                >
+                  View progress
+                </Link>
+              </div>
             </div>
-            <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed text-foreground font-bangla">
-              {q.stem}
-            </p>
-            {q.figure && <QuestionFigure spec={q.figure} />}
-          </div>
-
-          {/* Written parts */}
-          <div className="divide-y divide-border">
-            {q.parts.map((part) => (
-              <PartEditor
-                key={part.label}
-                part={part}
-                value={drafts[`${q.id}-${part.label}`] ?? ""}
-                onChange={(v) => setDraft(`${q.id}-${part.label}`, v)}
-                revealed={!!revealed[`${q.id}-${part.label}`]}
-                onToggleReveal={() =>
-                  setRevealed((r) => ({
-                    ...r,
-                    [`${q.id}-${part.label}`]: !r[`${q.id}-${part.label}`],
-                  }))
-                }
-                selfChecked={!!selfChecked[`${q.id}-${part.label}`]}
-                onSelfCheck={() =>
-                  setSelfChecked((c) => ({
-                    ...c,
-                    [`${q.id}-${part.label}`]: !c[`${q.id}-${part.label}`],
-                  }))
-                }
-              />
-            ))}
-          </div>
-
-          {/* Footer nav */}
-          <div className="flex items-center justify-between gap-3 border-t border-border bg-muted/40 px-5 py-3.5">
-            <button
-              onClick={() => setIndex((i) => Math.max(0, i - 1))}
-              disabled={index === 0}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3.5 py-2 text-xs font-semibold transition disabled:opacity-40 enabled:hover:border-primary/40 enabled:hover:text-primary"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" /> Previous
-            </button>
-            <span className="text-[11px] text-muted-foreground">
-              Question {index + 1} of {paper.length}
-            </span>
-            {index === paper.length - 1 ? (
-              <Link
-                to="/quiz/subject/$subjectId/$category/$chapterId"
-                params={{ subjectId, category: mode, chapterId: chapter.id }}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-secondary px-3.5 py-2 text-xs font-semibold text-secondary-foreground transition hover:-translate-y-0.5"
-              >
-                <CheckCircle2 className="h-3.5 w-3.5" /> Finish
-              </Link>
-            ) : (
-              <button
-                onClick={() => setIndex((i) => Math.min(paper.length - 1, i + 1))}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground transition hover:-translate-y-0.5"
-              >
-                Next <ArrowRight className="h-3.5 w-3.5" />
-              </button>
-            )}
-          </div>
-        </motion.article>
+          </motion.div>
+        )}
       </AnimatePresence>
 
-      <p className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-        <PenLine className="h-3.5 w-3.5" />
-        CQ-তে অপশন নেই — নিজে লিখে উত্তর দাও, তারপর মডেল উত্তরের সাথে মিলিয়ে নাও।
-      </p>
+      {/* All questions on one page */}
+      <div className="space-y-4">
+        {paper.map((q, index) => (
+          <motion.article
+            key={q.id}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: Math.min(0.04 * index, 0.24) }}
+            className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
+          >
+            {/* Stimulus */}
+            <div className="border-b border-border bg-primary/5 px-5 py-4">
+              <div className="flex items-center gap-2">
+                <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary text-xs font-bold text-primary-foreground">
+                  {index + 1}
+                </span>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
+                  উদ্দীপক · Stimulus
+                </p>
+                <span className="ml-auto rounded-full bg-secondary/15 px-2.5 py-1 text-[11px] font-semibold text-secondary-foreground">
+                  {q.totalMarks} marks
+                </span>
+              </div>
+              <p className="mt-3 whitespace-pre-line font-bangla text-[15px] leading-relaxed text-foreground">
+                {q.stem}
+              </p>
+              {q.figure && <QuestionFigure spec={q.figure} />}
+            </div>
+
+            {/* Written parts */}
+            <div className="divide-y divide-border">
+              {q.parts.map((part) => {
+                const key = `${q.id}-${part.label}`;
+                return (
+                  <PartEditor
+                    key={part.label}
+                    part={part}
+                    value={drafts[key] ?? ""}
+                    onChange={(v) => setDraft(key, v)}
+                    submitted={submitted}
+                    verdict={verdicts[key]}
+                    revealed={submitted || !!revealed[key]}
+                    onToggleReveal={() => setRevealed((r) => ({ ...r, [key]: !r[key] }))}
+                  />
+                );
+              })}
+            </div>
+          </motion.article>
+        ))}
+      </div>
+
+      {!submitted && (
+        <p className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+          <PenLine className="h-3.5 w-3.5" />
+          সব প্রশ্নের উত্তর লিখে একবারেই সাবমিট করো — তারপর ফলাফল ও মডেল উত্তর দেখতে পাবে।
+        </p>
+      )}
+
+      {/* Sticky submit bar */}
+      {!submitted && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-4 py-3 backdrop-blur lg:left-[264px]">
+          <div className="mx-auto flex max-w-3xl items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-semibold text-foreground">
+                {writtenParts}/{totalParts} answers written
+              </p>
+              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-muted">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
+                  animate={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+            <span className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-muted px-3 py-2 text-xs font-semibold tabular-nums text-foreground">
+              <TimerIcon className="h-3.5 w-3.5 text-primary" /> {fmtClock(elapsed)}
+            </span>
+            <button
+              onClick={() => setConfirming(true)}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-brand transition hover:-translate-y-0.5"
+            >
+              <Send className="h-4 w-4" /> Submit
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm dialog */}
+      <AnimatePresence>
+        {confirming && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 grid place-items-center bg-foreground/40 px-4 backdrop-blur-sm"
+            onClick={() => setConfirming(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 10 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm rounded-3xl border border-border bg-surface p-5 shadow-lg"
+            >
+              <h3 className="text-base font-semibold text-foreground">Submit this paper?</h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {totalParts - writtenParts > 0
+                  ? `${totalParts - writtenParts} টি উত্তর এখনো লেখা হয়নি।`
+                  : "সব উত্তর লেখা হয়েছে।"}{" "}
+                সাবমিট করলে ফলাফল ও মডেল উত্তর দেখানো হবে।
+              </p>
+              <div className="mt-4 flex gap-2">
+                <button
+                  onClick={() => setConfirming(false)}
+                  className="flex-1 rounded-xl border border-border px-3 py-2.5 text-sm font-semibold transition hover:border-primary/40"
+                >
+                  Keep writing
+                </button>
+                <button
+                  onClick={() => {
+                    setConfirming(false);
+                    setSubmitted(true);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="flex-1 rounded-xl bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground transition hover:opacity-95"
+                >
+                  Submit now
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
@@ -266,43 +414,64 @@ function PartEditor({
   part,
   value,
   onChange,
+  submitted,
+  verdict,
   revealed,
   onToggleReveal,
-  selfChecked,
-  onSelfCheck,
 }: {
   part: CqPart;
   value: string;
   onChange: (v: string) => void;
+  submitted: boolean;
+  verdict: PartVerdict;
   revealed: boolean;
   onToggleReveal: () => void;
-  selfChecked: boolean;
-  onSelfCheck: () => void;
 }) {
   const words = wordCount(value);
   const enough = words >= part.minWords;
-  const hits = part.keywords.filter((k) =>
-    value.toLowerCase().includes(k.toLowerCase()),
-  );
+  const hits = keywordHits(part, value);
 
   return (
-    <div className="px-5 py-4">
+    <div
+      className={cn(
+        "px-5 py-4 transition",
+        submitted && verdict === "correct" && "bg-secondary/5",
+        submitted && verdict === "partial" && "bg-accent/10",
+        submitted && verdict === "wrong" && "bg-destructive/5",
+      )}
+    >
       <div className="flex flex-wrap items-center gap-2">
-        <span className="grid h-7 w-7 place-items-center rounded-lg bg-primary/10 text-sm font-bold text-primary font-bangla">
+        <span className="grid h-7 w-7 place-items-center rounded-lg bg-primary/10 font-bangla text-sm font-bold text-primary">
           {part.label}
         </span>
         <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
           {part.level}
         </span>
-        <span className="text-[11px] font-semibold text-muted-foreground">{part.marks} mark{part.marks > 1 ? "s" : ""}</span>
-        {selfChecked && (
-          <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-secondary/15 px-2 py-0.5 text-[10px] font-semibold text-secondary-foreground">
-            <CheckCircle2 className="h-3 w-3" /> self-checked
+        <span className="text-[11px] font-semibold text-muted-foreground">
+          {part.marks} mark{part.marks > 1 ? "s" : ""}
+        </span>
+        {submitted && (
+          <span
+            className={cn(
+              "ml-auto inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold",
+              verdict === "correct"
+                ? "bg-secondary/20 text-secondary-foreground"
+                : verdict === "partial"
+                  ? "bg-accent/30 text-foreground"
+                  : "bg-destructive/10 text-destructive",
+            )}
+          >
+            {verdict === "wrong" ? (
+              <XCircle className="h-3 w-3" />
+            ) : (
+              <CheckCircle2 className="h-3 w-3" />
+            )}
+            {verdict}
           </span>
         )}
       </div>
 
-      <p className="mt-2 text-sm font-medium leading-relaxed text-foreground font-bangla">
+      <p className="mt-2 font-bangla text-sm font-medium leading-relaxed text-foreground">
         {part.prompt}
       </p>
 
@@ -310,32 +479,35 @@ function PartEditor({
         value={value}
         onChange={(e) => onChange(e.target.value.slice(0, 2000))}
         rows={part.marks + 2}
+        readOnly={submitted}
         placeholder="এখানে তোমার উত্তর লিখো..."
-        className="mt-2.5 w-full resize-y rounded-2xl border border-border bg-background px-3.5 py-3 text-sm leading-relaxed outline-none transition placeholder:text-muted-foreground focus:border-primary/50 focus:ring-2 focus:ring-primary/15 font-bangla"
+        className={cn(
+          "mt-2.5 w-full resize-y rounded-2xl border border-border bg-background px-3.5 py-3 font-bangla text-sm leading-relaxed outline-none transition placeholder:text-muted-foreground focus:border-primary/50 focus:ring-2 focus:ring-primary/15",
+          submitted && "cursor-default opacity-90",
+        )}
       />
 
       <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px]">
-        <span className={cn("tabular-nums", enough ? "text-secondary-foreground" : "text-muted-foreground")}>
+        <span
+          className={cn(
+            "tabular-nums",
+            enough ? "text-secondary-foreground" : "text-muted-foreground",
+          )}
+        >
           {words} words {enough ? "✓" : `· suggested ${part.minWords}+`}
         </span>
         <span className="inline-flex items-center gap-1 text-muted-foreground">
           <ListChecks className="h-3.5 w-3.5" /> keywords {hits.length}/{part.keywords.length}
         </span>
-        <div className="ml-auto flex items-center gap-2">
-          <button
-            onClick={onSelfCheck}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 font-semibold transition hover:border-secondary/50 hover:text-secondary-foreground"
-          >
-            <Save className="h-3 w-3" /> {selfChecked ? "Unmark" : "Mark done"}
-          </button>
+        {!submitted && (
           <button
             onClick={onToggleReveal}
-            className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary transition hover:bg-primary/15"
+            className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary transition hover:bg-primary/15"
           >
             {revealed ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
             {revealed ? "Hide model answer" : "Model answer"}
           </button>
-        </div>
+        )}
       </div>
 
       <AnimatePresence initial={false}>
@@ -350,7 +522,7 @@ function PartEditor({
               <p className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-secondary-foreground">
                 <BookOpenCheck className="h-3.5 w-3.5" /> Model answer
               </p>
-              <p className="mt-1.5 text-sm leading-relaxed text-foreground font-bangla">
+              <p className="mt-1.5 font-bangla text-sm leading-relaxed text-foreground">
                 {part.modelAnswer}
               </p>
               <div className="mt-2.5 flex flex-wrap gap-1.5">
@@ -372,6 +544,70 @@ function PartEditor({
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------- result bits */
+
+function Tally({ label, value, tone }: { label: string; value: number; tone: "pos" | "mid" | "neg" }) {
+  return (
+    <div
+      className={cn(
+        "rounded-2xl px-3 py-2 text-center",
+        tone === "pos" && "bg-secondary/12",
+        tone === "mid" && "bg-accent/25",
+        tone === "neg" && "bg-destructive/10",
+      )}
+    >
+      <p
+        className={cn(
+          "text-lg font-bold tabular-nums",
+          tone === "pos" && "text-secondary",
+          tone === "mid" && "text-foreground",
+          tone === "neg" && "text-destructive",
+        )}
+      >
+        {value}
+      </p>
+      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
+    </div>
+  );
+}
+
+function ScoreRing({ value }: { value: number }) {
+  const size = 96;
+  const stroke = 9;
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          strokeWidth={stroke}
+          className="stroke-muted"
+        />
+        <motion.circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={c}
+          initial={{ strokeDashoffset: c }}
+          animate={{ strokeDashoffset: c - (c * value) / 100 }}
+          transition={{ duration: 0.9, ease: "easeOut" }}
+          className="stroke-primary"
+        />
+      </svg>
+      <div className="absolute inset-0 grid place-items-center">
+        <p className="text-xl font-bold tabular-nums text-foreground">{value}%</p>
+      </div>
     </div>
   );
 }
