@@ -179,8 +179,9 @@ function ChapterTopics() {
                   <Link
                     to="/quiz/exam/$subjectId"
                     params={{ subjectId }}
-                    search={{ board: "dhaka", mode: "exam" as const }}
+                    search={{ chapter: chapter.id, topic: t.id, mode: "overview" as const }}
                     onClick={(e) => e.stopPropagation()}
+
                     className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition ${
                       done
                         ? "border border-border text-muted-foreground hover:border-primary/40 hover:text-primary"
