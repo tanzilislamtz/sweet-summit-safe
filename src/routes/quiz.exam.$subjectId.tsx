@@ -20,6 +20,8 @@ import { explainAnswer } from "@/lib/ai-explain.functions";
 
 const searchSchema = z.object({
   board: z.string().optional(),
+  chapter: z.string().optional(),
+  topic: z.string().optional(),
   mode: z.enum(["overview", "paper", "exam", "result"]).default("overview"),
 });
 
@@ -31,15 +33,32 @@ export const Route = createFileRoute("/quiz/exam/$subjectId")({
 
 function ExamFlow() {
   const { subjectId } = Route.useParams();
-  const { board, mode } = Route.useSearch();
+  const { board, chapter: chapterId, topic: topicId, mode } = Route.useSearch();
   const navigate = useNavigate();
 
   const subject = subjects.find((s) => s.id === subjectId);
   const boardMeta = board ? boards.find((b) => b.id === board) : undefined;
-  const paper = useMemo(
-    () => (board ? getExamQuestions(subjectId, board) : []),
-    [subjectId, board],
-  );
+
+  // Topic-driven practice context (chapter + topic selected in Practice).
+  const chapterMeta = chapterId
+    ? getChapters(subjectId).find((c) => c.id === chapterId)
+    : undefined;
+  const topicMeta = chapterMeta?.topics.find((t) => t.id === topicId);
+
+  const paper = useMemo(() => {
+    if (chapterMeta && topicMeta) {
+      return getTopicQuestions({
+        subjectId,
+        chapterId: chapterMeta.id,
+        chapterName: chapterMeta.name,
+        topicId: topicMeta.id,
+        topicName: topicMeta.name,
+        count: 25,
+      });
+    }
+    return board ? getExamQuestions(subjectId, board) : [];
+  }, [subjectId, board, chapterMeta, topicMeta]);
+
 
 
   const [answers, setAnswers] = useState<(number | null)[]>(() => Array(paper.length).fill(null));
