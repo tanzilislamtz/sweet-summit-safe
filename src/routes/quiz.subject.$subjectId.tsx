@@ -177,7 +177,7 @@ function SubjectOverview() {
               <h3 className="mt-4 text-lg font-semibold text-foreground">{mode.name}</h3>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{mode.desc}</p>
 
-              <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl bg-muted/60 p-3">
+              <div className="mb-5 mt-4 grid grid-cols-3 gap-2 rounded-2xl bg-muted/60 p-3">
                 {stats.map((s) => (
                   <div key={s.label} className="min-w-0">
                     <p className="inline-flex items-center gap-1 text-sm font-semibold tabular-nums text-foreground">
@@ -192,9 +192,10 @@ function SubjectOverview() {
               <Link
                 to="/quiz/subject/$subjectId/$category"
                 params={{ subjectId, category: mode.id }}
-                className={`mt-5 inline-flex items-center justify-center gap-2 rounded-xl ${accentBg} px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-95`}
+                className={`mt-auto flex w-full items-center justify-center gap-2 rounded-xl ${accentBg} px-3 py-2.5 text-center text-[13px] font-semibold leading-tight text-primary-foreground shadow-sm transition hover:opacity-95 sm:text-sm`}
               >
-                {cta} <ArrowRight className="h-4 w-4" />
+                <span className="min-w-0 truncate">{cta}</span>
+                <ArrowRight className="h-4 w-4 shrink-0" />
               </Link>
             </motion.div>
           );
