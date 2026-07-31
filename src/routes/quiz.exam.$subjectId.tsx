@@ -99,7 +99,7 @@ function ExamFlow() {
     navigate({
       to: "/quiz/exam/$subjectId",
       params: { subjectId },
-      search: { board, mode: nextMode },
+      search: { board, chapter: chapterId, topic: topicId, mode: nextMode },
     });
   }
 
@@ -114,7 +114,9 @@ function ExamFlow() {
     goto("result");
   }
 
-  if (!subject || !boardMeta) {
+  const isTopicRun = Boolean(chapterMeta && topicMeta);
+
+  if (!subject || (!boardMeta && !isTopicRun)) {
     return (
       <main className="min-h-screen bg-background pb-28 text-foreground">
         <div className="mx-auto max-w-2xl px-5 pt-16 text-center">
@@ -125,16 +127,33 @@ function ExamFlow() {
     );
   }
 
+  // Headline = the topic the learner came from; fallback = board paper.
+  const headline = isTopicRun ? topicMeta!.name : subject.name;
+  const contextLabel = isTopicRun
+    ? `${subject.name} · Chapter ${chapterMeta!.index}: ${chapterMeta!.name}`
+    : boardMeta!.name;
+  const paperEyebrow = isTopicRun
+    ? "Topic Practice · Learns Academy"
+    : "Board of Intermediate and Secondary Education";
+
+  const backToSource = () =>
+    isTopicRun
+      ? navigate({
+          to: "/quiz/subject/$subjectId/$category/$chapterId",
+          params: { subjectId, category: "mcq", chapterId: chapterMeta!.id },
+        })
+      : navigate({ to: "/quiz/subject/$subjectId", params: { subjectId } });
+
   if (mode === "overview") {
     return (
       <OverviewScreen
-        subjectName={subject.name}
+        subjectName={headline}
         subjectEmoji={subject.emoji}
         subjectColor={subject.color}
-        contextLabel={boardMeta.name}
+        contextLabel={contextLabel}
         onViewPaper={() => goto("paper")}
         onStartExam={() => goto("exam")}
-        onBack={() => navigate({ to: "/quiz/subject/$subjectId", params: { subjectId } })}
+        onBack={backToSource}
         count={paper.length}
       />
     );
@@ -143,8 +162,10 @@ function ExamFlow() {
   if (mode === "paper") {
     return (
       <PaperPreview
-        subjectName={subject.name}
-        contextLabel={boardMeta.name}
+        subjectName={headline}
+        contextLabel={contextLabel}
+        paperEyebrow={paperEyebrow}
+        subjectLine={subject.name}
         questions={paper}
         onBack={() => goto("overview")}
         onStart={() => goto("exam")}
@@ -155,8 +176,8 @@ function ExamFlow() {
   if (mode === "exam") {
     return (
       <ExamRunner
-        subjectName={subject.name}
-        contextLabel={boardMeta.name}
+        subjectName={headline}
+        contextLabel={contextLabel}
         questions={paper}
         current={current}
         setCurrent={setCurrent}
@@ -172,8 +193,8 @@ function ExamFlow() {
   return (
     <ResultScreen
       subjectId={subjectId}
-      subjectName={subject.name}
-      contextLabel={boardMeta.name}
+      subjectName={headline}
+      contextLabel={contextLabel}
       questions={paper}
       answers={answers}
       result={result}
@@ -182,6 +203,7 @@ function ExamFlow() {
     />
   );
 }
+
 
 /* ---------------- Overview ---------------- */
 
