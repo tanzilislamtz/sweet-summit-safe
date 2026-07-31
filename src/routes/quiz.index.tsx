@@ -3,12 +3,10 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   BookOpen,
-  ChevronRight,
   GraduationCap,
   Layers,
   PenLine,
   Sparkles,
-  Timer,
 } from "lucide-react";
 import { subjects } from "@/data/quiz";
 import { getSubjectStats } from "@/data/practice";
