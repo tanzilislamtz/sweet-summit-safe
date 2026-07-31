@@ -177,7 +177,7 @@ function SubjectOverview() {
               <h3 className="mt-4 text-lg font-semibold text-foreground">{mode.name}</h3>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{mode.desc}</p>
 
-              <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl bg-muted/60 p-3">
+              <div className="mb-5 mt-4 grid grid-cols-3 gap-2 rounded-2xl bg-muted/60 p-3">
                 {stats.map((s) => (
                   <div key={s.label} className="min-w-0">
                     <p className="inline-flex items-center gap-1 text-sm font-semibold tabular-nums text-foreground">
