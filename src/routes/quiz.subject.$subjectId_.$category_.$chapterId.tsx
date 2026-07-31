@@ -35,6 +35,25 @@ function ChapterTopics() {
     );
   }
 
+  const isWritten = category === "cq" || category === "board";
+
+  /**
+   * MCQ topics open the click-based exam runner; CQ / Board topics open the
+   * written (সৃজনশীল) practice page where the learner types the answers.
+   */
+  const startLinkProps = (topicId: string) =>
+    isWritten
+      ? ({
+          to: "/quiz/cq/$subjectId",
+          params: { subjectId },
+          search: { chapter: chapter.id, topic: topicId, mode: category as "cq" | "board" },
+        } as const)
+      : ({
+          to: "/quiz/exam/$subjectId",
+          params: { subjectId },
+          search: { chapter: chapter.id, topic: topicId, mode: "overview" as const },
+        } as const);
+
   const active = chapter.topics.find((t) => t.id === activeId) ?? chapter.topics[0];
   const attempted = Math.round((chapter.questions * chapter.progress) / 100);
 
@@ -177,9 +196,7 @@ function ChapterTopics() {
                     </div>
                   </div>
                   <Link
-                    to="/quiz/exam/$subjectId"
-                    params={{ subjectId }}
-                    search={{ chapter: chapter.id, topic: t.id, mode: "overview" as const }}
+                    {...startLinkProps(t.id)}
                     onClick={(e) => e.stopPropagation()}
 
                     className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition ${
@@ -223,13 +240,11 @@ function ChapterTopics() {
               </div>
 
               <Link
-                to="/quiz/exam/$subjectId"
-                params={{ subjectId }}
-                search={{ chapter: chapter.id, topic: active.id, mode: "overview" as const }}
+                {...startLinkProps(active.id)}
                 className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-brand transition hover:-translate-y-0.5"
 
               >
-                Start Practice <ArrowRight className="h-4 w-4" />
+                {isWritten ? "Start Writing" : "Start Practice"} <ArrowRight className="h-4 w-4" />
               </Link>
             </motion.aside>
           )}

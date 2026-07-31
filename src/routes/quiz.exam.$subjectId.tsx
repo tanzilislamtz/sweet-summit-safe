@@ -19,6 +19,7 @@ import { boards, getExamQuestions, subjects, type Question } from "@/data/quiz";
 import { getChapters } from "@/data/practice";
 import { getTopicQuestions } from "@/data/topic-questions";
 import { explainAnswer } from "@/lib/ai-explain.functions";
+import { QuestionFigure } from "@/components/QuestionFigure";
 
 
 const searchSchema = z.object({
@@ -380,6 +381,7 @@ function PaperPreview({
                 <span className="min-w-8 font-semibold">{i + 1}.</span>
                 <div className="flex-1">
                   <p>{q.text}</p>
+                  {q.figure && <QuestionFigure spec={q.figure} compact />}
                   <div className="mt-2 grid gap-y-1 sm:grid-cols-2">
                     {q.options.map((opt, oi) => (
                       <p key={oi} className="pl-3">
@@ -497,6 +499,7 @@ function ExamRunner({
                 <span className="mr-1 text-muted-foreground">{qi + 1}.</span>
                 {q.text}
               </p>
+              {q.figure && <QuestionFigure spec={q.figure} />}
 
               <div className="mt-4 grid gap-2 sm:grid-cols-2">
                 {q.options.map((opt, i) => {
@@ -726,6 +729,7 @@ function ReviewCard({
         <div className="flex-1">
           <p className="text-xs text-muted-foreground">Q{index + 1} · {question.topic}</p>
           <p className="mt-0.5 text-sm font-medium">{question.text}</p>
+          {question.figure && <QuestionFigure spec={question.figure} compact />}
         </div>
         <ChevronRight className={`h-4 w-4 shrink-0 text-muted-foreground transition ${open ? "rotate-90" : ""}`} />
       </button>

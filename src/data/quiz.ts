@@ -1,3 +1,5 @@
+import type { FigureSpec } from "./figures";
+
 export type Subject = {
   id: string;
   name: string;
@@ -49,6 +51,8 @@ export type Question = {
   explanation: string;
   year?: string;
   board?: string;
+  /** Optional diagram/screenshot the learner must read to answer. */
+  figure?: FigureSpec;
   difficulty: "easy" | "medium" | "hard";
 };
 
