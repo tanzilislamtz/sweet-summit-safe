@@ -16,7 +16,10 @@ import {
 } from "lucide-react";
 import { z } from "zod";
 import { boards, getExamQuestions, subjects, type Question } from "@/data/quiz";
+import { getChapters } from "@/data/practice";
+import { getTopicQuestions } from "@/data/topic-questions";
 import { explainAnswer } from "@/lib/ai-explain.functions";
+
 
 const searchSchema = z.object({
   board: z.string().optional(),
