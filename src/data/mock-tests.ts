@@ -252,7 +252,7 @@ export function getLeaderboard(testId: string): LeaderRow[] {
     "Fahim Ahmed",
     "Jarin Tasnim",
   ];
-  const rows = names.map((name, i) => ({
+  const rows: LeaderRow[] = names.map((name, i) => ({
     rank: i + 1,
     name,
     score: 100 - i * 3 - (hash(`${testId}${name}`) % 3),
