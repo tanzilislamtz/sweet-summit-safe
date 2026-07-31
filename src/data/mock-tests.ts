@@ -258,6 +258,6 @@ export function getLeaderboard(testId: string): LeaderRow[] {
     score: 100 - i * 3 - (hash(`${testId}${name}`) % 3),
     time: `${pick(`${testId}${name}t`, 9, 24)}:${String(pick(`${testId}${name}s`, 10, 59))}`,
   }));
-  rows.push({ rank: 12, name: "You", score: 86, time: "18:42" });
+  rows.push({ rank: 12, name: "You", score: 86, time: "18:42", you: true });
   return rows;
 }
