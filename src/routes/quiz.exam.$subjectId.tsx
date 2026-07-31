@@ -16,10 +16,15 @@ import {
 } from "lucide-react";
 import { z } from "zod";
 import { boards, getExamQuestions, subjects, type Question } from "@/data/quiz";
+import { getChapters } from "@/data/practice";
+import { getTopicQuestions } from "@/data/topic-questions";
 import { explainAnswer } from "@/lib/ai-explain.functions";
+
 
 const searchSchema = z.object({
   board: z.string().optional(),
+  chapter: z.string().optional(),
+  topic: z.string().optional(),
   mode: z.enum(["overview", "paper", "exam", "result"]).default("overview"),
 });
 
@@ -31,15 +36,32 @@ export const Route = createFileRoute("/quiz/exam/$subjectId")({
 
 function ExamFlow() {
   const { subjectId } = Route.useParams();
-  const { board, mode } = Route.useSearch();
+  const { board, chapter: chapterId, topic: topicId, mode } = Route.useSearch();
   const navigate = useNavigate();
 
   const subject = subjects.find((s) => s.id === subjectId);
   const boardMeta = board ? boards.find((b) => b.id === board) : undefined;
-  const paper = useMemo(
-    () => (board ? getExamQuestions(subjectId, board) : []),
-    [subjectId, board],
-  );
+
+  // Topic-driven practice context (chapter + topic selected in Practice).
+  const chapterMeta = chapterId
+    ? getChapters(subjectId).find((c) => c.id === chapterId)
+    : undefined;
+  const topicMeta = chapterMeta?.topics.find((t) => t.id === topicId);
+
+  const paper = useMemo(() => {
+    if (chapterMeta && topicMeta) {
+      return getTopicQuestions({
+        subjectId,
+        chapterId: chapterMeta.id,
+        chapterName: chapterMeta.name,
+        topicId: topicMeta.id,
+        topicName: topicMeta.name,
+        count: 25,
+      });
+    }
+    return board ? getExamQuestions(subjectId, board) : [];
+  }, [subjectId, board, chapterMeta, topicMeta]);
+
 
 
   const [answers, setAnswers] = useState<(number | null)[]>(() => Array(paper.length).fill(null));
@@ -80,7 +102,7 @@ function ExamFlow() {
     navigate({
       to: "/quiz/exam/$subjectId",
       params: { subjectId },
-      search: { board, mode: nextMode },
+      search: { board, chapter: chapterId, topic: topicId, mode: nextMode },
     });
   }
 
@@ -95,7 +117,9 @@ function ExamFlow() {
     goto("result");
   }
 
-  if (!subject || !boardMeta) {
+  const isTopicRun = Boolean(chapterMeta && topicMeta);
+
+  if (!subject || (!boardMeta && !isTopicRun)) {
     return (
       <main className="min-h-screen bg-background pb-28 text-foreground">
         <div className="mx-auto max-w-2xl px-5 pt-16 text-center">
@@ -106,16 +130,33 @@ function ExamFlow() {
     );
   }
 
+  // Headline = the topic the learner came from; fallback = board paper.
+  const headline = isTopicRun ? topicMeta!.name : subject.name;
+  const contextLabel = isTopicRun
+    ? `${subject.name} · Chapter ${chapterMeta!.index}: ${chapterMeta!.name}`
+    : boardMeta!.name;
+  const paperEyebrow = isTopicRun
+    ? "Topic Practice · Learns Academy"
+    : "Board of Intermediate and Secondary Education";
+
+  const backToSource = () =>
+    isTopicRun
+      ? navigate({
+          to: "/quiz/subject/$subjectId/$category/$chapterId",
+          params: { subjectId, category: "mcq", chapterId: chapterMeta!.id },
+        })
+      : navigate({ to: "/quiz/subject/$subjectId", params: { subjectId } });
+
   if (mode === "overview") {
     return (
       <OverviewScreen
-        subjectName={subject.name}
+        subjectName={headline}
         subjectEmoji={subject.emoji}
         subjectColor={subject.color}
-        boardName={boardMeta.name}
+        contextLabel={contextLabel}
         onViewPaper={() => goto("paper")}
         onStartExam={() => goto("exam")}
-        onBack={() => navigate({ to: "/quiz/subject/$subjectId", params: { subjectId } })}
+        onBack={backToSource}
         count={paper.length}
       />
     );
@@ -124,8 +165,10 @@ function ExamFlow() {
   if (mode === "paper") {
     return (
       <PaperPreview
-        subjectName={subject.name}
-        boardName={boardMeta.name}
+        subjectName={headline}
+        contextLabel={contextLabel}
+        paperEyebrow={paperEyebrow}
+        subjectLine={subject.name}
         questions={paper}
         onBack={() => goto("overview")}
         onStart={() => goto("exam")}
@@ -136,8 +179,8 @@ function ExamFlow() {
   if (mode === "exam") {
     return (
       <ExamRunner
-        subjectName={subject.name}
-        boardName={boardMeta.name}
+        subjectName={headline}
+        contextLabel={contextLabel}
         questions={paper}
         current={current}
         setCurrent={setCurrent}
@@ -153,8 +196,8 @@ function ExamFlow() {
   return (
     <ResultScreen
       subjectId={subjectId}
-      subjectName={subject.name}
-      boardName={boardMeta.name}
+      subjectName={headline}
+      contextLabel={contextLabel}
       questions={paper}
       answers={answers}
       result={result}
@@ -164,13 +207,14 @@ function ExamFlow() {
   );
 }
 
+
 /* ---------------- Overview ---------------- */
 
 function OverviewScreen({
   subjectName,
   subjectEmoji,
   subjectColor,
-  boardName,
+  contextLabel,
   onViewPaper,
   onStartExam,
   onBack,
@@ -179,7 +223,7 @@ function OverviewScreen({
   subjectName: string;
   subjectEmoji: string;
   subjectColor: string;
-  boardName: string;
+  contextLabel: string;
   onViewPaper: () => void;
   onStartExam: () => void;
   onBack: () => void;
@@ -197,7 +241,7 @@ function OverviewScreen({
             <span>{subjectEmoji}</span>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">{boardName}</p>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">{contextLabel}</p>
             <h1 className="text-2xl font-semibold tracking-tight">{subjectName}</h1>
           </div>
         </div>
@@ -261,17 +305,22 @@ function Meta({ label, value }: { label: string; value: string }) {
 
 function PaperPreview({
   subjectName,
-  boardName,
+  contextLabel,
+  paperEyebrow,
+  subjectLine,
   questions,
   onBack,
   onStart,
 }: {
   subjectName: string;
-  boardName: string;
+  contextLabel: string;
+  paperEyebrow: string;
+  subjectLine: string;
   questions: Question[];
   onBack: () => void;
   onStart: () => void;
 }) {
+
   return (
     <main className="min-h-screen bg-muted/30 pb-28 text-foreground print:bg-white">
       <div className="mx-auto max-w-3xl px-5 pt-6">
@@ -305,11 +354,12 @@ function PaperPreview({
         >
           <div className="px-8 pt-8">
             <div className="text-center">
-              <p className="text-xs uppercase tracking-[0.3em] text-neutral-600">Board of Intermediate and Secondary Education</p>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight">{boardName}</h1>
-              <p className="mt-1 text-sm">Secondary School Certificate (SSC) Examination</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-neutral-600">{paperEyebrow}</p>
+              <h1 className="mt-1 text-2xl font-bold tracking-tight">{subjectName}</h1>
+              <p className="mt-1 text-sm">{contextLabel}</p>
               <div className="mt-3 flex items-center justify-center gap-4 text-sm">
-                <span><b>Subject:</b> {subjectName}</span>
+                <span><b>Subject:</b> {subjectLine}</span>
+
                 <span>·</span>
                 <span><b>Time:</b> 25 minutes</span>
                 <span>·</span>
@@ -365,7 +415,7 @@ function PaperPreview({
 
 function ExamRunner({
   subjectName,
-  boardName,
+  contextLabel,
   questions,
   current: _current,
   setCurrent,
@@ -375,7 +425,7 @@ function ExamRunner({
   onSubmit,
 }: {
   subjectName: string;
-  boardName: string;
+  contextLabel: string;
   questions: Question[];
   current: number;
   setCurrent: (n: number) => void;
@@ -402,7 +452,7 @@ function ExamRunner({
       <div className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-5 py-3">
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{boardName}</p>
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{contextLabel}</p>
             <p className="truncate text-sm font-medium">{subjectName}</p>
           </div>
           <div className="flex items-center gap-2">
@@ -499,7 +549,7 @@ function ExamRunner({
 function ResultScreen({
   subjectId,
   subjectName,
-  boardName,
+  contextLabel,
   questions,
   answers,
   result,
@@ -508,7 +558,7 @@ function ResultScreen({
 }: {
   subjectId: string;
   subjectName: string;
-  boardName: string;
+  contextLabel: string;
   questions: Question[];
   answers: (number | null)[];
   result: { correct: number; wrongIds: string[] } | null;
@@ -523,7 +573,7 @@ function ResultScreen({
   return (
     <main className="min-h-screen bg-background pb-28 text-foreground">
       <div className="mx-auto max-w-2xl px-5 pt-8">
-        <p className="text-xs uppercase tracking-widest text-muted-foreground">{boardName} · {subjectName}</p>
+        <p className="text-xs uppercase tracking-widest text-muted-foreground">{contextLabel} · {subjectName}</p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight">Exam submitted.</h1>
         <p className="mt-1 text-sm text-muted-foreground">Here's how you did.</p>
 
