@@ -112,7 +112,7 @@ function ExamFlow() {
         subjectName={subject.name}
         subjectEmoji={subject.emoji}
         subjectColor={subject.color}
-        boardName={boardMeta.name}
+        contextLabel={boardMeta.name}
         onViewPaper={() => goto("paper")}
         onStartExam={() => goto("exam")}
         onBack={() => navigate({ to: "/quiz/subject/$subjectId", params: { subjectId } })}
@@ -125,7 +125,7 @@ function ExamFlow() {
     return (
       <PaperPreview
         subjectName={subject.name}
-        boardName={boardMeta.name}
+        contextLabel={boardMeta.name}
         questions={paper}
         onBack={() => goto("overview")}
         onStart={() => goto("exam")}
@@ -137,7 +137,7 @@ function ExamFlow() {
     return (
       <ExamRunner
         subjectName={subject.name}
-        boardName={boardMeta.name}
+        contextLabel={boardMeta.name}
         questions={paper}
         current={current}
         setCurrent={setCurrent}
@@ -154,7 +154,7 @@ function ExamFlow() {
     <ResultScreen
       subjectId={subjectId}
       subjectName={subject.name}
-      boardName={boardMeta.name}
+      contextLabel={boardMeta.name}
       questions={paper}
       answers={answers}
       result={result}
@@ -170,7 +170,7 @@ function OverviewScreen({
   subjectName,
   subjectEmoji,
   subjectColor,
-  boardName,
+  contextLabel,
   onViewPaper,
   onStartExam,
   onBack,
@@ -179,7 +179,7 @@ function OverviewScreen({
   subjectName: string;
   subjectEmoji: string;
   subjectColor: string;
-  boardName: string;
+  contextLabel: string;
   onViewPaper: () => void;
   onStartExam: () => void;
   onBack: () => void;
@@ -197,7 +197,7 @@ function OverviewScreen({
             <span>{subjectEmoji}</span>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">{boardName}</p>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">{contextLabel}</p>
             <h1 className="text-2xl font-semibold tracking-tight">{subjectName}</h1>
           </div>
         </div>
@@ -261,13 +261,13 @@ function Meta({ label, value }: { label: string; value: string }) {
 
 function PaperPreview({
   subjectName,
-  boardName,
+  contextLabel,
   questions,
   onBack,
   onStart,
 }: {
   subjectName: string;
-  boardName: string;
+  contextLabel: string;
   questions: Question[];
   onBack: () => void;
   onStart: () => void;
@@ -306,7 +306,7 @@ function PaperPreview({
           <div className="px-8 pt-8">
             <div className="text-center">
               <p className="text-xs uppercase tracking-[0.3em] text-neutral-600">Board of Intermediate and Secondary Education</p>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight">{boardName}</h1>
+              <h1 className="mt-1 text-2xl font-bold tracking-tight">{contextLabel}</h1>
               <p className="mt-1 text-sm">Secondary School Certificate (SSC) Examination</p>
               <div className="mt-3 flex items-center justify-center gap-4 text-sm">
                 <span><b>Subject:</b> {subjectName}</span>
@@ -365,7 +365,7 @@ function PaperPreview({
 
 function ExamRunner({
   subjectName,
-  boardName,
+  contextLabel,
   questions,
   current: _current,
   setCurrent,
@@ -375,7 +375,7 @@ function ExamRunner({
   onSubmit,
 }: {
   subjectName: string;
-  boardName: string;
+  contextLabel: string;
   questions: Question[];
   current: number;
   setCurrent: (n: number) => void;
@@ -402,7 +402,7 @@ function ExamRunner({
       <div className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-5 py-3">
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{boardName}</p>
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{contextLabel}</p>
             <p className="truncate text-sm font-medium">{subjectName}</p>
           </div>
           <div className="flex items-center gap-2">
@@ -499,7 +499,7 @@ function ExamRunner({
 function ResultScreen({
   subjectId,
   subjectName,
-  boardName,
+  contextLabel,
   questions,
   answers,
   result,
@@ -508,7 +508,7 @@ function ResultScreen({
 }: {
   subjectId: string;
   subjectName: string;
-  boardName: string;
+  contextLabel: string;
   questions: Question[];
   answers: (number | null)[];
   result: { correct: number; wrongIds: string[] } | null;
@@ -523,7 +523,7 @@ function ResultScreen({
   return (
     <main className="min-h-screen bg-background pb-28 text-foreground">
       <div className="mx-auto max-w-2xl px-5 pt-8">
-        <p className="text-xs uppercase tracking-widest text-muted-foreground">{boardName} · {subjectName}</p>
+        <p className="text-xs uppercase tracking-widest text-muted-foreground">{contextLabel} · {subjectName}</p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight">Exam submitted.</h1>
         <p className="mt-1 text-sm text-muted-foreground">Here's how you did.</p>
 
