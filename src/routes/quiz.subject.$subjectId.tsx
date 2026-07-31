@@ -82,25 +82,25 @@ function SubjectOverview() {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-3xl bg-primary p-6 text-primary-foreground shadow-brand"
+        className="relative overflow-hidden rounded-3xl bg-primary p-4 text-primary-foreground shadow-brand sm:p-6"
       >
         <span className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-primary-foreground/10 blur-3xl" />
         <span className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:radial-gradient(currentColor_1px,transparent_1px)] [background-size:18px_18px]" />
 
-        <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-          <div className="flex min-w-0 items-start gap-4">
-            <span className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-primary-foreground/12 text-3xl ring-1 ring-primary-foreground/20">
+        <div className="relative grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-6">
+          <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary-foreground/12 text-2xl ring-1 ring-primary-foreground/20 sm:h-16 sm:w-16 sm:text-3xl">
               {subject.emoji}
             </span>
             <div className="min-w-0">
-              <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
+              <h1 className="truncate text-xl font-bold tracking-tight sm:text-3xl">
                 {subject.name}
               </h1>
-              <p className="mt-1 max-w-md text-sm text-primary-foreground/75">
+              <p className="mt-1 max-w-md text-[13px] leading-relaxed text-primary-foreground/75 sm:text-sm">
                 {subject.nameBn} · chapter-wise practice, board patterns and instant AI
                 explanations.
               </p>
-              <div className="mt-4 flex flex-wrap gap-2 text-[11px]">
+              <div className="mt-3 flex flex-wrap gap-1.5 text-[11px] sm:mt-4 sm:gap-2">
                 {[
                   `${st.chapters} Chapters`,
                   `${st.mcq} MCQ`,
@@ -109,7 +109,7 @@ function SubjectOverview() {
                 ].map((chip) => (
                   <span
                     key={chip}
-                    className="rounded-lg bg-primary-foreground/10 px-2.5 py-1.5 font-medium ring-1 ring-primary-foreground/15"
+                    className="rounded-lg bg-primary-foreground/10 px-2 py-1 font-medium ring-1 ring-primary-foreground/15 sm:px-2.5 sm:py-1.5"
                   >
                     {chip}
                   </span>
@@ -118,9 +118,11 @@ function SubjectOverview() {
             </div>
           </div>
 
-          <div className="flex items-center gap-5 rounded-2xl bg-primary-foreground/10 p-4 ring-1 ring-primary-foreground/15">
-            <Ring value={st.progress} />
-            <div className="min-w-0 space-y-3">
+          <div className="flex items-center gap-4 rounded-2xl bg-primary-foreground/10 p-3.5 ring-1 ring-primary-foreground/15 sm:gap-5 sm:p-4">
+            <div className="shrink-0">
+              <Ring value={st.progress} />
+            </div>
+            <div className="min-w-0 flex-1 space-y-3 lg:w-56 lg:flex-none">
               <HeroStat
                 top={`${st.chaptersDone} / ${st.chapters}`}
                 label="Chapters completed"
@@ -140,6 +142,7 @@ function SubjectOverview() {
             </div>
           </div>
         </div>
+
       </motion.div>
 
       {/* ── Mode cards ───────────────────────────────────────── */}
