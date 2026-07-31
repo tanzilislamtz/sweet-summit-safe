@@ -225,8 +225,9 @@ function ChapterTopics() {
               <Link
                 to="/quiz/exam/$subjectId"
                 params={{ subjectId }}
-                search={{ board: "dhaka", mode: "exam" as const }}
+                search={{ chapter: chapter.id, topic: active.id, mode: "overview" as const }}
                 className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-brand transition hover:-translate-y-0.5"
+
               >
                 Start Practice <ArrowRight className="h-4 w-4" />
               </Link>
