@@ -188,22 +188,6 @@ function PracticeHub() {
         </div>
       </div>
 
-      {/* ── Mock test entry ───────────────────────────────────── */}
-      <Link
-        to="/quiz/mock-test"
-        className="group relative flex items-center gap-4 overflow-hidden rounded-3xl border border-secondary/25 bg-gradient-to-r from-secondary/8 via-surface to-surface p-4 shadow-sm transition hover:border-secondary/50"
-      >
-        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-secondary text-secondary-foreground shadow-tutor-glow">
-          <Timer className="h-5 w-5" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-foreground">Ready for a full exam?</p>
-          <p className="truncate text-xs text-muted-foreground">
-            Build a timed mock test across subjects
-          </p>
-        </div>
-        <ChevronRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-secondary" />
-      </Link>
     </section>
   );
 }
