@@ -1,4 +1,5 @@
 import type { Question } from "./quiz";
+import type { FigureSpec } from "./figures";
 
 /**
  * Deterministic topic-aware question generator.
@@ -38,6 +39,8 @@ type Raw = {
   options: string[];
   answer: number;
   explanation: string;
+  /** Optional diagram the learner must read before answering. */
+  figure?: FigureSpec;
 };
 
 type Factory = (rnd: () => number, topic: string, chapter: string) => Raw;
@@ -347,12 +350,77 @@ function gcd(a: number, b: number): number {
   return b === 0 ? a : gcd(b, a % b);
 }
 
+/** Figure-based MCQs — the learner must read a diagram to answer. */
+const figureFactories: Factory[] = [
+  (r) => {
+    const b = int(r, 6, 16);
+    const h = int(r, 5, 14);
+    return {
+      text: "চিত্রের ত্রিভুজটির ক্ষেত্রফল কত?",
+      ...numeric((b * h) / 2, [b * h, b + h, (b * h) / 4], " বর্গসেমি"),
+      explanation: `ক্ষেত্রফল = ½ × ${b} × ${h} = ${(b * h) / 2} বর্গসেমি।`,
+      figure: {
+        kind: "triangle",
+        caption: "চিত্র: ABC ত্রিভুজ",
+        labels: ["A", "B", "C", `b = ${b} cm`, `h = ${h} cm`],
+      },
+    };
+  },
+  (r) => {
+    const v = int(r, 6, 24);
+    const r1 = int(r, 2, 8);
+    const r2 = int(r, 2, 8);
+    return {
+      text: "চিত্রের বর্তনীর তুল্য রোধ কত?",
+      ...numeric(r1 + r2, [r1 * r2, Math.abs(r1 - r2), v], " Ω"),
+      explanation: `শ্রেণি সমবায়ে R = R₁ + R₂ = ${r1} + ${r2} = ${r1 + r2} Ω।`,
+      figure: {
+        kind: "circuit",
+        caption: "চিত্র: শ্রেণি সমবায়ে যুক্ত বর্তনী",
+        labels: [`V = ${v} V`, `R₁ = ${r1} Ω`, `R₂ = ${r2} Ω`],
+      },
+    };
+  },
+  (r) => {
+    const vals = [0, int(r, 4, 10), int(r, 12, 20), int(r, 22, 30), int(r, 32, 45)];
+    return {
+      text: "লেখচিত্র অনুযায়ী বস্তুটির গতি সম্পর্কে কোনটি সঠিক?",
+      ...choice(
+        "বেগ সময়ের সাথে বাড়ছে, অর্থাৎ বস্তুটি ত্বরিত",
+        ["বস্তুটি স্থির", "বেগ কমছে", "বস্তুটি সমবেগে চলছে"],
+        int(r, 0, 3),
+      ),
+      explanation: "লেখচিত্রের ঢাল ধনাত্মক, তাই ত্বরণ ধনাত্মক এবং বেগ বাড়ছে।",
+      figure: {
+        kind: "graph",
+        caption: "চিত্র: বেগ–সময় লেখচিত্র",
+        labels: ["time (s)", "v (m/s)"],
+        values: vals,
+      },
+    };
+  },
+  (r) => ({
+    text: "চিত্রে চিহ্নিত অঙ্গাণুটির প্রধান কাজ কী?",
+    ...choice(
+      "ATP তৈরি করে কোষে শক্তি সরবরাহ করা",
+      ["প্রোটিন সংশ্লেষ বন্ধ করা", "কোষপ্রাচীর গঠন করা", "আলো শোষণ করে খাদ্য তৈরি"],
+      int(r, 0, 3),
+    ),
+    explanation: "মাইটোকন্ড্রিয়া বায়বীয় শ্বসনে ATP তৈরি করে — তাই একে শক্তিঘর বলা হয়।",
+    figure: {
+      kind: "cell",
+      caption: "চিত্র: প্রাণিকোষ (মাইটোকন্ড্রিয়া চিহ্নিত)",
+      labels: ["নিউক্লিয়াস", "মাইটোকন্ড্রিয়া"],
+    },
+  }),
+];
+
 const bySubject: Record<string, Factory[]> = {
-  math: mathFactories,
-  hmath: mathFactories,
-  physics: physicsFactories,
+  math: [...mathFactories, figureFactories[0]],
+  hmath: [...mathFactories, figureFactories[0]],
+  physics: [...physicsFactories, figureFactories[1], figureFactories[2]],
   chem: chemFactories,
-  bio: bioFactories,
+  bio: [...bioFactories, figureFactories[3]],
   english: englishFactories,
   bangla: banglaFactories,
   ict: ictFactories,
