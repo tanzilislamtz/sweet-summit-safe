@@ -1,28 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   ArrowRight,
   Award,
   BarChart3,
-  CheckCircle2,
   Clock,
   Flame,
   ListChecks,
   Play,
   Sparkles,
-  Timer,
   Trophy,
-  Users,
 } from "lucide-react";
-import { subjects } from "@/data/quiz";
-import {
-  getMockStats,
-  listMockTests,
-  mockCategories,
-  type MockCategoryId,
-  type MockTest,
-} from "@/data/mock-tests";
+import { getMockStats, listMockTests, mockCategories } from "@/data/mock-tests";
 
 export const Route = createFileRoute("/quiz/mock-test")({
   head: () => ({
@@ -47,13 +37,7 @@ export const Route = createFileRoute("/quiz/mock-test")({
 
 function MockTestHub() {
   const stats = getMockStats();
-  const [category, setCategory] = useState<MockCategoryId>("model");
-  const [subjectId, setSubjectId] = useState<string | "all">("all");
 
-  const tests = useMemo(() => {
-    const all = listMockTests(category, subjectId === "all" ? undefined : subjectId);
-    return all.slice(0, subjectId === "all" ? 12 : 8);
-  }, [category, subjectId]);
 
   const recommended = useMemo(() => listMockTests("model").slice(0, 2), []);
   const lastTest = recommended[0];
@@ -107,10 +91,9 @@ function MockTestHub() {
 
       {/* ── Categories ───────────────────────────────────────── */}
       <div>
-        <SectionHead title="Mock test categories" sub="Pick the format that fits today's goal." />
+        <SectionHead title="Mock test categories" sub="Pick a category to see its tests." />
         <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {mockCategories.map((c, i) => {
-            const active = category === c.id;
             const bg =
               c.tone === "primary"
                 ? "bg-primary text-primary-foreground"
@@ -119,256 +102,117 @@ function MockTestHub() {
                   : c.tone === "accent"
                     ? "bg-accent text-foreground"
                     : "bg-surface text-foreground";
+            const count = listMockTests(c.id).length;
             return (
-              <motion.button
+              <motion.div
                 key={c.id}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.04 * i }}
-                onClick={() => setCategory(c.id)}
-                className={`group relative overflow-hidden rounded-3xl border p-4 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${bg} ${
-                  active ? "border-foreground/25 ring-2 ring-primary/40" : "border-border"
-                }`}
               >
-                <span className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-current opacity-[0.08] blur-2xl" />
-                <div className="flex items-start justify-between gap-2">
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-current/10 text-xl ring-1 ring-current/15">
-                    {c.emoji}
-                  </span>
-                  {c.badge && (
-                    <span className="rounded-full bg-current/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
-                      {c.badge}
+                <Link
+                  to="/quiz/mock-test/category/$categoryId"
+                  params={{ categoryId: c.id }}
+                  className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border p-4 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${bg}`}
+                >
+                  <span className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-current opacity-[0.08] blur-2xl" />
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-current/10 text-xl ring-1 ring-current/15">
+                      {c.emoji}
                     </span>
-                  )}
-                </div>
-                <h3 className="mt-3 text-sm font-semibold">{c.name}</h3>
-                <p className="text-[11px] opacity-70">{c.nameBn}</p>
-                <p className="mt-1.5 text-xs leading-relaxed opacity-75">{c.desc}</p>
-                <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold">
-                  {active ? "Showing below" : "Browse"}
-                  <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
-                </span>
-              </motion.button>
+                    {c.badge && (
+                      <span className="rounded-full bg-current/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                        {c.badge}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="mt-3 text-sm font-semibold">{c.name}</h3>
+                  <p className="text-[11px] opacity-70">{c.nameBn}</p>
+                  <p className="mt-1.5 text-xs leading-relaxed opacity-75">{c.desc}</p>
+                  <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold">
+                    {count} tests
+                    <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+                  </span>
+                </Link>
+              </motion.div>
             );
           })}
         </div>
       </div>
 
-      {/* ── Test list ────────────────────────────────────────── */}
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
-        <div className="min-w-0">
-          <SectionHead
-            title={mockCategories.find((c) => c.id === category)!.name}
-            sub={`${tests.length} tests available`}
-          />
-
-          <div className="mt-3 -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <Chip active={subjectId === "all"} onClick={() => setSubjectId("all")}>
-              All subjects
-            </Chip>
-            {subjects.map((s) => (
-              <Chip key={s.id} active={subjectId === s.id} onClick={() => setSubjectId(s.id)}>
-                <span className="mr-1">{s.emoji}</span>
-                {s.name}
-              </Chip>
-            ))}
-          </div>
-
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            {tests.map((t, i) => (
-              <TestCard key={t.id} test={t} delay={0.03 * i} />
-            ))}
-          </div>
-        </div>
-
-        {/* ── Side rail ──────────────────────────────────────── */}
-        <aside className="space-y-4">
-          {lastTest && (
-            <div className="rounded-3xl border border-border bg-surface p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                Continue your last test
-              </p>
-              <h3 className="mt-2 text-sm font-semibold text-foreground">{lastTest.title}</h3>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                {lastTest.questions} questions · {lastTest.minutes} min
-              </p>
-              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                <div className="h-full w-2/5 rounded-full bg-secondary" />
-              </div>
-              <Link
-                to="/quiz/mock-test/$testId"
-                params={{ testId: lastTest.id }}
-                className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-95"
-              >
-                <Play className="h-4 w-4" /> Resume
-              </Link>
-            </div>
-          )}
-
+      {/* ── Side rail ──────────────────────────────────────────── */}
+      <div className="grid gap-4 md:grid-cols-3">
+        {lastTest && (
           <div className="rounded-3xl border border-border bg-surface p-4 shadow-sm">
             <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-              Recommended for you
+              Continue your last test
             </p>
-            <ul className="mt-2 space-y-2">
-              {recommended.map((t) => (
-                <li key={t.id}>
-                  <Link
-                    to="/quiz/mock-test/$testId"
-                    params={{ testId: t.id }}
-                    className="flex items-center gap-3 rounded-2xl border border-border/70 p-2.5 transition hover:border-primary/40 hover:bg-muted/50"
-                  >
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                      <Award className="h-4 w-4" />
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block truncate text-xs font-semibold text-foreground">
-                        {t.title}
-                      </span>
-                      <span className="block text-[11px] text-muted-foreground">
-                        {t.questions} Q · {t.minutes} min
-                      </span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="rounded-3xl border border-border bg-primary p-4 text-primary-foreground shadow-brand">
-            <Trophy className="h-5 w-5" />
-            <p className="mt-2 text-sm font-semibold">Weekly national ranking</p>
-            <p className="mt-1 text-xs text-primary-foreground/75">
-              Finish 3 model tests this week to enter the leaderboard.
+            <h3 className="mt-2 text-sm font-semibold text-foreground">{lastTest.title}</h3>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {lastTest.questions} questions · {lastTest.minutes} min
             </p>
+            <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+              <div className="h-full w-2/5 rounded-full bg-secondary" />
+            </div>
             <Link
-              to="/quiz/leaderboard"
-              className="mt-3 inline-flex items-center gap-1 text-xs font-semibold underline-offset-4 hover:underline"
+              to="/quiz/mock-test/$testId"
+              params={{ testId: lastTest.id }}
+              className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-95"
             >
-              View leaderboard <ArrowRight className="h-3.5 w-3.5" />
+              <Play className="h-4 w-4" /> Resume
             </Link>
           </div>
-        </aside>
+        )}
+
+        <div className="rounded-3xl border border-border bg-surface p-4 shadow-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+            Recommended for you
+          </p>
+          <ul className="mt-2 space-y-2">
+            {recommended.map((t) => (
+              <li key={t.id}>
+                <Link
+                  to="/quiz/mock-test/$testId"
+                  params={{ testId: t.id }}
+                  className="flex items-center gap-3 rounded-2xl border border-border/70 p-2.5 transition hover:border-primary/40 hover:bg-muted/50"
+                >
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                    <Award className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-xs font-semibold text-foreground">
+                      {t.title}
+                    </span>
+                    <span className="block text-[11px] text-muted-foreground">
+                      {t.questions} Q · {t.minutes} min
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="rounded-3xl border border-border bg-primary p-4 text-primary-foreground shadow-brand">
+          <Trophy className="h-5 w-5" />
+          <p className="mt-2 text-sm font-semibold">Weekly national ranking</p>
+          <p className="mt-1 text-xs text-primary-foreground/75">
+            Finish 3 model tests this week to enter the leaderboard.
+          </p>
+          <Link
+            to="/quiz/leaderboard"
+            className="mt-3 inline-flex items-center gap-1 text-xs font-semibold underline-offset-4 hover:underline"
+          >
+            View leaderboard <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
       </div>
     </section>
   );
 }
 
+
 /* ---------------- pieces ---------------- */
-
-function TestCard({ test, delay }: { test: MockTest; delay: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay }}
-      className="group relative flex flex-col overflow-hidden rounded-3xl border border-border bg-surface p-4 shadow-sm transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg"
-    >
-      <span className="absolute inset-x-0 top-0 h-1 bg-primary opacity-60 transition group-hover:opacity-100" />
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-1.5">
-            {test.isNew && (
-              <span className="rounded-full bg-secondary/12 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-secondary">
-                New
-              </span>
-            )}
-            {test.free ? (
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
-                Free
-              </span>
-            ) : (
-              <span className="rounded-full bg-accent/25 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-foreground/70">
-                Premium
-              </span>
-            )}
-            {test.board && (
-              <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                {test.board} {test.year}
-              </span>
-            )}
-          </div>
-          <h3 className="mt-2 truncate text-sm font-semibold text-foreground">{test.title}</h3>
-          <p className="mt-0.5 truncate text-xs text-muted-foreground">
-            {test.chapterName ?? test.syllabus.length + " chapters covered"}
-          </p>
-        </div>
-        {test.bestScore !== null && (
-          <span className="shrink-0 rounded-2xl bg-secondary/10 px-2.5 py-1.5 text-center">
-            <span className="block text-sm font-bold tabular-nums text-secondary">
-              {test.bestScore}%
-            </span>
-            <span className="block text-[9px] uppercase tracking-wider text-muted-foreground">
-              best
-            </span>
-          </span>
-        )}
-      </div>
-
-      <div className="mt-3 grid grid-cols-3 gap-2 rounded-2xl bg-muted/60 p-2.5">
-        <Meta Icon={ListChecks} value={String(test.questions)} label="Questions" />
-        <Meta Icon={Timer} value={`${test.minutes}m`} label="Duration" />
-        <Meta Icon={Users} value={`${(test.attempts / 1000).toFixed(1)}k`} label="Attempts" />
-      </div>
-
-      <div className="mt-3 flex items-center justify-between gap-2">
-        <p className="inline-flex min-w-0 items-center gap-1 text-[11px] text-muted-foreground">
-          <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-secondary" />
-          <span className="truncate">Class avg. {test.avgScore}%</span>
-        </p>
-        <Link
-          to="/quiz/mock-test/$testId"
-          params={{ testId: test.id }}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition hover:opacity-95"
-        >
-          Start test <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
-      </div>
-    </motion.div>
-  );
-}
-
-function Meta({
-  Icon,
-  value,
-  label,
-}: {
-  Icon: typeof ListChecks;
-  value: string;
-  label: string;
-}) {
-  return (
-    <div className="min-w-0">
-      <p className="inline-flex items-center gap-1 text-sm font-semibold tabular-nums text-foreground">
-        <Icon className="h-3.5 w-3.5 text-primary" />
-        {value}
-      </p>
-      <p className="truncate text-[10px] text-muted-foreground">{label}</p>
-    </div>
-  );
-}
-
-function Chip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-medium transition ${
-        active
-          ? "border-primary bg-primary text-primary-foreground shadow-sm"
-          : "border-border bg-surface text-muted-foreground hover:border-primary/40 hover:text-foreground"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
 
 function SectionHead({ title, sub }: { title: string; sub: string }) {
   return (
