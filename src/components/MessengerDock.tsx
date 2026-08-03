@@ -190,7 +190,7 @@ function MessagesPopup() {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -8, scale: 0.97 }}
       transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
-      className="pointer-events-auto absolute right-4 top-16 w-[360px] origin-top-right overflow-hidden rounded-3xl border border-border bg-surface shadow-2xl"
+      className="pointer-events-auto absolute right-4 top-16 max-h-[calc(100dvh-6rem)] w-[min(360px,calc(100vw-2rem))] origin-top-right overflow-hidden rounded-3xl border border-border bg-surface shadow-2xl"
     >
       <div className="flex items-center justify-between px-4 pt-4">
         <h2 className="text-xl font-bold tracking-tight">Chats</h2>
