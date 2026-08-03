@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Languages, Loader2, RefreshCw, Sparkles } from "lucide-react";
+import { Check, ChevronDown, Languages, Loader2, RefreshCw, Sparkles } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { explainAnswer } from "@/lib/ai-explain.functions";
 
