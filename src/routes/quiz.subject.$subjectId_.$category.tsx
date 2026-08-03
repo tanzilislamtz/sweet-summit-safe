@@ -93,7 +93,7 @@ function ChapterPicker() {
       </motion.div>
 
       {category === "board" ? (
-        <BoardList subjectId={subjectId} />
+        <BoardList />
       ) : (
         <div>
           <div className="mb-3 flex items-baseline justify-between">
@@ -206,7 +206,7 @@ function HeadStat({
   );
 }
 
-function BoardList({ subjectId }: { subjectId: string }) {
+function BoardList() {
   return (
     <div>
       <div className="mb-3 flex items-baseline justify-between">
@@ -222,11 +222,12 @@ function BoardList({ subjectId }: { subjectId: string }) {
             transition={{ delay: 0.02 * i }}
           >
             <Link
-              to="/quiz/exam/$subjectId"
-              params={{ subjectId }}
-              search={{ board: b.id, mode: "overview" as const }}
+              to="/quiz/board/$boardId"
+              params={{ boardId: b.id }}
+              search={{}}
               className="group flex items-center gap-4 rounded-2xl border border-border bg-surface px-4 py-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
             >
+
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-primary/8 text-xs font-bold tracking-wider text-primary ring-1 ring-primary/12">
                 {b.short}
               </span>

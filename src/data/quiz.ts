@@ -109,7 +109,44 @@ const seed: Question[] = [
 
 export const questions: Question[] = seed;
 
+/** Years a learner can pick board papers from (newest first). */
+export const boardYears: number[] = [2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019];
+
+/** Learner's current group — board papers are filtered to these subjects. */
+export const learnerGroup = { level: "SSC", group: "Science" } as const;
+
+/** Subject ids that belong to the learner's group (demo: SSC Science). */
+export const groupSubjectIds: string[] = [
+  "bangla",
+  "english",
+  "math",
+  "hmath",
+  "physics",
+  "chem",
+  "bio",
+  "ict",
+];
+
+export function getGroupSubjects(): Subject[] {
+  return subjects.filter((s) => groupSubjectIds.includes(s.id));
+}
+
+/** Deterministic per board × year × subject paper metadata (demo data). */
+export function getBoardPaperMeta(boardId: string, year: number, subjectId: string) {
+  const key = `${boardId}-${year}-${subjectId}`;
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  return {
+    questions: 25,
+    marks: 25,
+    minutes: 25,
+    attempted: h % 3 === 0,
+    solvedBy: 400 + (h % 2600),
+  };
+}
+
 // Build a realistic 25-question paper for a subject × board.
+
 export function getExamQuestions(subjectId: string, boardId: string, year = "2024"): Question[] {
   const pool = seed.filter((q) => q.subject === subjectId);
   const source = pool.length ? pool : seed;
