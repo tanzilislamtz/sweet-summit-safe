@@ -25,7 +25,10 @@ import {
   Smile,
   Paperclip,
   Image as ImageIcon,
+  MailQuestion,
+  ChevronRight,
 } from "lucide-react";
+import { messageRequests } from "@/lib/requests";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   getMessengerState,
