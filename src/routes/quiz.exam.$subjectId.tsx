@@ -356,7 +356,6 @@ function PaperPreview({
   onBack,
   onStart,
 }: {
-  subjectIdForFav: string;
   subjectName: string;
   contextLabel: string;
   paperEyebrow: string;
@@ -471,6 +470,7 @@ function ExamRunner({
   time,
   onSubmit,
 }: {
+  subjectIdForFav: string;
   subjectName: string;
   contextLabel: string;
   questions: Question[];
