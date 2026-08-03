@@ -118,7 +118,7 @@ function MockTestRun() {
         <ResultModal
           open={resultModal}
           onClose={() => setResultModal(false)}
-          contextLabel={test.subject ?? "Mock Test"}
+          contextLabel={test.subjectName}
           title={test.title}
           percent={score}
           correct={correct}
