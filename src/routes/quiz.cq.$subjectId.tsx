@@ -320,7 +320,7 @@ function CqPractice() {
       </AnimatePresence>
 
       {/* All questions on one page */}
-      <div className="space-y-4">
+      <div id="cq-review" className="space-y-4 scroll-mt-6">
         {paper.map((q, index) => (
           <motion.article
             key={q.id}
