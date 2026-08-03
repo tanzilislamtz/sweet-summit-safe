@@ -20,7 +20,9 @@ import { getChapters } from "@/data/practice";
 import { getTopicQuestions } from "@/data/topic-questions";
 import { explainAnswer } from "@/lib/ai-explain.functions";
 import { QuestionFigure } from "@/components/QuestionFigure";
-import { saveAttempt } from "@/lib/practice-results";
+import { saveAttempt, summarise } from "@/lib/practice-results";
+import { ResultModal } from "@/components/ResultModal";
+
 
 
 
