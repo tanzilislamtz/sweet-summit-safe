@@ -165,21 +165,6 @@ function PracticeHub() {
                   <MiniCell value={st.cq} label="CQ" />
                 </div>
 
-                <div className="relative mt-auto pt-4">
-                  <div className="flex items-center gap-2">
-                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${st.progress}%` }}
-                        transition={{ duration: 0.7, delay: 0.1 + 0.03 * i }}
-                        className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
-                      />
-                    </div>
-                    <span className="text-[11px] font-semibold tabular-nums text-foreground">
-                      {st.progress}%
-                    </span>
-                  </div>
-                </div>
               </Link>
             </motion.div>
           ))}
