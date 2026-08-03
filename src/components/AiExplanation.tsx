@@ -78,7 +78,7 @@ export function AiExplanation({
     } catch {
       setCache((c) => ({
         ...c,
-        [target]: fallback ?? "ব্যাখ্যা আনা যায়নি। একটু পরে আবার চেষ্টা করুন।",
+        [target]: fallback ?? "Could not load the explanation. Please try again in a moment.",
       }));
     } finally {
       setLoadingLang(null);
@@ -99,7 +99,7 @@ export function AiExplanation({
     >
       <div className="flex flex-wrap items-center gap-2">
         <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400">
-          <Sparkles className="h-3.5 w-3.5" /> AI ব্যাখ্যা
+          <Sparkles className="h-3.5 w-3.5" /> AI explanation
         </span>
 
         <div className="ml-auto flex items-center gap-2">
@@ -168,7 +168,7 @@ export function AiExplanation({
       <div className="mt-2 min-h-[1.5rem] text-sm leading-relaxed">
         {busy && !text ? (
           <span className="inline-flex items-center gap-2 text-muted-foreground">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" /> ব্যাখ্যা তৈরি হচ্ছে…
+            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Generating explanation…
           </span>
         ) : text ? (
           <p className="whitespace-pre-line">{text}</p>
@@ -178,7 +178,7 @@ export function AiExplanation({
             onClick={() => void load(lang)}
             className="text-xs font-semibold text-primary underline underline-offset-2"
           >
-            ব্যাখ্যা দেখুন
+            Show explanation
           </button>
         )}
       </div>
