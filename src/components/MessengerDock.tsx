@@ -212,7 +212,7 @@ function MessagesPopup() {
         />
       </div>
 
-      <ul className="max-h-[420px] overflow-y-auto px-2 pb-2">
+      <ul className="max-h-[min(420px,calc(100dvh-14rem))] overflow-y-auto px-2 pb-2">
         {filtered.map((t) => {
           const last = latest[t.id];
           const n = unread[t.id] ?? 0;
