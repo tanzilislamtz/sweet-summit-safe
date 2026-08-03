@@ -20,6 +20,8 @@ import { getChapters } from "@/data/practice";
 import { getTopicQuestions } from "@/data/topic-questions";
 import { explainAnswer } from "@/lib/ai-explain.functions";
 import { QuestionFigure } from "@/components/QuestionFigure";
+import { AiExplanation } from "@/components/AiExplanation";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { saveAttempt, summarise } from "@/lib/practice-results";
 import { ResultModal } from "@/components/ResultModal";
 
@@ -200,6 +202,7 @@ function ExamFlow() {
   if (mode === "exam") {
     return (
       <ExamRunner
+        subjectIdForFav={subjectId}
         subjectName={headline}
         contextLabel={contextLabel}
         questions={paper}
@@ -353,6 +356,7 @@ function PaperPreview({
   onBack,
   onStart,
 }: {
+  subjectIdForFav: string;
   subjectName: string;
   contextLabel: string;
   paperEyebrow: string;
@@ -456,6 +460,7 @@ function PaperPreview({
 /* ---------------- Exam runner ---------------- */
 
 function ExamRunner({
+  subjectIdForFav,
   subjectName,
   contextLabel,
   questions,
@@ -540,6 +545,23 @@ function ExamRunner({
                 {q.text}
               </p>
               {q.figure && <QuestionFigure spec={q.figure} />}
+
+              <div className="mt-3 flex justify-end">
+                <FavoriteButton
+                  item={{
+                    questionId: q.id,
+                    text: q.text,
+                    options: q.options,
+                    answer: q.answer,
+                    explanation: q.explanation,
+                    figure: q.figure,
+                    subjectId: subjectIdForFav,
+                    subjectName,
+                    topic: q.topic,
+                    source: "mcq",
+                  }}
+                />
+              </div>
 
               <div className="mt-4 grid gap-2 sm:grid-cols-2">
                 {q.options.map((opt, i) => {
