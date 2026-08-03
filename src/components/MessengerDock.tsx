@@ -896,7 +896,7 @@ function ChatWindow({ threadId, minimized }: { threadId: string; minimized: bool
               e.preventDefault();
               submit();
             }}
-            className="relative flex items-center gap-1.5 border-t border-border bg-surface p-2"
+            className="relative flex w-full min-w-0 flex-nowrap items-center gap-1.5 border-t border-border bg-surface p-2"
           >
             <input
               ref={fileRef}
