@@ -173,16 +173,6 @@ function ChapterRow({
   );
 }
 
-function ProgressLine({ value }: { value: number }) {
-  return (
-    <div className="h-1.5 w-full flex-1 overflow-hidden rounded-full bg-muted">
-      <div
-        className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
-        style={{ width: `${Math.min(100, value)}%` }}
-      />
-    </div>
-  );
-}
 
 function HeadStat({
   Icon,
