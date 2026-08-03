@@ -127,7 +127,7 @@ export function MessengerDock() {
     <div className="pointer-events-none fixed inset-0 z-50 hidden lg:block">
       <AnimatePresence>{popupOpen && <MessagesPopup key="popup" />}</AnimatePresence>
 
-      <div className="absolute bottom-0 right-4 flex items-end gap-3">
+      <div className="absolute bottom-0 right-4 flex max-w-[calc(100vw-2rem)] items-end justify-end gap-3 overflow-hidden">
         <AnimatePresence>
           {openChats.map((id) => (
             <ChatWindow key={id} threadId={id} minimized={minimized.includes(id)} />
@@ -190,7 +190,7 @@ function MessagesPopup() {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -8, scale: 0.97 }}
       transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
-      className="pointer-events-auto absolute right-4 top-16 w-[360px] origin-top-right overflow-hidden rounded-3xl border border-border bg-surface shadow-2xl"
+      className="pointer-events-auto absolute right-4 top-16 max-h-[calc(100dvh-6rem)] w-[min(360px,calc(100vw-2rem))] origin-top-right overflow-hidden rounded-3xl border border-border bg-surface shadow-2xl"
     >
       <div className="flex items-center justify-between px-4 pt-4">
         <h2 className="text-xl font-bold tracking-tight">Chats</h2>
@@ -212,7 +212,7 @@ function MessagesPopup() {
         />
       </div>
 
-      <ul className="max-h-[420px] overflow-y-auto px-2 pb-2">
+      <ul className="max-h-[min(420px,calc(100dvh-14rem))] overflow-y-auto px-2 pb-2">
         {filtered.map((t) => {
           const last = latest[t.id];
           const n = unread[t.id] ?? 0;
@@ -519,8 +519,10 @@ function ChatWindow({ threadId, minimized }: { threadId: string; minimized: bool
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 24 }}
       transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-      className="pointer-events-auto relative flex w-[328px] flex-col overflow-hidden rounded-t-2xl border border-b-0 border-border bg-surface shadow-2xl"
-      style={{ height: minimized ? 48 : 440 }}
+      className="pointer-events-auto relative flex w-[min(328px,calc(100vw-2rem))] max-w-full min-w-0 flex-col overflow-hidden rounded-t-2xl border border-b-0 border-border bg-surface shadow-2xl"
+      style={{
+        height: minimized ? 48 : "min(440px, calc(100dvh - 5rem))",
+      }}
     >
       <div className="relative flex items-center gap-1 border-b border-border bg-surface px-3 py-2">
         <button
@@ -896,7 +898,7 @@ function ChatWindow({ threadId, minimized }: { threadId: string; minimized: bool
               e.preventDefault();
               submit();
             }}
-            className="relative flex items-center gap-1.5 border-t border-border bg-surface p-2"
+            className="relative flex w-full min-w-0 flex-nowrap items-center gap-1.5 border-t border-border bg-surface p-2"
           >
             <input
               ref={fileRef}
