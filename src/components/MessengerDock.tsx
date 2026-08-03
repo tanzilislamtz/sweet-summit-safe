@@ -25,7 +25,10 @@ import {
   Smile,
   Paperclip,
   Image as ImageIcon,
+  MailQuestion,
+  ChevronRight,
 } from "lucide-react";
+import { messageRequests } from "@/lib/requests";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   getMessengerState,
@@ -213,6 +216,29 @@ function MessagesPopup() {
       </div>
 
       <ul className="max-h-[min(420px,calc(100dvh-14rem))] overflow-y-auto px-2 pb-2">
+        {messageRequests.length > 0 && (
+          <li>
+            <Link
+              to="/message/requests"
+              onClick={() => closeMessengerPopup()}
+              className="mb-1 flex items-center gap-2.5 rounded-2xl border border-border bg-accent/20 px-2.5 py-2 transition hover:bg-accent/30"
+            >
+              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
+                <MailQuestion className="h-4 w-4" />
+              </div>
+              <p className="min-w-0 flex-1 truncate text-sm font-semibold">
+                Message requests
+                <span className="ml-1 text-xs font-normal text-muted-foreground">
+                  · {messageRequests.length} new
+                </span>
+              </p>
+              <span className="grid h-5 min-w-5 shrink-0 place-items-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
+                {messageRequests.length}
+              </span>
+              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+            </Link>
+          </li>
+        )}
         {filtered.map((t) => {
           const last = latest[t.id];
           const n = unread[t.id] ?? 0;
