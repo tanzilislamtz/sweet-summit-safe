@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Home, UserCheck, GraduationCap, BookOpen, MessagesSquare, Timer } from "lucide-react";
+import { X, Home, UserCheck, GraduationCap, BookOpen, MessagesSquare, Timer, Star } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
@@ -9,7 +9,7 @@ import { ChevronRight } from "lucide-react";
 type NavItem = {
   icon: typeof Home;
   label: string;
-  to: "/" | "/quiz" | "/quiz/mock-test" | "/available-tutor" | "/message";
+  to: "/" | "/quiz" | "/quiz/mock-test" | "/quiz/favorites" | "/available-tutor" | "/message";
 };
 
 const sections: { items: NavItem[] }[] = [
@@ -21,7 +21,10 @@ const sections: { items: NavItem[] }[] = [
     ],
   },
   {
-    items: [{ icon: Timer, label: "Mock Test", to: "/quiz/mock-test" }],
+    items: [
+      { icon: Timer, label: "Mock Test", to: "/quiz/mock-test" },
+      { icon: Star, label: "Favorite", to: "/quiz/favorites" },
+    ],
   },
   {
 
