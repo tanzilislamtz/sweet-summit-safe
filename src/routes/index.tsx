@@ -478,6 +478,7 @@ function Post({
   const isLearning = kind === "learning";
 
   const [liked, setLiked] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [likes, setLikes] = useState(stats.likes);
   const [bookmarked, setBookmarked] = useState(false);
   const [shared, setShared] = useState(stats.shares);
