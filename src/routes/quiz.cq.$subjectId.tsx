@@ -164,15 +164,58 @@ function CqPractice() {
     setDrafts({});
     setRevealed({});
     setSubmitted(false);
+    setModalOpen(false);
     setElapsed(0);
     savedRef.current = false;
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Next chapter in this subject, when one exists.
+  const allChapters = getChapters(subjectId);
+  const chapterPos = allChapters.findIndex((c) => c.id === chapter.id);
+  const nextChapter =
+    chapterPos >= 0 && chapterPos < allChapters.length - 1 ? allChapters[chapterPos + 1] : undefined;
+
   return (
     <section className="space-y-5 pb-32">
+      <ResultModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        contextLabel={`${subject.name} · Chapter ${chapter.index}: ${chapter.name}`}
+        title={topic.name}
+        percent={score.percent}
+        correct={score.correct}
+        partial={score.partial}
+        wrong={score.wrong}
+        total={score.total}
+        seconds={elapsed}
+        averagePercent={summarise().accuracy}
+        onRetake={retry}
+        nextChapterLabel={nextChapter?.name}
+        onNextChapter={
+          nextChapter
+            ? () =>
+                navigate({
+                  to: "/quiz/subject/$subjectId/$category/$chapterId",
+                  params: { subjectId, category: mode, chapterId: nextChapter.id },
+                })
+            : undefined
+        }
+        onReviewWrong={() => {
+          setModalOpen(false);
+          setTimeout(
+            () =>
+              document
+                .getElementById("cq-review")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+            220,
+          );
+        }}
+      />
+
       {/* Breadcrumb */}
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+
         <button
           onClick={() =>
             navigate({
