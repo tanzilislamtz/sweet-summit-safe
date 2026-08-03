@@ -93,7 +93,7 @@ function ChapterPicker() {
       </motion.div>
 
       {category === "board" ? (
-        <BoardList subjectId={subjectId} />
+        <BoardList />
       ) : (
         <div>
           <div className="mb-3 flex items-baseline justify-between">
@@ -206,7 +206,7 @@ function HeadStat({
   );
 }
 
-function BoardList({ subjectId }: { subjectId: string }) {
+function BoardList() {
   return (
     <div>
       <div className="mb-3 flex items-baseline justify-between">

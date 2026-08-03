@@ -26,6 +26,7 @@ import { saveAttempt } from "@/lib/practice-results";
 
 const searchSchema = z.object({
   board: z.string().optional(),
+  year: z.coerce.number().optional(),
   chapter: z.string().optional(),
   topic: z.string().optional(),
   mode: z.enum(["overview", "paper", "exam", "result"]).default("overview"),
@@ -39,7 +40,7 @@ export const Route = createFileRoute("/quiz/exam/$subjectId")({
 
 function ExamFlow() {
   const { subjectId } = Route.useParams();
-  const { board, chapter: chapterId, topic: topicId, mode } = Route.useSearch();
+  const { board, year, chapter: chapterId, topic: topicId, mode } = Route.useSearch();
   const navigate = useNavigate();
 
   const subject = subjects.find((s) => s.id === subjectId);
@@ -62,8 +63,8 @@ function ExamFlow() {
         count: 25,
       });
     }
-    return board ? getExamQuestions(subjectId, board) : [];
-  }, [subjectId, board, chapterMeta, topicMeta]);
+    return board ? getExamQuestions(subjectId, board, String(year ?? 2024)) : [];
+  }, [subjectId, board, year, chapterMeta, topicMeta]);
 
 
 
@@ -105,7 +106,7 @@ function ExamFlow() {
     navigate({
       to: "/quiz/exam/$subjectId",
       params: { subjectId },
-      search: { board, chapter: chapterId, topic: topicId, mode: nextMode },
+      search: { board, year, chapter: chapterId, topic: topicId, mode: nextMode },
     });
   }
 
@@ -152,7 +153,7 @@ function ExamFlow() {
   const headline = isTopicRun ? topicMeta!.name : subject.name;
   const contextLabel = isTopicRun
     ? `${subject.name} · Chapter ${chapterMeta!.index}: ${chapterMeta!.name}`
-    : boardMeta!.name;
+    : `${boardMeta!.name}${year ? ` · ${year}` : ""}`;
   const paperEyebrow = isTopicRun
     ? "Topic Practice · Learns Academy"
     : "Board of Intermediate and Secondary Education";
