@@ -162,22 +162,8 @@ function ChapterRow({
             <FileText className="h-3 w-3" /> {chapter.questions} Questions ·{" "}
             {chapter.topics.length} topics
           </p>
-          <div className="mt-2 flex items-center gap-2 sm:hidden">
-            <ProgressLine value={chapter.progress} />
-            <span className="text-[11px] tabular-nums text-muted-foreground">
-              {chapter.progress}%
-            </span>
-          </div>
         </div>
         <div className="flex shrink-0 items-center gap-3">
-          <div className="hidden items-center gap-3 sm:flex">
-            <span className="text-[11px] tabular-nums text-muted-foreground">
-              {chapter.progress}% completed
-            </span>
-            <div className="w-28">
-              <ProgressLine value={chapter.progress} />
-            </div>
-          </div>
           <span className="grid h-8 w-8 place-items-center rounded-full bg-muted text-muted-foreground transition group-hover:bg-primary group-hover:text-primary-foreground">
             <ChevronRight className="h-4 w-4" />
           </span>
@@ -187,16 +173,6 @@ function ChapterRow({
   );
 }
 
-function ProgressLine({ value }: { value: number }) {
-  return (
-    <div className="h-1.5 w-full flex-1 overflow-hidden rounded-full bg-muted">
-      <div
-        className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
-        style={{ width: `${Math.min(100, value)}%` }}
-      />
-    </div>
-  );
-}
 
 function HeadStat({
   Icon,
