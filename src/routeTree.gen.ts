@@ -24,6 +24,7 @@ import { Route as QuizQuestionBankRouteImport } from './routes/quiz.question-ban
 import { Route as QuizProgressRouteImport } from './routes/quiz.progress'
 import { Route as QuizMockTestRouteImport } from './routes/quiz.mock-test'
 import { Route as QuizLeaderboardRouteImport } from './routes/quiz.leaderboard'
+import { Route as QuizFavoritesRouteImport } from './routes/quiz.favorites'
 import { Route as QuizAiSolverRouteImport } from './routes/quiz.ai-solver'
 import { Route as PostPostIdRouteImport } from './routes/post.$postId'
 import { Route as MessageRequestsRouteImport } from './routes/message.requests'
@@ -113,6 +114,11 @@ const QuizMockTestRoute = QuizMockTestRouteImport.update({
 const QuizLeaderboardRoute = QuizLeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
+  getParentRoute: () => QuizRoute,
+} as any)
+const QuizFavoritesRoute = QuizFavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
   getParentRoute: () => QuizRoute,
 } as any)
 const QuizAiSolverRoute = QuizAiSolverRouteImport.update({
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/message/requests': typeof MessageRequestsRoute
   '/post/$postId': typeof PostPostIdRoute
   '/quiz/ai-solver': typeof QuizAiSolverRoute
+  '/quiz/favorites': typeof QuizFavoritesRoute
   '/quiz/leaderboard': typeof QuizLeaderboardRoute
   '/quiz/mock-test': typeof QuizMockTestRoute
   '/quiz/progress': typeof QuizProgressRoute
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/message/requests': typeof MessageRequestsRoute
   '/post/$postId': typeof PostPostIdRoute
   '/quiz/ai-solver': typeof QuizAiSolverRoute
+  '/quiz/favorites': typeof QuizFavoritesRoute
   '/quiz/leaderboard': typeof QuizLeaderboardRoute
   '/quiz/mock-test': typeof QuizMockTestRoute
   '/quiz/progress': typeof QuizProgressRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/message/requests': typeof MessageRequestsRoute
   '/post/$postId': typeof PostPostIdRoute
   '/quiz/ai-solver': typeof QuizAiSolverRoute
+  '/quiz/favorites': typeof QuizFavoritesRoute
   '/quiz/leaderboard': typeof QuizLeaderboardRoute
   '/quiz/mock-test': typeof QuizMockTestRoute
   '/quiz/progress': typeof QuizProgressRoute
@@ -306,6 +315,7 @@ export interface FileRouteTypes {
     | '/message/requests'
     | '/post/$postId'
     | '/quiz/ai-solver'
+    | '/quiz/favorites'
     | '/quiz/leaderboard'
     | '/quiz/mock-test'
     | '/quiz/progress'
@@ -337,6 +347,7 @@ export interface FileRouteTypes {
     | '/message/requests'
     | '/post/$postId'
     | '/quiz/ai-solver'
+    | '/quiz/favorites'
     | '/quiz/leaderboard'
     | '/quiz/mock-test'
     | '/quiz/progress'
@@ -369,6 +380,7 @@ export interface FileRouteTypes {
     | '/message/requests'
     | '/post/$postId'
     | '/quiz/ai-solver'
+    | '/quiz/favorites'
     | '/quiz/leaderboard'
     | '/quiz/mock-test'
     | '/quiz/progress'
@@ -508,6 +520,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuizLeaderboardRouteImport
       parentRoute: typeof QuizRoute
     }
+    '/quiz/favorites': {
+      id: '/quiz/favorites'
+      path: '/favorites'
+      fullPath: '/quiz/favorites'
+      preLoaderRoute: typeof QuizFavoritesRouteImport
+      parentRoute: typeof QuizRoute
+    }
     '/quiz/ai-solver': {
       id: '/quiz/ai-solver'
       path: '/ai-solver'
@@ -633,6 +652,7 @@ const MessageRouteWithChildren =
 
 interface QuizRouteChildren {
   QuizAiSolverRoute: typeof QuizAiSolverRoute
+  QuizFavoritesRoute: typeof QuizFavoritesRoute
   QuizLeaderboardRoute: typeof QuizLeaderboardRoute
   QuizMockTestRoute: typeof QuizMockTestRoute
   QuizProgressRoute: typeof QuizProgressRoute
@@ -653,6 +673,7 @@ interface QuizRouteChildren {
 
 const QuizRouteChildren: QuizRouteChildren = {
   QuizAiSolverRoute: QuizAiSolverRoute,
+  QuizFavoritesRoute: QuizFavoritesRoute,
   QuizLeaderboardRoute: QuizLeaderboardRoute,
   QuizMockTestRoute: QuizMockTestRoute,
   QuizProgressRoute: QuizProgressRoute,
