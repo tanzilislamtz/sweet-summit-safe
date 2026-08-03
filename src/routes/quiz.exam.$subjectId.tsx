@@ -211,6 +211,12 @@ function ExamFlow() {
     );
   }
 
+  // Next chapter in the same subject (topic-driven runs only).
+  const allChapters = getChapters(subjectId);
+  const chapterPos = chapterMeta ? allChapters.findIndex((c) => c.id === chapterMeta.id) : -1;
+  const nextChapter =
+    chapterPos >= 0 && chapterPos < allChapters.length - 1 ? allChapters[chapterPos + 1] : undefined;
+
   // result
   return (
     <ResultScreen
@@ -220,11 +226,25 @@ function ExamFlow() {
       questions={paper}
       answers={answers}
       result={result}
+      seconds={Math.max(0, 25 * 60 - time)}
+      nextChapter={
+        nextChapter
+          ? {
+              label: nextChapter.name,
+              go: () =>
+                navigate({
+                  to: "/quiz/subject/$subjectId/$category/$chapterId",
+                  params: { subjectId, category: "mcq", chapterId: nextChapter.id },
+                }),
+            }
+          : undefined
+      }
       onRetry={() => goto("exam")}
       onHome={() => navigate({ to: "/quiz" })}
     />
   );
 }
+
 
 
 /* ---------------- Overview ---------------- */
