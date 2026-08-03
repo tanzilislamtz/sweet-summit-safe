@@ -680,7 +680,7 @@ function ResultScreen({
         </div>
 
         {/* Answer review */}
-        <section className="mt-8">
+        <section id="answer-review" className="mt-8 scroll-mt-6">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-amber-500" />
             <h2 className="text-sm font-medium">AI review of your answers</h2>
