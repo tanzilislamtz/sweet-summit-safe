@@ -87,7 +87,7 @@ function SubjectOverview() {
         <span className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-primary-foreground/10 blur-3xl" />
         <span className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:radial-gradient(currentColor_1px,transparent_1px)] [background-size:18px_18px]" />
 
-        <div className="relative grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-6">
+        <div className="relative">
           <div className="flex min-w-0 items-start gap-3 sm:gap-4">
             <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary-foreground/12 text-2xl ring-1 ring-primary-foreground/20 sm:h-16 sm:w-16 sm:text-3xl">
               {subject.emoji}
@@ -118,29 +118,6 @@ function SubjectOverview() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 rounded-2xl bg-primary-foreground/10 p-3.5 ring-1 ring-primary-foreground/15 sm:gap-5 sm:p-4">
-            <div className="shrink-0">
-              <Ring value={st.progress} />
-            </div>
-            <div className="min-w-0 flex-1 space-y-3 lg:w-56 lg:flex-none">
-              <HeroStat
-                top={`${st.chaptersDone} / ${st.chapters}`}
-                label="Chapters completed"
-                pct={(st.chaptersDone / st.chapters) * 100}
-              />
-              <HeroStat
-                top={`${st.mcqAttempted} / ${st.mcq}`}
-                label="MCQ attempted"
-                pct={(st.mcqAttempted / st.mcq) * 100}
-              />
-              <Link
-                to="/quiz/progress"
-                className="inline-flex items-center gap-1 text-[11px] font-medium text-primary-foreground/80 underline-offset-4 hover:underline"
-              >
-                View analytics <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
-          </div>
         </div>
 
       </motion.div>
