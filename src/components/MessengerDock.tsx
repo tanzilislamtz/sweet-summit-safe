@@ -127,7 +127,7 @@ export function MessengerDock() {
     <div className="pointer-events-none fixed inset-0 z-50 hidden lg:block">
       <AnimatePresence>{popupOpen && <MessagesPopup key="popup" />}</AnimatePresence>
 
-      <div className="absolute bottom-0 right-4 flex items-end gap-3">
+      <div className="absolute bottom-0 right-4 flex max-w-[calc(100vw-2rem)] items-end justify-end gap-3 overflow-hidden">
         <AnimatePresence>
           {openChats.map((id) => (
             <ChatWindow key={id} threadId={id} minimized={minimized.includes(id)} />
