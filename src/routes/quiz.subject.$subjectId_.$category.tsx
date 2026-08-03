@@ -162,6 +162,19 @@ function ChapterRow({
             <FileText className="h-3 w-3" /> {chapter.questions} Questions ·{" "}
             {chapter.topics.length} topics
           </p>
+          <div className="mt-2 flex items-center gap-2">
+            <div className="h-1.5 w-full max-w-[220px] overflow-hidden rounded-full bg-muted">
+              <motion.span
+                className={`block h-full rounded-full ${done ? "bg-secondary" : "bg-primary"}`}
+                initial={{ width: 0 }}
+                animate={{ width: `${chapter.progress}%` }}
+                transition={{ duration: 0.6, delay: 0.05 + 0.02 * index }}
+              />
+            </div>
+            <span className="shrink-0 text-[10px] font-semibold tabular-nums text-muted-foreground">
+              {chapter.progress}%
+            </span>
+          </div>
         </div>
         <div className="flex shrink-0 items-center gap-3">
           <span className="grid h-8 w-8 place-items-center rounded-full bg-muted text-muted-foreground transition group-hover:bg-primary group-hover:text-primary-foreground">
