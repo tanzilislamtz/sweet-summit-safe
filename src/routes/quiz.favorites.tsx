@@ -67,8 +67,8 @@ function FavoritesPage() {
         <h1 className="mt-4 text-xl font-bold tracking-tight sm:text-2xl">Favorite Questions</h1>
         <p className="mt-1 text-sm text-primary-foreground/70">
           {items.length > 0
-            ? `${items.length} saved question${items.length > 1 ? "s" : ""} · প্রতিটির AI ব্যাখ্যা বাংলায়`
-            : "প্র্যাকটিসের সময় ⭐ চাপলে প্রশ্নগুলো এখানে জমা হবে।"}
+            ? `${items.length} saved question${items.length > 1 ? "s" : ""} · each with an AI explanation`
+            : "Tap the ⭐ on any question while practising to save it here."}
         </p>
       </motion.div>
 
@@ -77,7 +77,7 @@ function FavoritesPage() {
           <Star className="mx-auto h-8 w-8 text-muted-foreground/50" />
           <p className="mt-3 text-sm font-semibold text-foreground">No favorites yet</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            যেকোনো প্রশ্নের পাশে থাকা Favorite বাটনে ক্লিক করলে সেটি এখানে যুক্ত হবে।
+            Click the Favorite button next to any question and it will show up here.
           </p>
           <Link
             to="/quiz"
