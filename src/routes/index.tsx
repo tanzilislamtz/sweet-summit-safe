@@ -612,6 +612,10 @@ function Post({
             <DropdownMenuItem onSelect={() => toast.success("We'll show fewer posts like this")}>
               <X className="mr-2 h-4 w-4" /> Not interested
             </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setHidden(true)}>
+              <EyeOff className="mr-2 h-4 w-4" /> Hide post
+            </DropdownMenuItem>
+
             <DropdownMenuItem
               onSelect={() => {
                 navigator.clipboard?.writeText(window.location.href);
