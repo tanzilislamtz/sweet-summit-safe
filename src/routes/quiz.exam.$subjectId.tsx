@@ -757,37 +757,7 @@ function ReviewCard({
   isCorrect: boolean;
   subjectId: string;
 }) {
-  const explain = useServerFn(explainAnswer);
   const [open, setOpen] = useState(false);
-  const [aiText, setAiText] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  async function loadExplanation() {
-    if (aiText || loading) return;
-    setLoading(true);
-    try {
-      const res = await explain({
-        data: {
-          question: question.text,
-          options: question.options,
-          correctIndex: question.answer,
-          userIndex: userIndex ?? -1,
-          subject: subjectId,
-        },
-      });
-      setAiText(res.explanation);
-    } catch {
-      setAiText(question.explanation);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function toggle() {
-    const next = !open;
-    setOpen(next);
-    if (next && !isCorrect) void loadExplanation();
-  }
 
   return (
     <div
@@ -799,21 +769,39 @@ function ReviewCard({
           : "border-rose-500/30 bg-rose-500/5"
       }`}
     >
-      <button onClick={toggle} className="flex w-full items-start gap-3 text-left">
-        <span
-          className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-medium ${
-            isCorrect ? "bg-emerald-500 text-white" : "bg-rose-500 text-white"
-          }`}
-        >
-          {isCorrect ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
-        </span>
-        <div className="flex-1">
-          <p className="text-xs text-muted-foreground">Q{index + 1} · {question.topic}</p>
-          <p className="mt-0.5 text-sm font-medium">{question.text}</p>
-          {question.figure && <QuestionFigure spec={question.figure} compact />}
-        </div>
-        <ChevronRight className={`h-4 w-4 shrink-0 text-muted-foreground transition ${open ? "rotate-90" : ""}`} />
-      </button>
+      <div className="flex items-start gap-3">
+        <button onClick={() => setOpen((v) => !v)} className="flex flex-1 items-start gap-3 text-left">
+          <span
+            className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-medium ${
+              isCorrect ? "bg-emerald-500 text-white" : "bg-rose-500 text-white"
+            }`}
+          >
+            {isCorrect ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-muted-foreground">Q{index + 1} · {question.topic}</p>
+            <p className="mt-0.5 text-sm font-medium">{question.text}</p>
+            {question.figure && <QuestionFigure spec={question.figure} compact />}
+          </div>
+          <ChevronRight className={`h-4 w-4 shrink-0 text-muted-foreground transition ${open ? "rotate-90" : ""}`} />
+        </button>
+      </div>
+
+      <div className="mt-2 flex justify-end">
+        <FavoriteButton
+          item={{
+            questionId: question.id,
+            text: question.text,
+            options: question.options,
+            answer: question.answer,
+            explanation: question.explanation,
+            figure: question.figure,
+            subjectId,
+            topic: question.topic,
+            source: "mcq",
+          }}
+        />
+      </div>
 
       <AnimatePresence initial={false}>
         {open && (
@@ -851,23 +839,16 @@ function ReviewCard({
                 })}
               </div>
 
-              {!isCorrect && (
-                <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3">
-                  <div className="flex items-center gap-1.5 text-xs font-medium text-amber-700 dark:text-amber-400">
-                    <Sparkles className="h-3.5 w-3.5" /> AI explanation
-                  </div>
-                  <p className="mt-1.5 text-sm leading-relaxed">
-                    {loading ? "Thinking…" : aiText ?? "Tap to load explanation."}
-                  </p>
-                </div>
-              )}
-
-              {isCorrect && (
-                <div className="rounded-xl border border-border bg-card p-3">
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground">Why it's correct</p>
-                  <p className="mt-1 text-sm leading-relaxed">{question.explanation}</p>
-                </div>
-              )}
+              {/* AI explanation is now generated for every question — right, wrong or skipped. */}
+              <AiExplanation
+                question={question.text}
+                options={question.options}
+                correctIndex={question.answer}
+                userIndex={userIndex ?? -1}
+                subject={subjectId}
+                topic={question.topic}
+                fallback={question.explanation}
+              />
             </div>
           </motion.div>
         )}
@@ -875,3 +856,4 @@ function ReviewCard({
     </div>
   );
 }
+
