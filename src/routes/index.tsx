@@ -49,7 +49,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BellOff, Copy, Flag, Link2, UserMinus } from "lucide-react";
+import { BellOff, Copy, Flag, Link2, UserMinus, EyeOff, Undo2 } from "lucide-react";
 import { hasWelcomed, isAuthed } from "@/lib/session";
 import { posts, type Role, type Kind } from "@/lib/posts";
 import { toast } from "sonner";
@@ -478,6 +478,7 @@ function Post({
   const isLearning = kind === "learning";
 
   const [liked, setLiked] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [likes, setLikes] = useState(stats.likes);
   const [bookmarked, setBookmarked] = useState(false);
   const [shared, setShared] = useState(stats.shares);
@@ -504,7 +505,32 @@ function Post({
     setDraft("");
   };
 
+  if (hidden) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        className="flex items-center gap-3 rounded-2xl border border-border bg-muted/50 px-4 py-5"
+      >
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-foreground">Post hidden</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            You won't see this post in your feed.
+          </p>
+        </div>
+        <button
+          onClick={() => setHidden(false)}
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-surface px-3.5 py-1.5 text-xs font-semibold text-foreground transition hover:bg-muted"
+        >
+          <Undo2 className="h-3.5 w-3.5" /> Undo
+        </button>
+      </motion.div>
+    );
+  }
+
   return (
+
     <motion.article
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -612,6 +638,10 @@ function Post({
             <DropdownMenuItem onSelect={() => toast.success("We'll show fewer posts like this")}>
               <X className="mr-2 h-4 w-4" /> Not interested
             </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setHidden(true)}>
+              <EyeOff className="mr-2 h-4 w-4" /> Hide post
+            </DropdownMenuItem>
+
             <DropdownMenuItem
               onSelect={() => {
                 navigator.clipboard?.writeText(window.location.href);
