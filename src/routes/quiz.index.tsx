@@ -111,12 +111,10 @@ function PracticeHub() {
                 MCQ
               </span>
             </h2>
-            <div className="mt-4 max-w-sm">
-              <Bar value={cont.st.progress} />
-              <p className="mt-1.5 text-[11px] text-muted-foreground">
-                {cont.st.progress}% completed
-              </p>
-            </div>
+            <p className="mt-3 text-[12px] text-muted-foreground">
+              Pick up where you left off.
+            </p>
+
           </div>
           <Link
             to="/quiz/subject/$subjectId"
@@ -165,21 +163,6 @@ function PracticeHub() {
                   <MiniCell value={st.cq} label="CQ" />
                 </div>
 
-                <div className="relative mt-auto pt-4">
-                  <div className="flex items-center gap-2">
-                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${st.progress}%` }}
-                        transition={{ duration: 0.7, delay: 0.1 + 0.03 * i }}
-                        className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
-                      />
-                    </div>
-                    <span className="text-[11px] font-semibold tabular-nums text-foreground">
-                      {st.progress}%
-                    </span>
-                  </div>
-                </div>
               </Link>
             </motion.div>
           ))}
@@ -207,16 +190,6 @@ function MiniCell({ value, label }: { value: number; label: string }) {
   );
 }
 
-function Bar({ value }: { value: number }) {
-  return (
-    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-      <div
-        className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
-        style={{ width: `${Math.min(100, value)}%` }}
-      />
-    </div>
-  );
-}
 
 function HeroRing({ value }: { value: number }) {
   const size = 84;
