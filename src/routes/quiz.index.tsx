@@ -111,12 +111,10 @@ function PracticeHub() {
                 MCQ
               </span>
             </h2>
-            <div className="mt-4 max-w-sm">
-              <Bar value={cont.st.progress} />
-              <p className="mt-1.5 text-[11px] text-muted-foreground">
-                {cont.st.progress}% completed
-              </p>
-            </div>
+            <p className="mt-3 text-[12px] text-muted-foreground">
+              Pick up where you left off.
+            </p>
+
           </div>
           <Link
             to="/quiz/subject/$subjectId"
