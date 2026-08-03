@@ -21,7 +21,9 @@ import { subjects } from "@/data/quiz";
 import { getChapters } from "@/data/practice";
 import { getTopicCqQuestions, type CqPart, type CqQuestion } from "@/data/topic-cq";
 import { QuestionFigure } from "@/components/QuestionFigure";
-import { saveAttempt } from "@/lib/practice-results";
+import { saveAttempt, summarise } from "@/lib/practice-results";
+import { ResultModal } from "@/components/ResultModal";
+
 import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({
