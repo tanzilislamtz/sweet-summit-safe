@@ -395,8 +395,10 @@ function CqPractice() {
                   onClick={() => {
                     setConfirming(false);
                     setSubmitted(true);
+                    setModalOpen(true);
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
+
                   className="flex-1 rounded-xl bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground transition hover:opacity-95"
                 >
                   Submit now
