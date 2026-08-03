@@ -88,6 +88,8 @@ function CqPractice() {
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
   const [submitted, setSubmitted] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+
   const [elapsed, setElapsed] = useState(0);
   const savedRef = useRef(false);
 
