@@ -102,53 +102,68 @@ export function AiExplanation({
           <Sparkles className="h-3.5 w-3.5" /> AI ব্যাখ্যা
         </span>
 
-        <div className="relative ml-auto">
+        <div className="ml-auto flex items-center gap-2">
           <button
             type="button"
             onClick={() => setPicker((v) => !v)}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-semibold transition hover:border-primary/40 hover:text-primary"
+            aria-expanded={picker}
+            className="inline-flex max-w-[9rem] items-center gap-1.5 truncate rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-semibold transition hover:border-primary/40 hover:text-primary"
           >
-            <Languages className="h-3.5 w-3.5" />
-            {EXPLAIN_LANGUAGES.find((l) => l.id === lang)?.label}
+            <Languages className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">
+              {EXPLAIN_LANGUAGES.find((l) => l.id === lang)?.label}
+            </span>
+            <ChevronDown
+              className={`h-3 w-3 shrink-0 transition ${picker ? "rotate-180" : ""}`}
+            />
           </button>
 
-          <AnimatePresence>
-            {picker && (
-              <motion.div
-                initial={{ opacity: 0, y: -4, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -4, scale: 0.97 }}
-                className="absolute right-0 top-full z-30 mt-1.5 w-40 overflow-hidden rounded-xl border border-border bg-card p-1 shadow-lg"
-              >
-                {EXPLAIN_LANGUAGES.map((l) => (
-                  <button
-                    key={l.id}
-                    type="button"
-                    onClick={() => {
-                      setPicker(false);
-                      void load(l.id);
-                    }}
-                    className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs transition hover:bg-muted"
-                  >
-                    {l.label}
-                    {lang === l.id && <Check className="h-3.5 w-3.5 text-primary" />}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <button
+            type="button"
+            onClick={() => void load(lang, true)}
+            disabled={busy}
+            className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-border bg-card text-muted-foreground transition hover:border-primary/40 hover:text-primary disabled:opacity-50"
+            aria-label="Regenerate explanation"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${busy ? "animate-spin" : ""}`} />
+          </button>
         </div>
-
-        <button
-          type="button"
-          onClick={() => void load(lang, true)}
-          disabled={busy}
-          className="grid h-7 w-7 place-items-center rounded-full border border-border bg-card text-muted-foreground transition hover:border-primary/40 hover:text-primary disabled:opacity-50"
-          aria-label="Regenerate explanation"
-        >
-          <RefreshCw className={`h-3.5 w-3.5 ${busy ? "animate-spin" : ""}`} />
-        </button>
       </div>
+
+      {/* Inline (non-absolute) language chips: never clipped by collapsing parents
+          and wraps naturally on narrow viewports. */}
+      <AnimatePresence initial={false}>
+        {picker && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-2 flex flex-wrap gap-1.5 rounded-xl border border-border bg-card/70 p-2">
+              {EXPLAIN_LANGUAGES.map((l) => (
+                <button
+                  key={l.id}
+                  type="button"
+                  onClick={() => {
+                    setPicker(false);
+                    void load(l.id);
+                  }}
+                  className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium transition ${
+                    lang === l.id
+                      ? "border-primary/50 bg-primary/10 text-primary"
+                      : "border-border text-muted-foreground hover:border-primary/40 hover:text-primary"
+                  }`}
+                >
+                  {l.label}
+                  {lang === l.id && <Check className="h-3 w-3" />}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
 
       <div className="mt-2 min-h-[1.5rem] text-sm leading-relaxed">
         {busy && !text ? (
