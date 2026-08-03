@@ -111,9 +111,13 @@ function PracticeHub() {
                 MCQ
               </span>
             </h2>
-            <p className="mt-3 text-[12px] text-muted-foreground">
-              Pick up where you left off.
-            </p>
+            <div className="mt-4 max-w-sm">
+              <Bar value={cont.st.progress} />
+              <p className="mt-1.5 text-[11px] text-muted-foreground">
+                {cont.st.progress}% completed
+              </p>
+            </div>
+
 
           </div>
           <Link
@@ -186,6 +190,17 @@ function MiniCell({ value, label }: { value: number; label: string }) {
     <div className="min-w-0">
       <p className="text-sm font-semibold tabular-nums text-foreground">{value}</p>
       <p className="truncate text-[10px] text-muted-foreground">{label}</p>
+    </div>
+  );
+}
+
+function Bar({ value }: { value: number }) {
+  return (
+    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+      <div
+        className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
+        style={{ width: `${Math.min(100, value)}%` }}
+      />
     </div>
   );
 }
