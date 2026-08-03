@@ -20,7 +20,9 @@ import { getChapters } from "@/data/practice";
 import { getTopicQuestions } from "@/data/topic-questions";
 import { explainAnswer } from "@/lib/ai-explain.functions";
 import { QuestionFigure } from "@/components/QuestionFigure";
-import { saveAttempt } from "@/lib/practice-results";
+import { saveAttempt, summarise } from "@/lib/practice-results";
+import { ResultModal } from "@/components/ResultModal";
+
 
 
 
@@ -211,6 +213,12 @@ function ExamFlow() {
     );
   }
 
+  // Next chapter in the same subject (topic-driven runs only).
+  const allChapters = getChapters(subjectId);
+  const chapterPos = chapterMeta ? allChapters.findIndex((c) => c.id === chapterMeta.id) : -1;
+  const nextChapter =
+    chapterPos >= 0 && chapterPos < allChapters.length - 1 ? allChapters[chapterPos + 1] : undefined;
+
   // result
   return (
     <ResultScreen
@@ -220,11 +228,25 @@ function ExamFlow() {
       questions={paper}
       answers={answers}
       result={result}
+      seconds={Math.max(0, 25 * 60 - time)}
+      nextChapter={
+        nextChapter
+          ? {
+              label: nextChapter.name,
+              go: () =>
+                navigate({
+                  to: "/quiz/subject/$subjectId/$category/$chapterId",
+                  params: { subjectId, category: "mcq", chapterId: nextChapter.id },
+                }),
+            }
+          : undefined
+      }
       onRetry={() => goto("exam")}
       onHome={() => navigate({ to: "/quiz" })}
     />
   );
 }
+
 
 
 /* ---------------- Overview ---------------- */
@@ -574,6 +596,8 @@ function ResultScreen({
   questions,
   answers,
   result,
+  seconds,
+  nextChapter,
   onRetry,
   onHome,
 }: {
@@ -583,20 +607,59 @@ function ResultScreen({
   questions: Question[];
   answers: (number | null)[];
   result: { correct: number; wrongIds: string[] } | null;
+  seconds: number;
+  nextChapter?: { label: string; go: () => void };
   onRetry: () => void;
   onHome: () => void;
 }) {
   const correct = result?.correct ?? 0;
   const total = questions.length;
   const wrong = total - correct;
-  const pct = Math.round((correct / total) * 100);
+  const skipped = answers.filter((a) => a === null).length;
+  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+  // Celebration modal opens automatically once, right after submitting.
+  const [showModal, setShowModal] = useState(true);
+  const average = useMemo(() => summarise().accuracy, []);
+
+  const scrollToReview = () => {
+    setShowModal(false);
+    // Let the modal unmount before scrolling to the review list.
+    setTimeout(() => {
+      document.getElementById("answer-review")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 220);
+  };
 
   return (
     <main className="min-h-screen bg-background pb-28 text-foreground">
+      <ResultModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        contextLabel={contextLabel}
+        title={subjectName}
+        percent={pct}
+        correct={correct}
+        wrong={Math.max(0, wrong - skipped)}
+        skipped={skipped}
+        total={total}
+        seconds={seconds}
+        averagePercent={average}
+        onRetake={onRetry}
+        nextChapterLabel={nextChapter?.label}
+        onNextChapter={nextChapter?.go}
+        onReviewWrong={scrollToReview}
+      />
       <div className="mx-auto max-w-2xl px-5 pt-8">
         <p className="text-xs uppercase tracking-widest text-muted-foreground">{contextLabel} · {subjectName}</p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight">Exam submitted.</h1>
         <p className="mt-1 text-sm text-muted-foreground">Here's how you did.</p>
+        <button
+          onClick={() => setShowModal(true)}
+          className="mt-3 inline-flex items-center gap-2 rounded-full border border-border px-3.5 py-1.5 text-xs font-semibold transition hover:border-primary/40 hover:text-primary"
+        >
+          <Sparkles className="h-3.5 w-3.5 text-primary" /> View result summary
+        </button>
+
 
         {/* Scorecard */}
         <div className="mt-6 grid grid-cols-3 gap-3">
@@ -619,7 +682,7 @@ function ResultScreen({
         </div>
 
         {/* Answer review */}
-        <section className="mt-8">
+        <section id="answer-review" className="mt-8 scroll-mt-6">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-amber-500" />
             <h2 className="text-sm font-medium">AI review of your answers</h2>

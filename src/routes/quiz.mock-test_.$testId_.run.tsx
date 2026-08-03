@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { z } from "zod";
 import { getLeaderboard, getMockTest, getMockTestPaper } from "@/data/mock-tests";
+import { ResultModal } from "@/components/ResultModal";
+import { summarise } from "@/lib/practice-results";
 import type { Question } from "@/data/quiz";
 
 const searchSchema = z.object({
@@ -63,6 +65,7 @@ function MockTestRun() {
   const [time, setTime] = useState((test?.minutes ?? 25) * 60);
   const [view, setView] = useState<View>("exam");
   const [confirm, setConfirm] = useState(false);
+  const [resultModal, setResultModal] = useState(false);
 
   useEffect(() => {
     if (view !== "exam") return;
@@ -70,6 +73,7 @@ function MockTestRun() {
       setTime((v) => {
         if (v <= 1) {
           setView("result");
+          setResultModal(true);
           return 0;
         }
         return v - 1;
@@ -111,6 +115,31 @@ function MockTestRun() {
   if (view !== "exam") {
     return (
       <section className="space-y-5 pb-6">
+        <ResultModal
+          open={resultModal}
+          onClose={() => setResultModal(false)}
+          contextLabel={test.subjectName}
+          title={test.title}
+          percent={score}
+          correct={correct}
+          wrong={wrong}
+          skipped={skipped}
+          total={paper.length}
+          seconds={test.minutes * 60 - time}
+          averagePercent={summarise().accuracy}
+          onRetake={() => {
+            setResultModal(false);
+            setAnswers(Array(paper.length).fill(null));
+            setFlags(Array(paper.length).fill(false));
+            setCurrent(0);
+            setTime(test.minutes * 60);
+            setView("exam");
+          }}
+          onReviewWrong={() => {
+            setResultModal(false);
+            setView("review");
+          }}
+        />
         <ResultHeader
           test={test.title}
           view={view}
@@ -374,6 +403,7 @@ function MockTestRun() {
                   onClick={() => {
                     setConfirm(false);
                     setView("result");
+                    setResultModal(true);
                   }}
                   className="rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-95"
                 >

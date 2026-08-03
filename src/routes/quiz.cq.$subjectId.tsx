@@ -21,7 +21,9 @@ import { subjects } from "@/data/quiz";
 import { getChapters } from "@/data/practice";
 import { getTopicCqQuestions, type CqPart, type CqQuestion } from "@/data/topic-cq";
 import { QuestionFigure } from "@/components/QuestionFigure";
-import { saveAttempt } from "@/lib/practice-results";
+import { saveAttempt, summarise } from "@/lib/practice-results";
+import { ResultModal } from "@/components/ResultModal";
+
 import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({
@@ -88,6 +90,8 @@ function CqPractice() {
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
   const [submitted, setSubmitted] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+
   const [elapsed, setElapsed] = useState(0);
   const savedRef = useRef(false);
 
@@ -162,15 +166,58 @@ function CqPractice() {
     setDrafts({});
     setRevealed({});
     setSubmitted(false);
+    setModalOpen(false);
     setElapsed(0);
     savedRef.current = false;
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Next chapter in this subject, when one exists.
+  const allChapters = getChapters(subjectId);
+  const chapterPos = allChapters.findIndex((c) => c.id === chapter.id);
+  const nextChapter =
+    chapterPos >= 0 && chapterPos < allChapters.length - 1 ? allChapters[chapterPos + 1] : undefined;
+
   return (
     <section className="space-y-5 pb-32">
+      <ResultModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        contextLabel={`${subject.name} · Chapter ${chapter.index}: ${chapter.name}`}
+        title={topic.name}
+        percent={score.percent}
+        correct={score.correct}
+        partial={score.partial}
+        wrong={score.wrong}
+        total={score.total}
+        seconds={elapsed}
+        averagePercent={summarise().accuracy}
+        onRetake={retry}
+        nextChapterLabel={nextChapter?.name}
+        onNextChapter={
+          nextChapter
+            ? () =>
+                navigate({
+                  to: "/quiz/subject/$subjectId/$category/$chapterId",
+                  params: { subjectId, category: mode, chapterId: nextChapter.id },
+                })
+            : undefined
+        }
+        onReviewWrong={() => {
+          setModalOpen(false);
+          setTimeout(
+            () =>
+              document
+                .getElementById("cq-review")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+            220,
+          );
+        }}
+      />
+
       {/* Breadcrumb */}
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+
         <button
           onClick={() =>
             navigate({
@@ -273,7 +320,7 @@ function CqPractice() {
       </AnimatePresence>
 
       {/* All questions on one page */}
-      <div className="space-y-4">
+      <div id="cq-review" className="space-y-4 scroll-mt-6">
         {paper.map((q, index) => (
           <motion.article
             key={q.id}
@@ -393,8 +440,10 @@ function CqPractice() {
                   onClick={() => {
                     setConfirming(false);
                     setSubmitted(true);
+                    setModalOpen(true);
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
+
                   className="flex-1 rounded-xl bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground transition hover:opacity-95"
                 >
                   Submit now
