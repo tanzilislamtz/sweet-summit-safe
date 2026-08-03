@@ -37,20 +37,25 @@ export const explainAnswer = createServerFn({ method: "POST" })
         ? `The student answered correctly with: ${chosen}`
         : `The student answered incorrectly with: ${chosen}`;
 
+    const correctLetter = String.fromCharCode(65 + data.correctIndex);
+    const chosenLetter = answered ? String.fromCharCode(65 + data.userIndex) : null;
+
     const prompt = `You are a friendly SSC-level tutor for Bangladeshi students.
 ${situation}
 
-Write the whole explanation in ${data.language}. Use 3-5 short sentences covering:
-1) what the correct answer is and why it is right,
-2) ${isCorrect ? "one deeper insight or common trap for this topic" : "why the student's choice (or leaving it blank) is wrong"},
-3) a short tip to remember it.
-Plain sentences only — no markdown headings, no bullet symbols, no bold markers.
+Write the whole explanation in ${data.language}, as exactly two short labelled paragraphs (2-3 sentences each), in this order:
+
+1) A paragraph starting with the label meaning "Why this answer is wrong" — explain concretely why option ${chosenLetter ?? "(none chosen)"}${chosen ? ` ("${chosen}")` : ""} is not correct${answered ? "" : ", or why leaving it blank misses the point"}.${isCorrect ? " Since the student was right, instead explain the most tempting wrong option and why it fails." : ""}
+2) A paragraph starting with the label meaning "Why option ${correctLetter} is correct" — explain the rule/logic that makes "${correct}" right, plus one short tip to remember it.
+
+Plain sentences only — no markdown headings, no bullet symbols, no bold markers. Keep the labels in ${data.language}, followed by a colon.
 
 Subject: ${data.subject ?? "general"}
 Topic: ${data.topic ?? "general"}
 Question: ${data.question}
 Options: ${data.options.map((o, i) => `${String.fromCharCode(65 + i)}. ${o}`).join(" | ")}
-Correct answer: ${correct}`;
+Correct answer: ${correctLetter}. ${correct}`;
+
 
     try {
       const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
