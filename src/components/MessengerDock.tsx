@@ -519,8 +519,10 @@ function ChatWindow({ threadId, minimized }: { threadId: string; minimized: bool
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 24 }}
       transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-      className="pointer-events-auto relative flex w-[328px] flex-col overflow-hidden rounded-t-2xl border border-b-0 border-border bg-surface shadow-2xl"
-      style={{ height: minimized ? 48 : 440 }}
+      className="pointer-events-auto relative flex w-[min(328px,calc(100vw-2rem))] max-w-full min-w-0 flex-col overflow-hidden rounded-t-2xl border border-b-0 border-border bg-surface shadow-2xl"
+      style={{
+        height: minimized ? 48 : "min(440px, calc(100dvh - 5rem))",
+      }}
     >
       <div className="relative flex items-center gap-1 border-b border-border bg-surface px-3 py-2">
         <button
