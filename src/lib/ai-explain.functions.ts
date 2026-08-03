@@ -40,15 +40,20 @@ export const explainAnswer = createServerFn({ method: "POST" })
     const correctLetter = String.fromCharCode(65 + data.correctIndex);
     const chosenLetter = answered ? String.fromCharCode(65 + data.userIndex) : null;
 
-    const prompt = `You are a friendly SSC-level tutor for Bangladeshi students.
+    // Three distinct tutor behaviours — correct / wrong / skipped. The model decides
+    // the actual wording and reasoning from the question itself.
+    const guidance = isCorrect
+      ? `Start by warmly congratulating the student for choosing ${chosenLetter}. Confirm it is right, then explain in your own words the reasoning or rule that makes it right. End with one encouraging line.`
+      : answered
+        ? `Gently tell the student that their choice ${chosenLetter} ("${chosen}") is not right. Explain, in your own words, exactly where that thinking goes wrong. Then say the correct answer is ${correctLetter} ("${correct}") and explain clearly why it is right. End with one short memory tip.`
+        : `The student left this question blank. Kindly say they should have attempted it — even a reasoned guess helps — and encourage them to answer next time. Then explain the correct answer ${correctLetter} ("${correct}") in your own words, step by step, so they remember it.`;
+
+    const prompt = `You are a warm, encouraging tutor for Bangladeshi SSC students.
 ${situation}
 
-Write the whole explanation in ${data.language}, as exactly two short labelled paragraphs (2-3 sentences each), in this order:
+${guidance}
 
-1) A paragraph starting with the label meaning "Why this answer is wrong" — explain concretely why option ${chosenLetter ?? "(none chosen)"}${chosen ? ` ("${chosen}")` : ""} is not correct${answered ? "" : ", or why leaving it blank misses the point"}.${isCorrect ? " Since the student was right, instead explain the most tempting wrong option and why it fails." : ""}
-2) A paragraph starting with the label meaning "Why option ${correctLetter} is correct" — explain the rule/logic that makes "${correct}" right, plus one short tip to remember it.
-
-Plain sentences only — no markdown headings, no bullet symbols, no bold markers. Keep the labels in ${data.language}, followed by a colon.
+Reason from the actual question and options below — do not use generic filler, and do not repeat these instructions back. Write 3-5 natural sentences in ${data.language}, conversational and friendly, plain text only (no markdown, no bullet points, no headings).
 
 Subject: ${data.subject ?? "general"}
 Topic: ${data.topic ?? "general"}
