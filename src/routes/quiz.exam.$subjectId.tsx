@@ -111,6 +111,9 @@ function ExamFlow() {
       to: "/quiz/exam/$subjectId",
       params: { subjectId },
       search: { board, year, chapter: chapterId, topic: topicId, mode: nextMode },
+      // Paper/exam/result are views of the same selected practice step.
+      // Replacing prevents browser Back from cycling through internal views.
+      replace: true,
     });
   }
 
@@ -168,7 +171,13 @@ function ExamFlow() {
           to: "/quiz/subject/$subjectId/$category/$chapterId",
           params: { subjectId, category: "mcq", chapterId: chapterMeta!.id },
         })
-      : navigate({ to: "/quiz/subject/$subjectId", params: { subjectId } });
+      : board
+        ? navigate({
+            to: "/quiz/board/$boardId",
+            params: { boardId: board },
+            search: { subject: subjectId },
+          })
+        : navigate({ to: "/quiz/subject/$subjectId", params: { subjectId } });
 
   if (mode === "overview") {
     return (
@@ -276,7 +285,11 @@ function OverviewScreen({
   return (
     <main className="min-h-screen bg-background pb-28 text-foreground">
       <div className="mx-auto max-w-2xl px-5 pt-6">
-        <button onClick={onBack} className="grid h-10 w-10 place-items-center rounded-full border border-border">
+        <button
+          onClick={onBack}
+          className="grid h-10 w-10 place-items-center rounded-full border border-border"
+          aria-label="Back to year selection"
+        >
           <ArrowLeft className="h-4 w-4" />
         </button>
 

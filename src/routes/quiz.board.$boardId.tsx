@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -32,7 +32,25 @@ export const Route = createFileRoute("/quiz/board/$boardId")({
 function BoardYearFlow() {
   const { boardId } = Route.useParams();
   const { year, subject } = Route.useSearch();
+  const navigate = useNavigate();
   const board = boards.find((b) => b.id === boardId);
+
+  const goBackOneStep = () => {
+    if (year && !subject) {
+      navigate({ to: "/quiz/board/$boardId", params: { boardId }, search: {} });
+      return;
+    }
+
+    if (subject) {
+      navigate({
+        to: "/quiz/subject/$subjectId/$category",
+        params: { subjectId: subject, category: "board" },
+      });
+      return;
+    }
+
+    navigate({ to: "/quiz" });
+  };
 
   if (!board) {
     return (
@@ -52,7 +70,7 @@ function BoardYearFlow() {
       {/* Breadcrumb */}
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
         <button
-          onClick={() => window.history.back()}
+          onClick={goBackOneStep}
           className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-border transition hover:border-primary/40 hover:text-primary"
           aria-label="Back"
         >
