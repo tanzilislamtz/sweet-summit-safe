@@ -188,13 +188,13 @@ function SubjectOverview() {
 function Crumbs({ subjectId, current }: { subjectId: string; current: string }) {
   return (
     <div className="flex items-center gap-2 text-xs text-muted-foreground">
-      <Link
-        to="/quiz"
+      <button
+        onClick={() => window.history.back()}
         className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-border transition hover:border-primary/40 hover:text-primary"
-        aria-label="Back to practice"
+        aria-label="Back to previous page"
       >
         <ArrowLeft className="h-4 w-4" />
-      </Link>
+      </button>
       <Link to="/quiz" className="hover:text-primary">
         Practice
       </Link>
