@@ -608,9 +608,7 @@ function RoomsTab({ group }: { group: StudyGroup }) {
 
 /* ---------------------------- Members ---------------------------- */
 
-const ROLES: GroupRole[] = ["Admin", "Moderator", "Tutor", "Student"];
-
-function MembersTab({ group, canManage }: { group: StudyGroup; canManage: boolean }) {
+function MembersTab({ group }: { group: StudyGroup }) {
   const [q, setQ] = useState("");
   const [section, setSection] = useState("All");
   const [tick, setTick] = useState(0);
@@ -639,7 +637,7 @@ function MembersTab({ group, canManage }: { group: StudyGroup; canManage: boolea
       <Panel>
         <ul className="divide-y divide-border">
           {list.map((m) => (
-            <MemberRow key={m.id} member={m} groupId={group.id} canManage={canManage} />
+            <MemberRow key={m.id} member={m} />
           ))}
           {list.length === 0 && <li><Empty text="No members match these filters." /></li>}
         </ul>
@@ -648,15 +646,7 @@ function MembersTab({ group, canManage }: { group: StudyGroup; canManage: boolea
   );
 }
 
-function MemberRow({
-  member,
-  groupId,
-  canManage,
-}: {
-  member: GroupMember;
-  groupId: string;
-  canManage: boolean;
-}) {
+function MemberRow({ member }: { member: GroupMember }) {
   const statusTone =
     member.status === "Online" ? "bg-tutor" : member.status === "Away" ? "bg-warning" : "bg-muted-foreground/50";
 
@@ -675,27 +665,6 @@ function MemberRow({
       <Pill tone={member.role === "Admin" ? "primary" : member.role === "Tutor" ? "tutor" : "muted"}>
         {member.role}
       </Pill>
-      {canManage && (
-        <div className="flex shrink-0 items-center gap-1.5">
-          <select
-            value={member.role}
-            onChange={(e) => setMemberRole(groupId, member.id, e.target.value as GroupRole)}
-            aria-label={`Change role for ${member.name}`}
-            className="rounded-lg border border-border bg-background px-2 py-1 text-[11px] font-semibold outline-none focus:border-primary/50"
-          >
-            {ROLES.map((r) => (
-              <option key={r} value={r}>{r}</option>
-            ))}
-          </select>
-          <button
-            onClick={() => setMemberRemoved(groupId, member.id, true)}
-            aria-label={`Remove ${member.name}`}
-            className="grid h-7 w-7 place-items-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-          >
-            <UserMinus className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      )}
     </li>
   );
 }
