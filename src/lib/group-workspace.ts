@@ -11,10 +11,25 @@ import { GROUPS_EVENT, listCreatedGroups } from "@/lib/groups";
 export type GroupRole = GroupMember["role"];
 
 export type GroupSettings = {
+  /** identity */
+  name: string;
+  tagline: string;
+  description: string;
+  batch: string;
+  board: string;
+  classLevel: string;
+  language: string;
+  /** how the signed-in admin is shown inside this group */
+  displayName: string;
+  rules: string[];
+  /** privacy and permissions */
   privacy: "Public Group" | "Private Group";
   approveMembers: boolean;
   membersCanPost: boolean;
   membersCanCreateRooms: boolean;
+  membersCanInvite: boolean;
+  membersCanUpload: boolean;
+  postsNeedApproval: boolean;
 };
 
 export type JoinRequest = {
