@@ -205,7 +205,7 @@ function HeadStat({
   );
 }
 
-function BoardList() {
+function BoardList({ subjectId }: { subjectId: string }) {
   return (
     <div>
       <div className="mb-3 flex items-baseline justify-between">
@@ -223,7 +223,7 @@ function BoardList() {
             <Link
               to="/quiz/board/$boardId"
               params={{ boardId: b.id }}
-              search={{}}
+              search={{ subject: subjectId }}
               className="group flex items-center gap-4 rounded-2xl border border-border bg-surface px-4 py-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
             >
 
