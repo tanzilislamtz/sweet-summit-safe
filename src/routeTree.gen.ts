@@ -15,6 +15,7 @@ import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as MessageRouteImport } from './routes/message'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as GroupStudyRouteImport } from './routes/group-study'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as CreatePostRouteImport } from './routes/create-post'
 import { Route as AvailableTutorRouteImport } from './routes/available-tutor'
@@ -69,6 +70,11 @@ const MessageRoute = MessageRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupStudyRoute = GroupStudyRouteImport.update({
+  id: '/group-study',
+  path: '/group-study',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -205,6 +211,7 @@ export interface FileRoutesByFullPath {
   '/available-tutor': typeof AvailableTutorRoute
   '/create-post': typeof CreatePostRoute
   '/favorites': typeof FavoritesRoute
+  '/group-study': typeof GroupStudyRoute
   '/login': typeof LoginRoute
   '/message': typeof MessageRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -238,6 +245,7 @@ export interface FileRoutesByTo {
   '/available-tutor': typeof AvailableTutorRoute
   '/create-post': typeof CreatePostRoute
   '/favorites': typeof FavoritesRoute
+  '/group-study': typeof GroupStudyRoute
   '/login': typeof LoginRoute
   '/message': typeof MessageRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -271,6 +279,7 @@ export interface FileRoutesById {
   '/available-tutor': typeof AvailableTutorRoute
   '/create-post': typeof CreatePostRoute
   '/favorites': typeof FavoritesRoute
+  '/group-study': typeof GroupStudyRoute
   '/login': typeof LoginRoute
   '/message': typeof MessageRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -306,6 +315,7 @@ export interface FileRouteTypes {
     | '/available-tutor'
     | '/create-post'
     | '/favorites'
+    | '/group-study'
     | '/login'
     | '/message'
     | '/profile'
@@ -339,6 +349,7 @@ export interface FileRouteTypes {
     | '/available-tutor'
     | '/create-post'
     | '/favorites'
+    | '/group-study'
     | '/login'
     | '/message'
     | '/profile'
@@ -371,6 +382,7 @@ export interface FileRouteTypes {
     | '/available-tutor'
     | '/create-post'
     | '/favorites'
+    | '/group-study'
     | '/login'
     | '/message'
     | '/profile'
@@ -405,6 +417,7 @@ export interface RootRouteChildren {
   AvailableTutorRoute: typeof AvailableTutorRoute
   CreatePostRoute: typeof CreatePostRoute
   FavoritesRoute: typeof FavoritesRoute
+  GroupStudyRoute: typeof GroupStudyRoute
   LoginRoute: typeof LoginRoute
   MessageRoute: typeof MessageRouteWithChildren
   ProfileRoute: typeof ProfileRoute
@@ -456,6 +469,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/group-study': {
+      id: '/group-study'
+      path: '/group-study'
+      fullPath: '/group-study'
+      preLoaderRoute: typeof GroupStudyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favorites': {
@@ -699,6 +719,7 @@ const rootRouteChildren: RootRouteChildren = {
   AvailableTutorRoute: AvailableTutorRoute,
   CreatePostRoute: CreatePostRoute,
   FavoritesRoute: FavoritesRoute,
+  GroupStudyRoute: GroupStudyRoute,
   LoginRoute: LoginRoute,
   MessageRoute: MessageRouteWithChildren,
   ProfileRoute: ProfileRoute,
