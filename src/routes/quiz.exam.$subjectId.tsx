@@ -212,6 +212,7 @@ function ExamFlow() {
     return (
       <ExamRunner
         subjectIdForFav={subjectId}
+        favSubjectName={subject.name}
         subjectName={headline}
         contextLabel={contextLabel}
         questions={paper}
@@ -235,6 +236,7 @@ function ExamFlow() {
   return (
     <ResultScreen
       subjectId={subjectId}
+      favSubjectName={subject.name}
       subjectName={headline}
       contextLabel={contextLabel}
       questions={paper}
@@ -473,6 +475,7 @@ function PaperPreview({
 
 function ExamRunner({
   subjectIdForFav,
+  favSubjectName,
   subjectName,
   contextLabel,
   questions,
@@ -484,6 +487,7 @@ function ExamRunner({
   onSubmit,
 }: {
   subjectIdForFav: string;
+  favSubjectName: string;
   subjectName: string;
   contextLabel: string;
   questions: Question[];
@@ -572,7 +576,7 @@ function ExamRunner({
                       explanation: q.explanation,
                       figure: q.figure,
                       subjectId: subjectIdForFav,
-                      subjectName,
+                      subjectName: favSubjectName,
                       topic: q.topic,
                       source: "mcq",
                     },
@@ -630,6 +634,7 @@ function ExamRunner({
 
 function ResultScreen({
   subjectId,
+  favSubjectName,
   subjectName,
   contextLabel,
   questions,
@@ -641,6 +646,7 @@ function ResultScreen({
   onHome,
 }: {
   subjectId: string;
+  favSubjectName: string;
   subjectName: string;
   contextLabel: string;
   questions: Question[];
@@ -742,6 +748,7 @@ function ResultScreen({
                   userIndex={user}
                   isCorrect={isCorrect}
                   subjectId={subjectId}
+                  favSubjectName={favSubjectName}
                 />
               );
             })}
@@ -789,12 +796,14 @@ function ReviewCard({
   userIndex,
   isCorrect,
   subjectId,
+  favSubjectName,
 }: {
   index: number;
   question: Question;
   userIndex: number | null;
   isCorrect: boolean;
   subjectId: string;
+  favSubjectName: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -839,6 +848,7 @@ function ReviewCard({
               explanation: question.explanation,
               figure: question.figure,
               subjectId,
+              subjectName: favSubjectName,
               topic: question.topic,
               source: "mcq",
             },
