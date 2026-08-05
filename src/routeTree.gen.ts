@@ -39,6 +39,7 @@ import { Route as QuizExamSubjectIdRouteImport } from './routes/quiz.exam.$subje
 import { Route as QuizCqSubjectIdRouteImport } from './routes/quiz.cq.$subjectId'
 import { Route as QuizBoardBoardIdRouteImport } from './routes/quiz.board.$boardId'
 import { Route as MessageRequestRequestIdRouteImport } from './routes/message.request.$requestId'
+import { Route as GroupStudyManageGroupIdRouteImport } from './routes/group-study.manage.$groupId'
 import { Route as QuizSubjectSubjectIdCategoryRouteImport } from './routes/quiz.subject.$subjectId_.$category'
 import { Route as QuizMockTestCategoryCategoryIdRouteImport } from './routes/quiz.mock-test_.category.$categoryId'
 import { Route as QuizMockTestTestIdRunRouteImport } from './routes/quiz.mock-test_.$testId_.run'
@@ -194,6 +195,11 @@ const MessageRequestRequestIdRoute = MessageRequestRequestIdRouteImport.update({
   path: '/request/$requestId',
   getParentRoute: () => MessageRoute,
 } as any)
+const GroupStudyManageGroupIdRoute = GroupStudyManageGroupIdRouteImport.update({
+  id: '/manage/$groupId',
+  path: '/manage/$groupId',
+  getParentRoute: () => GroupStudyRoute,
+} as any)
 const QuizSubjectSubjectIdCategoryRoute =
   QuizSubjectSubjectIdCategoryRouteImport.update({
     id: '/subject/$subjectId_/$category',
@@ -242,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/quiz/quick-practice': typeof QuizQuickPracticeRoute
   '/group-study/': typeof GroupStudyIndexRoute
   '/quiz/': typeof QuizIndexRoute
+  '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
   '/quiz/cq/$subjectId': typeof QuizCqSubjectIdRoute
@@ -276,6 +283,7 @@ export interface FileRoutesByTo {
   '/quiz/quick-practice': typeof QuizQuickPracticeRoute
   '/group-study': typeof GroupStudyIndexRoute
   '/quiz': typeof QuizIndexRoute
+  '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
   '/quiz/cq/$subjectId': typeof QuizCqSubjectIdRoute
@@ -313,6 +321,7 @@ export interface FileRoutesById {
   '/quiz/quick-practice': typeof QuizQuickPracticeRoute
   '/group-study/': typeof GroupStudyIndexRoute
   '/quiz/': typeof QuizIndexRoute
+  '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
   '/quiz/cq/$subjectId': typeof QuizCqSubjectIdRoute
@@ -351,6 +360,7 @@ export interface FileRouteTypes {
     | '/quiz/quick-practice'
     | '/group-study/'
     | '/quiz/'
+    | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
     | '/quiz/cq/$subjectId'
@@ -385,6 +395,7 @@ export interface FileRouteTypes {
     | '/quiz/quick-practice'
     | '/group-study'
     | '/quiz'
+    | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
     | '/quiz/cq/$subjectId'
@@ -421,6 +432,7 @@ export interface FileRouteTypes {
     | '/quiz/quick-practice'
     | '/group-study/'
     | '/quiz/'
+    | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
     | '/quiz/cq/$subjectId'
@@ -661,6 +673,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MessageRequestRequestIdRouteImport
       parentRoute: typeof MessageRoute
     }
+    '/group-study/manage/$groupId': {
+      id: '/group-study/manage/$groupId'
+      path: '/manage/$groupId'
+      fullPath: '/group-study/manage/$groupId'
+      preLoaderRoute: typeof GroupStudyManageGroupIdRouteImport
+      parentRoute: typeof GroupStudyRoute
+    }
     '/quiz/subject/$subjectId_/$category': {
       id: '/quiz/subject/$subjectId_/$category'
       path: '/subject/$subjectId/$category'
@@ -695,11 +714,13 @@ declare module '@tanstack/react-router' {
 interface GroupStudyRouteChildren {
   GroupStudyGroupIdRoute: typeof GroupStudyGroupIdRoute
   GroupStudyIndexRoute: typeof GroupStudyIndexRoute
+  GroupStudyManageGroupIdRoute: typeof GroupStudyManageGroupIdRoute
 }
 
 const GroupStudyRouteChildren: GroupStudyRouteChildren = {
   GroupStudyGroupIdRoute: GroupStudyGroupIdRoute,
   GroupStudyIndexRoute: GroupStudyIndexRoute,
+  GroupStudyManageGroupIdRoute: GroupStudyManageGroupIdRoute,
 }
 
 const GroupStudyRouteWithChildren = GroupStudyRoute._addFileChildren(

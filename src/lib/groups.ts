@@ -98,3 +98,9 @@ export const findGroup = (id: string): StudyGroup | undefined => {
   const created = listCreatedGroups().find((g) => g.id === id);
   return created ? hydrateCreatedGroup(created) : undefined;
 };
+
+/** Permanently removes a locally created group (admin "delete group" action). */
+export const deleteCreatedGroup = (id: string) => {
+  write(CREATED_KEY, listCreatedGroups().filter((g) => g.id !== id));
+  setJoined(id, false);
+};

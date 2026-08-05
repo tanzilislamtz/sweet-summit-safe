@@ -23,22 +23,18 @@ import {
   UserMinus,
   UserPlus,
   Search,
+  ChevronDown,
+  LogOut,
 } from "lucide-react";
 import type { GroupMember, StudyGroup } from "@/data/groups";
 import { GROUPS_EVENT, findGroup, isJoined, setJoined } from "@/lib/groups";
 import {
   addGroupPost,
+  applyGroupOverrides,
   canManageGroup,
   deleteGroupPost,
-  getGroupSettings,
   listGroupPosts,
-  listJoinRequests,
-  resolveJoinRequest,
   resolveMembers,
-  setMemberRole,
-  setMemberRemoved,
-  updateGroupSettings,
-  type GroupRole,
   type StoredPost,
 } from "@/lib/group-workspace";
 import { getSession } from "@/lib/session";
@@ -65,7 +61,7 @@ export const Route = createFileRoute("/group-study/$groupId")({
 });
 
 const BASE_TABS = ["Feed", "Rooms", "Members", "Files", "Events", "About"] as const;
-type Tab = (typeof BASE_TABS)[number] | "Manage";
+type Tab = (typeof BASE_TABS)[number];
 
 function GroupDetailPage() {
   const { groupId } = useParams({ from: "/group-study/$groupId" });
@@ -77,7 +73,7 @@ function GroupDetailPage() {
   useEffect(() => {
     const sync = () => {
       const g = findGroup(groupId);
-      setGroup(g);
+      setGroup(g ? applyGroupOverrides(g) : undefined);
       setJoinedState(g ? isJoined(g) : false);
       setTick((t) => t + 1);
     };
@@ -87,7 +83,7 @@ function GroupDetailPage() {
   }, [groupId]);
 
   const canManage = group ? canManageGroup(group, joined) : false;
-  const tabs: Tab[] = canManage ? [...BASE_TABS, "Manage"] : [...BASE_TABS];
+  const tabs: Tab[] = [...BASE_TABS];
 
   if (!group) {
     return (
@@ -129,11 +125,10 @@ function GroupDetailPage() {
 
       {tab === "Feed" && <FeedTab group={group} tick={tick} />}
       {tab === "Rooms" && <RoomsTab group={group} />}
-      {tab === "Members" && <MembersTab group={group} canManage={canManage} />}
+      {tab === "Members" && <MembersTab group={group} />}
       {tab === "Files" && <FilesTab group={group} />}
       {tab === "Events" && <EventsTab group={group} />}
       {tab === "About" && <AboutTab group={group} />}
-      {tab === "Manage" && canManage && <ManageTab group={group} />}
     </div>
   );
 }
@@ -178,20 +173,30 @@ function GroupHeader({
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <button
-            onClick={() => setJoined(group.id, !joined)}
-            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition ${
-              joined
-                ? "ring-1 ring-primary-foreground/30 hover:bg-primary-foreground/10"
-                : "bg-accent text-accent-foreground hover:brightness-95"
-            }`}
-          >
-            {joined ? <Check className="h-3.5 w-3.5" /> : <UserPlus className="h-3.5 w-3.5" />}
-            {joined ? "Joined" : "Join"}
-          </button>
+          {joined ? (
+            <JoinedMenu groupId={group.id} />
+          ) : (
+            <button
+              onClick={() => setJoined(group.id, true)}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground transition hover:brightness-95"
+            >
+              <UserPlus className="h-3.5 w-3.5" /> Join
+            </button>
+          )}
           <button className="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold ring-1 ring-primary-foreground/30 hover:bg-primary-foreground/10 sm:inline-flex">
             <Share2 className="h-3.5 w-3.5" /> Invite
           </button>
+          {canManage && (
+            <Link
+              to="/group-study/manage/$groupId"
+              params={{ groupId: group.id }}
+              aria-label="Admin tools"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary-foreground/15 px-3 py-2 text-xs font-semibold ring-1 ring-primary-foreground/30 transition hover:bg-primary-foreground/25"
+            >
+              <Settings2 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Admin tools</span>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -204,6 +209,49 @@ function GroupHeader({
         ))}
       </div>
     </header>
+  );
+}
+
+/** "Joined" pill with a small menu holding the leave-group action. */
+function JoinedMenu({ groupId }: { groupId: string }) {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    window.addEventListener("click", close);
+    return () => window.removeEventListener("click", close);
+  }, [open]);
+
+  return (
+    <div className="relative" onClick={(e) => e.stopPropagation()}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold ring-1 ring-primary-foreground/30 transition hover:bg-primary-foreground/10"
+      >
+        <Check className="h-3.5 w-3.5" /> Joined
+        <ChevronDown className="h-3 w-3" />
+      </button>
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 z-20 mt-1.5 w-44 overflow-hidden rounded-xl border border-border bg-surface text-foreground shadow-lg"
+        >
+          <button
+            role="menuitem"
+            onClick={() => {
+              setJoined(groupId, false);
+              setOpen(false);
+            }}
+            className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs font-semibold text-destructive hover:bg-destructive/10"
+          >
+            <LogOut className="h-3.5 w-3.5" /> Leave group
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -615,9 +663,7 @@ function RoomsTab({ group }: { group: StudyGroup }) {
 
 /* ---------------------------- Members ---------------------------- */
 
-const ROLES: GroupRole[] = ["Admin", "Moderator", "Tutor", "Student"];
-
-function MembersTab({ group, canManage }: { group: StudyGroup; canManage: boolean }) {
+function MembersTab({ group }: { group: StudyGroup }) {
   const [q, setQ] = useState("");
   const [section, setSection] = useState("All");
   const [tick, setTick] = useState(0);
@@ -646,7 +692,7 @@ function MembersTab({ group, canManage }: { group: StudyGroup; canManage: boolea
       <Panel>
         <ul className="divide-y divide-border">
           {list.map((m) => (
-            <MemberRow key={m.id} member={m} groupId={group.id} canManage={canManage} />
+            <MemberRow key={m.id} member={m} />
           ))}
           {list.length === 0 && <li><Empty text="No members match these filters." /></li>}
         </ul>
@@ -655,15 +701,7 @@ function MembersTab({ group, canManage }: { group: StudyGroup; canManage: boolea
   );
 }
 
-function MemberRow({
-  member,
-  groupId,
-  canManage,
-}: {
-  member: GroupMember;
-  groupId: string;
-  canManage: boolean;
-}) {
+function MemberRow({ member }: { member: GroupMember }) {
   const statusTone =
     member.status === "Online" ? "bg-tutor" : member.status === "Away" ? "bg-warning" : "bg-muted-foreground/50";
 
@@ -682,27 +720,6 @@ function MemberRow({
       <Pill tone={member.role === "Admin" ? "primary" : member.role === "Tutor" ? "tutor" : "muted"}>
         {member.role}
       </Pill>
-      {canManage && (
-        <div className="flex shrink-0 items-center gap-1.5">
-          <select
-            value={member.role}
-            onChange={(e) => setMemberRole(groupId, member.id, e.target.value as GroupRole)}
-            aria-label={`Change role for ${member.name}`}
-            className="rounded-lg border border-border bg-background px-2 py-1 text-[11px] font-semibold outline-none focus:border-primary/50"
-          >
-            {ROLES.map((r) => (
-              <option key={r} value={r}>{r}</option>
-            ))}
-          </select>
-          <button
-            onClick={() => setMemberRemoved(groupId, member.id, true)}
-            aria-label={`Remove ${member.name}`}
-            className="grid h-7 w-7 place-items-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-          >
-            <UserMinus className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      )}
     </li>
   );
 }
@@ -840,163 +857,6 @@ function AboutTab({ group }: { group: StudyGroup }) {
             </li>
           ))}
           {group.sections.length === 0 && <li><Empty text="No sections yet." /></li>}
-        </ul>
-      </Panel>
-    </div>
-  );
-}
-
-/* ----------------------------- Manage ----------------------------- */
-
-function ManageTab({ group }: { group: StudyGroup }) {
-  const [tick, setTick] = useState(0);
-  useEffect(() => {
-    const sync = () => setTick((t) => t + 1);
-    window.addEventListener(GROUPS_EVENT, sync);
-    return () => window.removeEventListener(GROUPS_EVENT, sync);
-  }, []);
-
-  const settings = useMemo(() => getGroupSettings(group), [group, tick]);
-  const requests = useMemo(() => listJoinRequests(group.id), [group.id, tick]);
-  const removed = useMemo(
-    () => group.memberList.filter((m) => !resolveMembers(group).some((r) => r.id === m.id)),
-    [group, tick],
-  );
-  const admins = useMemo(
-    () => resolveMembers(group).filter((m) => m.role === "Admin" || m.role === "Moderator"),
-    [group, tick],
-  );
-
-  const toggles: [keyof typeof settings, string, string][] = [
-    ["approveMembers", "Approve new members", "Admins review every join request"],
-    ["membersCanPost", "Members can post", "Turn off to make the feed admin-only"],
-    ["membersCanCreateRooms", "Members can create rooms", "Allow anyone to start a study room"],
-  ];
-
-  return (
-    <div className="grid gap-3 lg:grid-cols-2">
-      <Panel>
-        <PanelHead
-          icon={UserPlus}
-          title="Join requests"
-          right={<Pill tone="primary">{requests.length}</Pill>}
-        />
-        <ul className="divide-y divide-border">
-          {requests.map((r) => (
-            <li key={r.id} className="flex items-center gap-2.5 px-4 py-2.5">
-              <Avatar initials={r.initials} size="xs" />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-xs font-semibold">{r.name}</span>
-                <span className="block truncate text-[11px] text-muted-foreground">
-                  {r.section} · {r.requestedOn}
-                </span>
-              </span>
-              <button
-                onClick={() => resolveJoinRequest(group.id, r.id)}
-                className="shrink-0 rounded-lg bg-primary px-3 py-1.5 text-[11px] font-semibold text-primary-foreground hover:brightness-110"
-              >
-                Approve
-              </button>
-              <button
-                onClick={() => resolveJoinRequest(group.id, r.id)}
-                className="shrink-0 rounded-lg border border-border px-3 py-1.5 text-[11px] font-semibold hover:bg-muted"
-              >
-                Decline
-              </button>
-            </li>
-          ))}
-          {requests.length === 0 && <li><Empty text="No pending requests." /></li>}
-        </ul>
-      </Panel>
-
-      <Panel>
-        <PanelHead icon={Settings2} title="Group settings" />
-        <div className="space-y-2.5 p-4">
-          <div className="flex items-center gap-2">
-            <span className="min-w-0 flex-1 text-xs font-semibold">Privacy</span>
-            <div className="flex gap-1.5">
-              {(["Public Group", "Private Group"] as const).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => updateGroupSettings(group, { privacy: p })}
-                  className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-semibold transition ${
-                    settings.privacy === p
-                      ? "bg-primary text-primary-foreground"
-                      : "border border-border hover:bg-muted"
-                  }`}
-                >
-                  {p === "Public Group" ? <Globe className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
-                  {p.replace(" Group", "")}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {toggles.map(([key, label, hint]) => (
-            <div key={key} className="flex items-center gap-3 border-t border-border pt-2.5">
-              <span className="min-w-0 flex-1">
-                <span className="block text-xs font-semibold">{label}</span>
-                <span className="block text-[11px] text-muted-foreground">{hint}</span>
-              </span>
-              <button
-                role="switch"
-                aria-checked={Boolean(settings[key])}
-                aria-label={label}
-                onClick={() => updateGroupSettings(group, { [key]: !settings[key] })}
-                className={`relative h-5 w-9 shrink-0 rounded-full transition ${
-                  settings[key] ? "bg-primary" : "bg-muted-foreground/30"
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 h-4 w-4 rounded-full bg-surface transition-all ${
-                    settings[key] ? "left-[1.15rem]" : "left-0.5"
-                  }`}
-                />
-              </button>
-            </div>
-          ))}
-        </div>
-      </Panel>
-
-      <Panel>
-        <PanelHead icon={ShieldCheck} title="Admins & moderators" />
-        <ul className="divide-y divide-border">
-          {admins.map((m) => (
-            <li key={m.id} className="flex items-center gap-2.5 px-4 py-2.5">
-              <Avatar initials={m.initials} size="xs" />
-              <span className="min-w-0 flex-1 truncate text-xs font-semibold">{m.name}</span>
-              <select
-                value={m.role}
-                onChange={(e) => setMemberRole(group.id, m.id, e.target.value as GroupRole)}
-                aria-label={`Change role for ${m.name}`}
-                className="rounded-lg border border-border bg-background px-2 py-1 text-[11px] font-semibold outline-none"
-              >
-                {ROLES.map((r) => (
-                  <option key={r} value={r}>{r}</option>
-                ))}
-              </select>
-            </li>
-          ))}
-          {admins.length === 0 && <li><Empty text="Assign an admin from the Members tab." /></li>}
-        </ul>
-      </Panel>
-
-      <Panel>
-        <PanelHead icon={UserMinus} title="Removed members" />
-        <ul className="divide-y divide-border">
-          {removed.map((m) => (
-            <li key={m.id} className="flex items-center gap-2.5 px-4 py-2.5">
-              <Avatar initials={m.initials} size="xs" />
-              <span className="min-w-0 flex-1 truncate text-xs font-semibold">{m.name}</span>
-              <button
-                onClick={() => setMemberRemoved(group.id, m.id, false)}
-                className="shrink-0 rounded-lg border border-border px-3 py-1.5 text-[11px] font-semibold hover:bg-muted"
-              >
-                Restore
-              </button>
-            </li>
-          ))}
-          {removed.length === 0 && <li><Empty text="Nobody has been removed." /></li>}
         </ul>
       </Panel>
     </div>
