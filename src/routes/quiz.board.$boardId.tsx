@@ -114,39 +114,66 @@ function BoardYearFlow() {
         </div>
       </motion.div>
 
-      {!year ? (
+      {!year || subject ? (
         <div>
           <div className="mb-3 flex items-baseline justify-between">
             <h2 className="text-base font-semibold text-foreground">Select a year</h2>
             <span className="text-xs text-muted-foreground">{boardYears.length} years</span>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {boardYears.map((y, i) => (
-              <motion.div
-                key={y}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.02 * i }}
-              >
-                <Link
-                  to="/quiz/board/$boardId"
-                  params={{ boardId }}
-                  search={{ year: y }}
-                  className="group flex items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
-                >
+            {boardYears.map((y, i) => {
+              const cardClass =
+                "group flex items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md";
+              const meta = subject ? getBoardPaperMeta(boardId, y, subject) : null;
+              const inner = (
+                <>
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-primary/8 text-primary ring-1 ring-primary/12">
                     <CalendarDays className="h-4 w-4" />
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-bold tabular-nums text-foreground">{y}</p>
                     <p className="truncate text-[11px] text-muted-foreground">
-                      {getGroupSubjects().length} subjects
+                      {meta ? (
+                        <span className="inline-flex items-center gap-1">
+                          <FileText className="h-3 w-3" /> {meta.questions} MCQ · {meta.minutes} min
+                        </span>
+                      ) : (
+                        `${subjects.length} subjects`
+                      )}
                     </p>
                   </div>
                   <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:text-primary" />
-                </Link>
-              </motion.div>
-            ))}
+                </>
+              );
+              return (
+                <motion.div
+                  key={y}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.02 * i }}
+                >
+                  {subject ? (
+                    <Link
+                      to="/quiz/exam/$subjectId"
+                      params={{ subjectId: subject }}
+                      search={{ board: boardId, year: y, mode: "overview" as const }}
+                      className={cardClass}
+                    >
+                      {inner}
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/quiz/board/$boardId"
+                      params={{ boardId }}
+                      search={{ year: y }}
+                      className={cardClass}
+                    >
+                      {inner}
+                    </Link>
+                  )}
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       ) : (
