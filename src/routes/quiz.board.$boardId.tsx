@@ -31,7 +31,7 @@ export const Route = createFileRoute("/quiz/board/$boardId")({
 
 function BoardYearFlow() {
   const { boardId } = Route.useParams();
-  const { year } = Route.useSearch();
+  const { year, subject } = Route.useSearch();
   const board = boards.find((b) => b.id === boardId);
 
   if (!board) {
