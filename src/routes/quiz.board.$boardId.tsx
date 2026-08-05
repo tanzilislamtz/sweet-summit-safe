@@ -21,6 +21,7 @@ import {
 
 const searchSchema = z.object({
   year: z.coerce.number().optional(),
+  subject: z.string().optional(),
 });
 
 export const Route = createFileRoute("/quiz/board/$boardId")({
