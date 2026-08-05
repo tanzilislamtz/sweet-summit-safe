@@ -50,13 +50,13 @@ function BoardYearFlow() {
     <section className="space-y-5 pb-4">
       {/* Breadcrumb */}
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-        <Link
-          to="/quiz"
+        <button
+          onClick={() => window.history.back()}
           className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-border transition hover:border-primary/40 hover:text-primary"
           aria-label="Back"
         >
           <ArrowLeft className="h-4 w-4" />
-        </Link>
+        </button>
         <Link to="/quiz" className="hover:text-primary">
           Practice
         </Link>
