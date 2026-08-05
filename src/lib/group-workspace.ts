@@ -135,17 +135,51 @@ export const resolveMembers = (group: StudyGroup): GroupMember[] => {
 
 type SettingsMap = Record<string, GroupSettings>;
 
-export const getGroupSettings = (group: StudyGroup): GroupSettings =>
-  read<SettingsMap>(SETTINGS_KEY, {})[group.id] ?? {
-    privacy: group.privacy,
-    approveMembers: group.privacy === "Private Group",
-    membersCanPost: true,
-    membersCanCreateRooms: false,
-  };
+/** Fallback board/class derived from the group's batch label, e.g. "SSC · 2026 Batch". */
+const deriveClass = (batch: string) => batch.split("·")[0]?.trim() || "SSC";
+
+export const defaultGroupSettings = (group: StudyGroup): GroupSettings => ({
+  name: group.name,
+  tagline: group.tagline,
+  description: group.description,
+  batch: group.batch,
+  board: "Dhaka Board",
+  classLevel: deriveClass(group.batch),
+  language: group.language,
+  displayName: "You",
+  rules: group.rules,
+  privacy: group.privacy,
+  approveMembers: group.privacy === "Private Group",
+  membersCanPost: true,
+  membersCanCreateRooms: false,
+  membersCanInvite: true,
+  membersCanUpload: true,
+  postsNeedApproval: false,
+});
+
+export const getGroupSettings = (group: StudyGroup): GroupSettings => ({
+  ...defaultGroupSettings(group),
+  ...(read<SettingsMap>(SETTINGS_KEY, {})[group.id] ?? {}),
+});
 
 export const updateGroupSettings = (group: StudyGroup, patch: Partial<GroupSettings>) => {
   const map = read<SettingsMap>(SETTINGS_KEY, {});
   write(SETTINGS_KEY, { ...map, [group.id]: { ...getGroupSettings(group), ...patch } });
+};
+
+/** Group with admin-saved overrides applied — use this everywhere the group is rendered. */
+export const applyGroupOverrides = (group: StudyGroup): StudyGroup => {
+  const s = getGroupSettings(group);
+  return {
+    ...group,
+    name: s.name,
+    tagline: s.tagline,
+    description: s.description,
+    batch: s.batch,
+    language: s.language,
+    privacy: s.privacy,
+    rules: s.rules,
+  };
 };
 
 /* ------------------------ join requests --------------------------- */
