@@ -346,7 +346,7 @@ function CqPractice() {
                       title: q.stem,
                       questionData: {
                         text: q.stem,
-                        options: q.parts.map(p => `${p.label}: ${p.question}`),
+                        options: q.parts.map(p => `${p.label}: ${p.prompt}`),
                         answer: -1,
                         explanation: "Written CQ practice",
                         figure: q.figure,
