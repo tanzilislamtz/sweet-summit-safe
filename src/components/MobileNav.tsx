@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Home, UserCheck, GraduationCap, BookOpen, MessagesSquare, Timer, Star } from "lucide-react";
+import { X, Home, UserCheck, GraduationCap, BookOpen, MessagesSquare, Timer, Star, Users } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
@@ -9,7 +9,7 @@ import { ChevronRight } from "lucide-react";
 type NavItem = {
   icon: typeof Home;
   label: string;
-  to: "/" | "/quiz" | "/quiz/mock-test" | "/favorites" | "/available-tutor" | "/message";
+  to: "/" | "/quiz" | "/quiz/mock-test" | "/favorites" | "/available-tutor" | "/message" | "/group-study";
 };
 
 const sections: { items: NavItem[] }[] = [
@@ -23,6 +23,7 @@ const sections: { items: NavItem[] }[] = [
   {
     items: [
       { icon: Timer, label: "Mock Test", to: "/quiz/mock-test" },
+      { icon: Users, label: "Group Study", to: "/group-study" },
       { icon: Star, label: "Favorite", to: "/favorites" },
     ],
   },
@@ -105,6 +106,8 @@ export function MobileNav({ open, onClose }: { open: boolean; onClose: () => voi
                           ? isMock
                           : to === "/favorites"
                             ? pathname.startsWith("/favorites")
+                          : to === "/group-study"
+                            ? pathname.startsWith("/group-study")
                           : to === "/available-tutor"
                             ? pathname.startsWith("/available-tutor")
                             : to === "/message"

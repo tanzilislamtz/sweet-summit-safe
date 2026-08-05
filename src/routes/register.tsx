@@ -849,7 +849,7 @@ function RegisterPage() {
                       className="mt-0.5 h-4 w-4 rounded border-border accent-primary"
                     />
                     <span>
-                      I agree to the <Link to="/terms" className="font-semibold text-primary hover:underline">Terms</Link> and <Link to="/privacy" className="font-semibold text-primary hover:underline">Privacy Policy</Link>.
+                      I agree to the <a href="/terms" className="font-semibold text-primary hover:underline">Terms</a> and <a href="/privacy" className="font-semibold text-primary hover:underline">Privacy Policy</a>.
                     </span>
                   </label>
                 </div>
