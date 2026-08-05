@@ -14,7 +14,7 @@ import {
   Radio,
   Download,
   MessageCircle,
-  ThumbsUp,
+  
   Share2,
   ShieldCheck,
   Settings2,
