@@ -46,6 +46,8 @@ export function LeftNav({ stickyClass = "sticky top-24" }: { stickyClass?: strin
                   ? isFav
                 : match === "mock"
                   ? isMock
+                : match === "group"
+                  ? pathname.startsWith("/group-study")
                   : match === "message"
                     ? pathname.startsWith("/message")
                     : match === "available"
