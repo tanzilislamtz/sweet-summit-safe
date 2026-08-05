@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, BookOpen, UserCheck, MessagesSquare, Timer, Star, ChevronRight } from "lucide-react";
+import { Home, BookOpen, UserCheck, MessagesSquare, Timer, Star, Users, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getSession, type Session } from "@/lib/session";
 
@@ -7,6 +7,7 @@ const items = [
   { icon: Home, label: "Home", to: "/" as const, match: "home" as const },
   { icon: BookOpen, label: "Practice", to: "/quiz" as const, match: "practice" as const },
   { icon: Timer, label: "Mock Test", to: "/quiz/mock-test" as const, match: "mock" as const },
+  { icon: Users, label: "Group Study", to: "/group-study" as const, match: "group" as const },
   { icon: Star, label: "Favorite", to: "/favorites" as const, match: "favorite" as const },
   { icon: MessagesSquare, label: "Messages", to: "/message" as const, match: "message" as const },
   { icon: UserCheck, label: "Available Tutor", to: "/available-tutor" as const, match: "available" as const },

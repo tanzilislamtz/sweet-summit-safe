@@ -31,6 +31,7 @@ import { Route as QuizAiSolverRouteImport } from './routes/quiz.ai-solver'
 import { Route as PostPostIdRouteImport } from './routes/post.$postId'
 import { Route as MessageRequestsRouteImport } from './routes/message.requests'
 import { Route as MessageThreadIdRouteImport } from './routes/message.$threadId'
+import { Route as GroupStudyGroupIdRouteImport } from './routes/group-study.$groupId'
 import { Route as QuizWrittenSubjectIdRouteImport } from './routes/quiz.written.$subjectId'
 import { Route as QuizSubjectSubjectIdRouteImport } from './routes/quiz.subject.$subjectId'
 import { Route as QuizMockTestTestIdRouteImport } from './routes/quiz.mock-test_.$testId'
@@ -153,6 +154,11 @@ const MessageThreadIdRoute = MessageThreadIdRouteImport.update({
   path: '/$threadId',
   getParentRoute: () => MessageRoute,
 } as any)
+const GroupStudyGroupIdRoute = GroupStudyGroupIdRouteImport.update({
+  id: '/$groupId',
+  path: '/$groupId',
+  getParentRoute: () => GroupStudyRoute,
+} as any)
 const QuizWrittenSubjectIdRoute = QuizWrittenSubjectIdRouteImport.update({
   id: '/written/$subjectId',
   path: '/written/$subjectId',
@@ -224,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/quiz': typeof QuizRouteWithChildren
   '/register': typeof RegisterRoute
   '/welcome': typeof WelcomeRoute
+  '/group-study/$groupId': typeof GroupStudyGroupIdRoute
   '/message/$threadId': typeof MessageThreadIdRoute
   '/message/requests': typeof MessageRequestsRoute
   '/post/$postId': typeof PostPostIdRoute
@@ -257,6 +264,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/welcome': typeof WelcomeRoute
+  '/group-study/$groupId': typeof GroupStudyGroupIdRoute
   '/message/$threadId': typeof MessageThreadIdRoute
   '/message/requests': typeof MessageRequestsRoute
   '/post/$postId': typeof PostPostIdRoute
@@ -293,6 +301,7 @@ export interface FileRoutesById {
   '/quiz': typeof QuizRouteWithChildren
   '/register': typeof RegisterRoute
   '/welcome': typeof WelcomeRoute
+  '/group-study/$groupId': typeof GroupStudyGroupIdRoute
   '/message/$threadId': typeof MessageThreadIdRoute
   '/message/requests': typeof MessageRequestsRoute
   '/post/$postId': typeof PostPostIdRoute
@@ -330,6 +339,7 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/register'
     | '/welcome'
+    | '/group-study/$groupId'
     | '/message/$threadId'
     | '/message/requests'
     | '/post/$postId'
@@ -363,6 +373,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/welcome'
+    | '/group-study/$groupId'
     | '/message/$threadId'
     | '/message/requests'
     | '/post/$postId'
@@ -398,6 +409,7 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/register'
     | '/welcome'
+    | '/group-study/$groupId'
     | '/message/$threadId'
     | '/message/requests'
     | '/post/$postId'
@@ -593,6 +605,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MessageThreadIdRouteImport
       parentRoute: typeof MessageRoute
     }
+    '/group-study/$groupId': {
+      id: '/group-study/$groupId'
+      path: '/$groupId'
+      fullPath: '/group-study/$groupId'
+      preLoaderRoute: typeof GroupStudyGroupIdRouteImport
+      parentRoute: typeof GroupStudyRoute
+    }
     '/quiz/written/$subjectId': {
       id: '/quiz/written/$subjectId'
       path: '/written/$subjectId'
@@ -674,10 +693,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface GroupStudyRouteChildren {
+  GroupStudyGroupIdRoute: typeof GroupStudyGroupIdRoute
   GroupStudyIndexRoute: typeof GroupStudyIndexRoute
 }
 
 const GroupStudyRouteChildren: GroupStudyRouteChildren = {
+  GroupStudyGroupIdRoute: GroupStudyGroupIdRoute,
   GroupStudyIndexRoute: GroupStudyIndexRoute,
 }
 
