@@ -15,6 +15,7 @@ import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as MessageRouteImport } from './routes/message'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as CreatePostRouteImport } from './routes/create-post'
 import { Route as AvailableTutorRouteImport } from './routes/available-tutor'
 import { Route as IndexRouteImport } from './routes/index'
@@ -24,7 +25,6 @@ import { Route as QuizQuestionBankRouteImport } from './routes/quiz.question-ban
 import { Route as QuizProgressRouteImport } from './routes/quiz.progress'
 import { Route as QuizMockTestRouteImport } from './routes/quiz.mock-test'
 import { Route as QuizLeaderboardRouteImport } from './routes/quiz.leaderboard'
-import { Route as QuizFavoritesRouteImport } from './routes/quiz.favorites'
 import { Route as QuizAiSolverRouteImport } from './routes/quiz.ai-solver'
 import { Route as PostPostIdRouteImport } from './routes/post.$postId'
 import { Route as MessageRequestsRouteImport } from './routes/message.requests'
@@ -71,6 +71,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CreatePostRoute = CreatePostRouteImport.update({
   id: '/create-post',
   path: '/create-post',
@@ -114,11 +119,6 @@ const QuizMockTestRoute = QuizMockTestRouteImport.update({
 const QuizLeaderboardRoute = QuizLeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
-  getParentRoute: () => QuizRoute,
-} as any)
-const QuizFavoritesRoute = QuizFavoritesRouteImport.update({
-  id: '/favorites',
-  path: '/favorites',
   getParentRoute: () => QuizRoute,
 } as any)
 const QuizAiSolverRoute = QuizAiSolverRouteImport.update({
@@ -204,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/available-tutor': typeof AvailableTutorRoute
   '/create-post': typeof CreatePostRoute
+  '/favorites': typeof FavoritesRoute
   '/login': typeof LoginRoute
   '/message': typeof MessageRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -214,7 +215,6 @@ export interface FileRoutesByFullPath {
   '/message/requests': typeof MessageRequestsRoute
   '/post/$postId': typeof PostPostIdRoute
   '/quiz/ai-solver': typeof QuizAiSolverRoute
-  '/quiz/favorites': typeof QuizFavoritesRoute
   '/quiz/leaderboard': typeof QuizLeaderboardRoute
   '/quiz/mock-test': typeof QuizMockTestRoute
   '/quiz/progress': typeof QuizProgressRoute
@@ -237,6 +237,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/available-tutor': typeof AvailableTutorRoute
   '/create-post': typeof CreatePostRoute
+  '/favorites': typeof FavoritesRoute
   '/login': typeof LoginRoute
   '/message': typeof MessageRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -246,7 +247,6 @@ export interface FileRoutesByTo {
   '/message/requests': typeof MessageRequestsRoute
   '/post/$postId': typeof PostPostIdRoute
   '/quiz/ai-solver': typeof QuizAiSolverRoute
-  '/quiz/favorites': typeof QuizFavoritesRoute
   '/quiz/leaderboard': typeof QuizLeaderboardRoute
   '/quiz/mock-test': typeof QuizMockTestRoute
   '/quiz/progress': typeof QuizProgressRoute
@@ -270,6 +270,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/available-tutor': typeof AvailableTutorRoute
   '/create-post': typeof CreatePostRoute
+  '/favorites': typeof FavoritesRoute
   '/login': typeof LoginRoute
   '/message': typeof MessageRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -280,7 +281,6 @@ export interface FileRoutesById {
   '/message/requests': typeof MessageRequestsRoute
   '/post/$postId': typeof PostPostIdRoute
   '/quiz/ai-solver': typeof QuizAiSolverRoute
-  '/quiz/favorites': typeof QuizFavoritesRoute
   '/quiz/leaderboard': typeof QuizLeaderboardRoute
   '/quiz/mock-test': typeof QuizMockTestRoute
   '/quiz/progress': typeof QuizProgressRoute
@@ -305,6 +305,7 @@ export interface FileRouteTypes {
     | '/'
     | '/available-tutor'
     | '/create-post'
+    | '/favorites'
     | '/login'
     | '/message'
     | '/profile'
@@ -315,7 +316,6 @@ export interface FileRouteTypes {
     | '/message/requests'
     | '/post/$postId'
     | '/quiz/ai-solver'
-    | '/quiz/favorites'
     | '/quiz/leaderboard'
     | '/quiz/mock-test'
     | '/quiz/progress'
@@ -338,6 +338,7 @@ export interface FileRouteTypes {
     | '/'
     | '/available-tutor'
     | '/create-post'
+    | '/favorites'
     | '/login'
     | '/message'
     | '/profile'
@@ -347,7 +348,6 @@ export interface FileRouteTypes {
     | '/message/requests'
     | '/post/$postId'
     | '/quiz/ai-solver'
-    | '/quiz/favorites'
     | '/quiz/leaderboard'
     | '/quiz/mock-test'
     | '/quiz/progress'
@@ -370,6 +370,7 @@ export interface FileRouteTypes {
     | '/'
     | '/available-tutor'
     | '/create-post'
+    | '/favorites'
     | '/login'
     | '/message'
     | '/profile'
@@ -380,7 +381,6 @@ export interface FileRouteTypes {
     | '/message/requests'
     | '/post/$postId'
     | '/quiz/ai-solver'
-    | '/quiz/favorites'
     | '/quiz/leaderboard'
     | '/quiz/mock-test'
     | '/quiz/progress'
@@ -404,6 +404,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AvailableTutorRoute: typeof AvailableTutorRoute
   CreatePostRoute: typeof CreatePostRoute
+  FavoritesRoute: typeof FavoritesRoute
   LoginRoute: typeof LoginRoute
   MessageRoute: typeof MessageRouteWithChildren
   ProfileRoute: typeof ProfileRoute
@@ -455,6 +456,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/create-post': {
@@ -518,13 +526,6 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/quiz/leaderboard'
       preLoaderRoute: typeof QuizLeaderboardRouteImport
-      parentRoute: typeof QuizRoute
-    }
-    '/quiz/favorites': {
-      id: '/quiz/favorites'
-      path: '/favorites'
-      fullPath: '/quiz/favorites'
-      preLoaderRoute: typeof QuizFavoritesRouteImport
       parentRoute: typeof QuizRoute
     }
     '/quiz/ai-solver': {
@@ -652,7 +653,6 @@ const MessageRouteWithChildren =
 
 interface QuizRouteChildren {
   QuizAiSolverRoute: typeof QuizAiSolverRoute
-  QuizFavoritesRoute: typeof QuizFavoritesRoute
   QuizLeaderboardRoute: typeof QuizLeaderboardRoute
   QuizMockTestRoute: typeof QuizMockTestRoute
   QuizProgressRoute: typeof QuizProgressRoute
@@ -673,7 +673,6 @@ interface QuizRouteChildren {
 
 const QuizRouteChildren: QuizRouteChildren = {
   QuizAiSolverRoute: QuizAiSolverRoute,
-  QuizFavoritesRoute: QuizFavoritesRoute,
   QuizLeaderboardRoute: QuizLeaderboardRoute,
   QuizMockTestRoute: QuizMockTestRoute,
   QuizProgressRoute: QuizProgressRoute,
@@ -699,6 +698,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AvailableTutorRoute: AvailableTutorRoute,
   CreatePostRoute: CreatePostRoute,
+  FavoritesRoute: FavoritesRoute,
   LoginRoute: LoginRoute,
   MessageRoute: MessageRouteWithChildren,
   ProfileRoute: ProfileRoute,
@@ -710,3 +710,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

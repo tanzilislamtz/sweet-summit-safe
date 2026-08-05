@@ -25,7 +25,7 @@ import { Topbar } from "@/components/Topbar";
 import { MobileNav } from "@/components/MobileNav";
 import { LeftNav } from "@/components/LeftNav";
 
-export const Route = createFileRoute("/quiz/favorites")({
+export const Route = createFileRoute("/favorites")({
   head: () => ({
     meta: [
       { title: "Favorites · Learns Academy" },
