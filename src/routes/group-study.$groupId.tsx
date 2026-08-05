@@ -382,9 +382,13 @@ function SearchInput({
 function FeedTab({ group, tick }: { group: StudyGroup; tick: number }) {
   const [filter, setFilter] = useState("All");
   const stored = useMemo(() => listGroupPosts(group.id), [group.id, tick]);
+  const hidden = useMemo(() => listHiddenPosts(group.id), [group.id, tick]);
   const posts: StoredPost[] = useMemo(
-    () => [...stored, ...group.postList.map((p) => ({ ...p, createdAt: 0 }) as StoredPost)],
-    [stored, group.postList],
+    () =>
+      [...stored, ...group.postList.map((p) => ({ ...p, createdAt: 0 }) as StoredPost)].filter(
+        (p) => !hidden.includes(p.id),
+      ),
+    [stored, group.postList, hidden],
   );
   const sectionNames = useMemo(
     () => ["All", ...Array.from(new Set(posts.map((p) => p.section)))],
