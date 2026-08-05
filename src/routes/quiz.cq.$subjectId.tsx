@@ -23,7 +23,7 @@ import { getTopicCqQuestions, type CqPart, type CqQuestion } from "@/data/topic-
 import { QuestionFigure } from "@/components/QuestionFigure";
 import { saveAttempt, summarise } from "@/lib/practice-results";
 import { ResultModal } from "@/components/ResultModal";
-
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({
