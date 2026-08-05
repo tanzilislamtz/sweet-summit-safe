@@ -90,7 +90,8 @@ function FavoritesPage() {
                 <TabBtn active={activeTab === "all"} onClick={() => setActiveTab("all")} icon={LayoutGrid} label="All" />
                 <TabBtn active={activeTab === "question"} onClick={() => setActiveTab("question")} icon={BookOpen} label="Questions" />
                 <TabBtn active={activeTab === "post"} onClick={() => setActiveTab("post")} icon={FileText} label="Posts" />
-                <TabBtn active={activeTab === "user"} onClick={() => setActiveTab("user")} icon={UserIcon} label="Users" />
+                <TabBtn active={activeTab === "tutor"} onClick={() => setActiveTab("tutor")} icon={UserIcon} label="Tutors" />
+                <TabBtn active={activeTab === "student"} onClick={() => setActiveTab("student")} icon={UserIcon} label="Students" />
               </div>
 
               {(activeTab === "all" || activeTab === "question") && subjects.length > 2 && (
