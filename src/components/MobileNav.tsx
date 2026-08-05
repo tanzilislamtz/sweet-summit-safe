@@ -9,7 +9,7 @@ import { ChevronRight } from "lucide-react";
 type NavItem = {
   icon: typeof Home;
   label: string;
-  to: "/" | "/quiz" | "/quiz/mock-test" | "/quiz/favorites" | "/available-tutor" | "/message";
+  to: "/" | "/quiz" | "/quiz/mock-test" | "/favorites" | "/available-tutor" | "/message";
 };
 
 const sections: { items: NavItem[] }[] = [
@@ -23,7 +23,7 @@ const sections: { items: NavItem[] }[] = [
   {
     items: [
       { icon: Timer, label: "Mock Test", to: "/quiz/mock-test" },
-      { icon: Star, label: "Favorite", to: "/quiz/favorites" },
+      { icon: Star, label: "Favorite", to: "/favorites" },
     ],
   },
   {
@@ -103,6 +103,8 @@ export function MobileNav({ open, onClose }: { open: boolean; onClose: () => voi
                         ? pathname.startsWith("/quiz") && !isMock
                         : to === "/quiz/mock-test"
                           ? isMock
+                          : to === "/favorites"
+                            ? pathname.startsWith("/favorites")
                           : to === "/available-tutor"
                             ? pathname.startsWith("/available-tutor")
                             : to === "/message"

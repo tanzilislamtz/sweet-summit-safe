@@ -7,7 +7,7 @@ const items = [
   { icon: Home, label: "Home", to: "/" as const, match: "home" as const },
   { icon: BookOpen, label: "Practice", to: "/quiz" as const, match: "practice" as const },
   { icon: Timer, label: "Mock Test", to: "/quiz/mock-test" as const, match: "mock" as const },
-  { icon: Star, label: "Favorite", to: "/quiz/favorites" as const, match: "favorite" as const },
+  { icon: Star, label: "Favorite", to: "/favorites" as const, match: "favorite" as const },
   { icon: MessagesSquare, label: "Messages", to: "/message" as const, match: "message" as const },
   { icon: UserCheck, label: "Available Tutor", to: "/available-tutor" as const, match: "available" as const },
 ];
@@ -28,7 +28,7 @@ export function LeftNav({ stickyClass = "sticky top-24" }: { stickyClass?: strin
   const initial = name.charAt(0).toUpperCase();
 
   const isMock = pathname.startsWith("/quiz/mock-test");
-  const isFav = pathname.startsWith("/quiz/favorites");
+  const isFav = pathname.startsWith("/favorites");
   return (
     <aside className="hidden lg:block lg:h-full">
       <nav className={`${stickyClass} flex h-full flex-col`}>
