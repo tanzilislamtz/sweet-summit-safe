@@ -23,6 +23,7 @@ import {
   listCreatedGroups,
   setJoined,
 } from "@/lib/groups";
+import { applyGroupOverrides } from "@/lib/group-workspace";
 
 export const Route = createFileRoute("/group-study/")({
   head: () => ({
