@@ -103,6 +103,8 @@ export function MobileNav({ open, onClose }: { open: boolean; onClose: () => voi
                         ? pathname.startsWith("/quiz") && !isMock
                         : to === "/quiz/mock-test"
                           ? isMock
+                          : to === "/favorites"
+                            ? pathname.startsWith("/favorites")
                           : to === "/available-tutor"
                             ? pathname.startsWith("/available-tutor")
                             : to === "/message"
