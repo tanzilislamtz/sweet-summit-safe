@@ -41,7 +41,7 @@ export const Route = createFileRoute("/quiz/favorites")({
 function FavoritesPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [items, setItems] = useState<FavoriteItem[]>([]);
-  const [activeTab, setActiveTab] = useState<"all" | "question" | "post" | "user" | "tutor" | "student">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "question" | "post" | "tutor" | "student">("all");
   const [selectedSubject, setSelectedSubject] = useState<string>("All Subjects");
 
   useEffect(() => {
