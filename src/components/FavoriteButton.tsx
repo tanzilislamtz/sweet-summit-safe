@@ -3,30 +3,29 @@ import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import {
   FAVORITES_EVENT,
-  favoriteKey,
   isFavorite,
   toggleFavorite,
-  type FavoriteQuestion,
+  type FavoriteItem,
+  type FavoriteType,
 } from "@/lib/favorites";
 
 export interface FavoriteButtonProps {
-  item: Omit<FavoriteQuestion, "key" | "at">;
+  item: Omit<FavoriteItem, "key" | "at">;
   /** Compact icon-only rendering for dense lists. */
   compact?: boolean;
   className?: string;
 }
 
-/** Star toggle that saves a question into the local Favourites list. */
+/** Star toggle that saves an item (question, post, tutor) into the local Favorites list. */
 export function FavoriteButton({ item, compact = false, className }: FavoriteButtonProps) {
-  const key = favoriteKey(item.subjectId, item.questionId);
   const [active, setActive] = useState(false);
 
   useEffect(() => {
-    const sync = () => setActive(isFavorite(key));
+    const sync = () => setActive(isFavorite(item.type, item.id));
     sync();
     window.addEventListener(FAVORITES_EVENT, sync);
     return () => window.removeEventListener(FAVORITES_EVENT, sync);
-  }, [key]);
+  }, [item.type, item.id]);
 
   return (
     <motion.button
