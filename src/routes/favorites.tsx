@@ -74,11 +74,12 @@ function FavoritesPage() {
   const filteredItems = items.filter((item) => {
     const matchTab = activeTab === "all" || item.type === activeTab;
     if (!matchTab) return false;
-    if (item.type !== "question") return true;
+    if (activeTab !== "question" || item.type !== "question") return true;
     return selectedSubject === "All Subjects" || subjectOf(item) === selectedSubject;
   });
 
-  const showSubjectRail = (activeTab === "all" || activeTab === "question") && subjects.length > 0;
+  // Subject filtering only makes sense on the Questions tab.
+  const showSubjectRail = activeTab === "question" && subjects.length > 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground lg:h-[100dvh] lg:overflow-hidden">
