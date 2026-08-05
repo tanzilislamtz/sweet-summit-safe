@@ -285,7 +285,11 @@ function OverviewScreen({
   return (
     <main className="min-h-screen bg-background pb-28 text-foreground">
       <div className="mx-auto max-w-2xl px-5 pt-6">
-        <button onClick={onBack} className="grid h-10 w-10 place-items-center rounded-full border border-border">
+        <button
+          onClick={onBack}
+          className="grid h-10 w-10 place-items-center rounded-full border border-border"
+          aria-label="Back to year selection"
+        >
           <ArrowLeft className="h-4 w-4" />
         </button>
 
