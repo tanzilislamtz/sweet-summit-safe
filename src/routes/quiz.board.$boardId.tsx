@@ -62,7 +62,7 @@ function BoardYearFlow() {
           Practice
         </Link>
         <ChevronRight className="h-3 w-3" />
-        {year ? (
+        {year && !subject ? (
           <>
             <Link
               to="/quiz/board/$boardId"
