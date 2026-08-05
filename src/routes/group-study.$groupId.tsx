@@ -543,7 +543,40 @@ function PostCard({
   groupId: string;
   removable: boolean;
 }) {
-  const [liked, setLiked] = useState(false);
+  const me = getSession()?.name || "You";
+
+  // Reactions / comments are persisted locally so the group feed behaves
+  // exactly like the main feed across reloads.
+  const [loved, setLoved] = useState(false);
+  const [comments, setComments] = useState<GroupPostComment[]>([]);
+  const [showComments, setShowComments] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [shared, setShared] = useState(0);
+
+  useEffect(() => {
+    setLoved(isPostLoved(groupId, post.id));
+    setComments(listPostComments(groupId, post.id));
+  }, [groupId, post.id]);
+
+  const loves = post.likes + (loved ? 1 : 0);
+  const commentCount = post.comments + comments.length;
+
+  const toggleLove = () => setLoved(togglePostLove(groupId, post.id));
+
+  const submitComment = (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = draft.trim();
+    if (!text) return;
+    setComments((prev) => [...prev, addPostComment(groupId, post.id, { author: me, text })]);
+    setDraft("");
+  };
+
+  const onShare = () => {
+    setShared((n) => n + 1);
+    navigator.clipboard?.writeText(window.location.href);
+    toast.success("Post link copied — share it with your group");
+  };
+
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <Panel className="p-4">
@@ -554,15 +587,77 @@ function PostCard({
               <span className="truncate text-xs font-bold">{post.author}</span>
               <Pill>{post.section}</Pill>
               <span className="shrink-0 text-[11px] text-muted-foreground">{post.time}</span>
-              {removable && (
-                <button
-                  onClick={() => deleteGroupPost(groupId, post.id)}
-                  aria-label="Delete post"
-                  className="ml-auto grid h-7 w-7 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-destructive"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
-              )}
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    aria-label="Post options"
+                    className="ml-auto grid h-7 w-7 shrink-0 place-items-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem asChild>
+                    <div className="flex w-full items-center justify-between px-2 py-1.5">
+                      <div className="flex items-center">
+                        <Star className="mr-2 h-4 w-4" /> Save
+                      </div>
+                      <FavoriteButton
+                        item={{
+                          id: post.id,
+                          type: "post",
+                          title: post.body.slice(0, 60) || "Group post",
+                          postData: {
+                            author: post.author,
+                            role: "Student",
+                            time: post.time,
+                            body: post.body,
+                            tag: post.section,
+                          },
+                        }}
+                        compact
+                      />
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => toast.success("Marked as interested")}>
+                    <Heart className="mr-2 h-4 w-4" /> Interested
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => hideGroupPost(groupId, post.id)}>
+                    <EyeOff className="mr-2 h-4 w-4" /> Hide post
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      navigator.clipboard?.writeText(window.location.href);
+                      toast.success("Link copied");
+                    }}
+                  >
+                    <Link2 className="mr-2 h-4 w-4" /> Copy link
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => toast.success("Notifications muted for this post")}>
+                    <BellOff className="mr-2 h-4 w-4" /> Mute notifications
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {removable ? (
+                    <DropdownMenuItem
+                      onSelect={() => {
+                        deleteGroupPost(groupId, post.id);
+                        toast.success("Post deleted");
+                      }}
+                      className="text-destructive focus:text-destructive"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" /> Delete post
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem
+                      onSelect={() => toast.success("Reported to group admins")}
+                      className="text-destructive focus:text-destructive"
+                    >
+                      <Flag className="mr-2 h-4 w-4" /> Report to admins
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
             {post.body && <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed">{post.body}</p>}
 
@@ -590,26 +685,165 @@ function PostCard({
               </div>
             )}
 
-            <div className="mt-2.5 flex items-center gap-4 text-[11px] font-semibold text-muted-foreground">
-              <button
-                onClick={() => setLiked(!liked)}
-                className={`inline-flex items-center gap-1.5 transition ${liked ? "text-primary" : "hover:text-foreground"}`}
+            <footer className="mt-3 flex items-center gap-1 border-t border-border pt-2.5">
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={toggleLove}
+                aria-pressed={loved}
+                className={`relative inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                  loved
+                    ? "bg-destructive/10 text-destructive"
+                    : "text-foreground/70 hover:bg-muted hover:text-foreground"
+                }`}
               >
-                <ThumbsUp className="h-3.5 w-3.5" /> {post.likes + (liked ? 1 : 0)}
-              </button>
-              <span className="inline-flex items-center gap-1.5">
-                <MessageCircle className="h-3.5 w-3.5" /> {post.comments}
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Share2 className="h-3.5 w-3.5" /> Share
-              </span>
-            </div>
+                <span className="relative inline-flex">
+                  <motion.span
+                    key={loved ? "on" : "off"}
+                    initial={{ scale: 0.6, rotate: -20 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 14 }}
+                    className="inline-flex"
+                  >
+                    <Heart className={`h-4 w-4 ${loved ? "fill-current" : ""}`} />
+                  </motion.span>
+
+                  <AnimatePresence>
+                    {loved && (
+                      <motion.span
+                        key="ring"
+                        initial={{ scale: 0.3, opacity: 0.6 }}
+                        animate={{ scale: 2.4, opacity: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                        className="pointer-events-none absolute inset-0 rounded-full border-2 border-destructive"
+                      />
+                    )}
+                  </AnimatePresence>
+
+                  <AnimatePresence>
+                    {loved &&
+                      [0, 1, 2, 3, 4].map((i) => {
+                        const angle = (i / 5) * Math.PI - Math.PI / 2;
+                        const dist = 28 + (i % 2) * 10;
+                        return (
+                          <motion.span
+                            key={`burst-${i}`}
+                            initial={{ x: 0, y: 0, scale: 0.4, opacity: 1 }}
+                            animate={{
+                              x: Math.cos(angle) * dist,
+                              y: Math.sin(angle) * dist - 6,
+                              scale: 1,
+                              opacity: 0,
+                            }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.7, ease: "easeOut", delay: i * 0.02 }}
+                            className="pointer-events-none absolute left-0 top-0 text-destructive"
+                          >
+                            <Heart className="h-3 w-3 fill-current" />
+                          </motion.span>
+                        );
+                      })}
+                  </AnimatePresence>
+                </span>
+
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span
+                    key={loves}
+                    initial={{ y: 8, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -8, opacity: 0 }}
+                    transition={{ duration: 0.18 }}
+                    className="tabular-nums"
+                  >
+                    {loves}
+                  </motion.span>
+                </AnimatePresence>
+              </motion.button>
+
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setShowComments((v) => !v)}
+                aria-expanded={showComments}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                  showComments
+                    ? "bg-primary/10 text-primary"
+                    : "text-foreground/70 hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                <MessageCircle className="h-4 w-4" />
+                {commentCount}
+              </motion.button>
+
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={onShare}
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-foreground/70 transition hover:bg-muted hover:text-foreground"
+              >
+                <Share2 className="h-4 w-4" />
+                {shared}
+              </motion.button>
+            </footer>
+
+            <AnimatePresence initial={false}>
+              {showComments && (
+                <motion.div
+                  key="comments"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-3 space-y-3 border-t border-border pt-3">
+                    {comments.length === 0 && (
+                      <p className="text-xs text-muted-foreground">Be the first to comment.</p>
+                    )}
+                    {comments.map((c) => (
+                      <motion.div
+                        key={c.id}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex gap-2"
+                      >
+                        <Avatar initials={c.author.charAt(0).toUpperCase()} size="xs" />
+                        <div className="min-w-0 flex-1 rounded-2xl bg-muted/60 px-3 py-2">
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="font-semibold text-foreground">{c.author}</span>
+                            <span className="text-muted-foreground">· {c.time}</span>
+                          </div>
+                          <p className="mt-0.5 text-sm text-foreground/85">{c.text}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+
+                    <form onSubmit={submitComment} className="flex gap-2 pt-1">
+                      <Avatar initials={me.charAt(0).toUpperCase()} size="xs" />
+                      <input
+                        type="text"
+                        value={draft}
+                        onChange={(e) => setDraft(e.target.value)}
+                        placeholder="Write a comment…"
+                        className="h-9 min-w-0 flex-1 rounded-full border border-transparent bg-muted/60 px-4 text-sm outline-none focus:border-primary/30 focus:bg-surface focus:ring-4 focus:ring-primary/10"
+                      />
+                      <button
+                        type="submit"
+                        disabled={!draft.trim()}
+                        className="shrink-0 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground transition hover:opacity-95 disabled:opacity-40"
+                      >
+                        Post
+                      </button>
+                    </form>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </Panel>
     </motion.div>
   );
 }
+
 
 /* ----------------------------- Rooms ----------------------------- */
 
