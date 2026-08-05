@@ -632,11 +632,30 @@ function Post({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuItem asChild>
+              <div className="flex w-full items-center justify-between px-2 py-1.5">
+                <div className="flex items-center">
+                  <Star className="mr-2 h-4 w-4" /> Save
+                </div>
+                <FavoriteButton
+                  item={{
+                    id,
+                    type: "post",
+                    title,
+                    postData: {
+                      author,
+                      role,
+                      time,
+                      body,
+                      tag,
+                    }
+                  }}
+                  compact
+                />
+              </div>
+            </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => toast.success("Marked as interested")}>
               <Heart className="mr-2 h-4 w-4" /> Interested
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => toast.success("We'll show fewer posts like this")}>
-              <X className="mr-2 h-4 w-4" /> Not interested
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => setHidden(true)}>
               <EyeOff className="mr-2 h-4 w-4" /> Hide post
