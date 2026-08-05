@@ -108,23 +108,68 @@ function FavoritesPage() {
             </div>
           </header>
 
-          {filteredItems.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-border bg-surface p-12 text-center">
-              <Star className="mx-auto h-10 w-10 text-muted-foreground/30" />
-              <p className="mt-4 text-sm font-semibold">No favorites found</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Items you star across the academy will appear here.
-              </p>
+          <AnimatePresence mode="popLayout">
+            {filteredItems.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="rounded-3xl border border-dashed border-border bg-surface p-12 text-center"
+              >
+                <Star className="mx-auto h-10 w-10 text-muted-foreground/30" />
+                <p className="mt-4 text-sm font-semibold">No favorites found</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Items you star across the academy will appear here.
+                </p>
+              </motion.div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                {activeTab === "all" ? (
+                  <SectionedList items={filteredItems} />
+                ) : (
+                  filteredItems.map((item, i) => (
+                    <FavoriteCard key={item.key} item={item} index={i} />
+                  ))
+                )}
+              </div>
+            )}
+          </AnimatePresence>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function SectionedList({ items }: { items: FavoriteItem[] }) {
+  const sections = [
+    { type: "tutor", label: "Tutors", icon: UserIcon },
+    { type: "student", label: "Students", icon: UserIcon },
+    { type: "post", label: "Posts", icon: FileText },
+    { type: "question", label: "Questions", icon: BookOpen },
+  ] as const;
+
+  return (
+    <div className="space-y-10">
+      {sections.map((sec) => {
+        const secItems = items.filter((i) => i.type === sec.type);
+        if (secItems.length === 0) return null;
+
+        return (
+          <div key={sec.type} className="space-y-4">
+            <div className="flex items-center gap-2 border-l-4 border-primary pl-3">
+              <sec.icon className="h-4 w-4 text-primary" />
+              <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
+                {sec.label} ({secItems.length})
+              </h2>
             </div>
-          ) : (
             <div className="grid grid-cols-1 gap-4">
-              {filteredItems.map((item, i) => (
+              {secItems.map((item, i) => (
                 <FavoriteCard key={item.key} item={item} index={i} />
               ))}
             </div>
-          )}
-        </div>
-      </main>
+          </div>
+        );
+      })}
     </div>
   );
 }
