@@ -849,36 +849,27 @@ function RegisterPage() {
                       className="mt-0.5 h-4 w-4 rounded border-border accent-primary"
                     />
                     <span>
-                      I agree to the{" "}
-                      <a href="#" className="font-semibold text-primary hover:underline">
-                        Terms & Conditions
-                      </a>{" "}
-                      and{" "}
-                      <a href="#" className="font-semibold text-primary hover:underline">
-                        Privacy Policy
-                      </a>
-                      .
+                      I agree to the <Link to="/terms" className="font-semibold text-primary hover:underline">Terms</Link> and <Link to="/privacy" className="font-semibold text-primary hover:underline">Privacy Policy</Link>.
                     </span>
                   </label>
                 </div>
               </StepPane>
             ) : step === 3 ? (
-
               <StepPane key="s-otp" dir={dir}>
                 <div className="space-y-5">
                   <div className="rounded-2xl border border-border/70 bg-gradient-to-br from-surface to-muted/40 p-5">
                     <div className="flex items-start gap-3">
                       <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                        <Mail className="h-5 w-5" />
+                        <ShieldCheck className="h-5 w-5" />
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-foreground">
-                          Check your inbox
+                          Check your phone
                         </p>
                         <p className="mt-0.5 text-xs text-muted-foreground">
                           We sent a 4-digit code to{" "}
                           <span className="font-medium text-foreground">
-                            {email || "your email"}
+                            {phone || "your number"}
                           </span>
                           . Enter it below to verify.
                         </p>
@@ -938,7 +929,7 @@ function RegisterPage() {
                     className="mx-auto flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground"
                   >
                     <ArrowLeft className="h-3 w-3" />
-                    Wrong email? Go back
+                    Wrong number? Go back
                   </button>
                 </div>
               </StepPane>
