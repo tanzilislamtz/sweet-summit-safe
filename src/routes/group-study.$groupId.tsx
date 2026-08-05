@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   Users,
@@ -25,16 +26,38 @@ import {
   Search,
   ChevronDown,
   LogOut,
+  Heart,
+  MoreHorizontal,
+  Star,
+  EyeOff,
+  Link2,
+  BellOff,
+  Flag,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import FavoriteButton from "@/components/FavoriteButton";
 import type { GroupMember, StudyGroup } from "@/data/groups";
 import { GROUPS_EVENT, findGroup, isJoined, setJoined } from "@/lib/groups";
 import {
   addGroupPost,
+  addPostComment,
   applyGroupOverrides,
   canManageGroup,
   deleteGroupPost,
+  hideGroupPost,
+  isPostLoved,
   listGroupPosts,
+  listHiddenPosts,
+  listPostComments,
   resolveMembers,
+  togglePostLove,
+  type GroupPostComment,
   type StoredPost,
 } from "@/lib/group-workspace";
 import { getSession } from "@/lib/session";
