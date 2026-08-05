@@ -96,6 +96,72 @@ export const addGroupPost = (
   return post;
 };
 
+/* ------------- reactions, comments, hidden posts ------------------ */
+
+const LOVES_KEY = "la:groups:post-loves";
+const COMMENTS_KEY = "la:groups:post-comments";
+const HIDDEN_KEY = "la:groups:post-hidden";
+
+export type GroupPostComment = {
+  id: string;
+  author: string;
+  text: string;
+  time: string;
+};
+
+type LoveMap = Record<string, string[]>;
+type CommentMap = Record<string, GroupPostComment[]>;
+type HiddenMap = Record<string, string[]>;
+
+const scope = (groupId: string, postId: string) => `${groupId}::${postId}`;
+
+/** Has the signed-in user loved this post? */
+export const isPostLoved = (groupId: string, postId: string): boolean =>
+  (read<LoveMap>(LOVES_KEY, {})[groupId] ?? []).includes(postId);
+
+export const togglePostLove = (groupId: string, postId: string): boolean => {
+  const map = read<LoveMap>(LOVES_KEY, {});
+  const current = map[groupId] ?? [];
+  const loved = current.includes(postId);
+  const next = loved ? current.filter((id) => id !== postId) : [postId, ...current];
+  write(LOVES_KEY, { ...map, [groupId]: next });
+  return !loved;
+};
+
+export const listPostComments = (groupId: string, postId: string): GroupPostComment[] =>
+  read<CommentMap>(COMMENTS_KEY, {})[scope(groupId, postId)] ?? [];
+
+export const addPostComment = (
+  groupId: string,
+  postId: string,
+  input: { author: string; text: string },
+): GroupPostComment => {
+  const comment: GroupPostComment = {
+    id: `c-${Date.now()}`,
+    author: input.author,
+    text: input.text,
+    time: "Just now",
+  };
+  const key = scope(groupId, postId);
+  const map = read<CommentMap>(COMMENTS_KEY, {});
+  write(COMMENTS_KEY, { ...map, [key]: [...(map[key] ?? []), comment] });
+  return comment;
+};
+
+export const listHiddenPosts = (groupId: string): string[] =>
+  read<HiddenMap>(HIDDEN_KEY, {})[groupId] ?? [];
+
+export const hideGroupPost = (groupId: string, postId: string) => {
+  const map = read<HiddenMap>(HIDDEN_KEY, {});
+  const current = (map[groupId] ?? []).filter((id) => id !== postId);
+  write(HIDDEN_KEY, { ...map, [groupId]: [postId, ...current] });
+};
+
+export const unhideGroupPost = (groupId: string, postId: string) => {
+  const map = read<HiddenMap>(HIDDEN_KEY, {});
+  write(HIDDEN_KEY, { ...map, [groupId]: (map[groupId] ?? []).filter((id) => id !== postId) });
+};
+
 export const deleteGroupPost = (groupId: string, postId: string) => {
   const map = read<PostMap>(POSTS_KEY, {});
   write(POSTS_KEY, { ...map, [groupId]: (map[groupId] ?? []).filter((p) => p.id !== postId) });
