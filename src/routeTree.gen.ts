@@ -21,6 +21,7 @@ import { Route as CreatePostRouteImport } from './routes/create-post'
 import { Route as AvailableTutorRouteImport } from './routes/available-tutor'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QuizIndexRouteImport } from './routes/quiz.index'
+import { Route as GroupStudyIndexRouteImport } from './routes/group-study.index'
 import { Route as QuizQuickPracticeRouteImport } from './routes/quiz.quick-practice'
 import { Route as QuizQuestionBankRouteImport } from './routes/quiz.question-bank'
 import { Route as QuizProgressRouteImport } from './routes/quiz.progress'
@@ -101,6 +102,11 @@ const QuizIndexRoute = QuizIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => QuizRoute,
+} as any)
+const GroupStudyIndexRoute = GroupStudyIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => GroupStudyRoute,
 } as any)
 const QuizQuickPracticeRoute = QuizQuickPracticeRouteImport.update({
   id: '/quick-practice',
@@ -211,7 +217,7 @@ export interface FileRoutesByFullPath {
   '/available-tutor': typeof AvailableTutorRoute
   '/create-post': typeof CreatePostRoute
   '/favorites': typeof FavoritesRoute
-  '/group-study': typeof GroupStudyRoute
+  '/group-study': typeof GroupStudyRouteWithChildren
   '/login': typeof LoginRoute
   '/message': typeof MessageRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -227,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/quiz/progress': typeof QuizProgressRoute
   '/quiz/question-bank': typeof QuizQuestionBankRoute
   '/quiz/quick-practice': typeof QuizQuickPracticeRoute
+  '/group-study/': typeof GroupStudyIndexRoute
   '/quiz/': typeof QuizIndexRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
@@ -245,7 +252,6 @@ export interface FileRoutesByTo {
   '/available-tutor': typeof AvailableTutorRoute
   '/create-post': typeof CreatePostRoute
   '/favorites': typeof FavoritesRoute
-  '/group-study': typeof GroupStudyRoute
   '/login': typeof LoginRoute
   '/message': typeof MessageRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -260,6 +266,7 @@ export interface FileRoutesByTo {
   '/quiz/progress': typeof QuizProgressRoute
   '/quiz/question-bank': typeof QuizQuestionBankRoute
   '/quiz/quick-practice': typeof QuizQuickPracticeRoute
+  '/group-study': typeof GroupStudyIndexRoute
   '/quiz': typeof QuizIndexRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
@@ -279,7 +286,7 @@ export interface FileRoutesById {
   '/available-tutor': typeof AvailableTutorRoute
   '/create-post': typeof CreatePostRoute
   '/favorites': typeof FavoritesRoute
-  '/group-study': typeof GroupStudyRoute
+  '/group-study': typeof GroupStudyRouteWithChildren
   '/login': typeof LoginRoute
   '/message': typeof MessageRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -295,6 +302,7 @@ export interface FileRoutesById {
   '/quiz/progress': typeof QuizProgressRoute
   '/quiz/question-bank': typeof QuizQuestionBankRoute
   '/quiz/quick-practice': typeof QuizQuickPracticeRoute
+  '/group-study/': typeof GroupStudyIndexRoute
   '/quiz/': typeof QuizIndexRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
@@ -331,6 +339,7 @@ export interface FileRouteTypes {
     | '/quiz/progress'
     | '/quiz/question-bank'
     | '/quiz/quick-practice'
+    | '/group-study/'
     | '/quiz/'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
@@ -349,7 +358,6 @@ export interface FileRouteTypes {
     | '/available-tutor'
     | '/create-post'
     | '/favorites'
-    | '/group-study'
     | '/login'
     | '/message'
     | '/profile'
@@ -364,6 +372,7 @@ export interface FileRouteTypes {
     | '/quiz/progress'
     | '/quiz/question-bank'
     | '/quiz/quick-practice'
+    | '/group-study'
     | '/quiz'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
@@ -398,6 +407,7 @@ export interface FileRouteTypes {
     | '/quiz/progress'
     | '/quiz/question-bank'
     | '/quiz/quick-practice'
+    | '/group-study/'
     | '/quiz/'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
@@ -417,7 +427,7 @@ export interface RootRouteChildren {
   AvailableTutorRoute: typeof AvailableTutorRoute
   CreatePostRoute: typeof CreatePostRoute
   FavoritesRoute: typeof FavoritesRoute
-  GroupStudyRoute: typeof GroupStudyRoute
+  GroupStudyRoute: typeof GroupStudyRouteWithChildren
   LoginRoute: typeof LoginRoute
   MessageRoute: typeof MessageRouteWithChildren
   ProfileRoute: typeof ProfileRoute
@@ -512,6 +522,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/quiz/'
       preLoaderRoute: typeof QuizIndexRouteImport
       parentRoute: typeof QuizRoute
+    }
+    '/group-study/': {
+      id: '/group-study/'
+      path: '/'
+      fullPath: '/group-study/'
+      preLoaderRoute: typeof GroupStudyIndexRouteImport
+      parentRoute: typeof GroupStudyRoute
     }
     '/quiz/quick-practice': {
       id: '/quiz/quick-practice'
@@ -656,6 +673,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface GroupStudyRouteChildren {
+  GroupStudyIndexRoute: typeof GroupStudyIndexRoute
+}
+
+const GroupStudyRouteChildren: GroupStudyRouteChildren = {
+  GroupStudyIndexRoute: GroupStudyIndexRoute,
+}
+
+const GroupStudyRouteWithChildren = GroupStudyRoute._addFileChildren(
+  GroupStudyRouteChildren,
+)
+
 interface MessageRouteChildren {
   MessageThreadIdRoute: typeof MessageThreadIdRoute
   MessageRequestsRoute: typeof MessageRequestsRoute
@@ -719,7 +748,7 @@ const rootRouteChildren: RootRouteChildren = {
   AvailableTutorRoute: AvailableTutorRoute,
   CreatePostRoute: CreatePostRoute,
   FavoritesRoute: FavoritesRoute,
-  GroupStudyRoute: GroupStudyRoute,
+  GroupStudyRoute: GroupStudyRouteWithChildren,
   LoginRoute: LoginRoute,
   MessageRoute: MessageRouteWithChildren,
   ProfileRoute: ProfileRoute,
