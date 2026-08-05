@@ -41,7 +41,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import FavoriteButton from "@/components/FavoriteButton";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import type { GroupMember, StudyGroup } from "@/data/groups";
 import { GROUPS_EVENT, findGroup, isJoined, setJoined } from "@/lib/groups";
 import {
