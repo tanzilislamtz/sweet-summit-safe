@@ -188,7 +188,7 @@ function GroupHeader({
           </button>
           {canManage && (
             <Link
-              to="/group-study/$groupId/manage"
+              to="/group-study/manage/$groupId"
               params={{ groupId: group.id }}
               aria-label="Admin tools"
               className="inline-flex items-center gap-1.5 rounded-lg bg-primary-foreground/15 px-3 py-2 text-xs font-semibold ring-1 ring-primary-foreground/30 transition hover:bg-primary-foreground/25"
