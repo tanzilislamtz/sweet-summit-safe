@@ -28,17 +28,11 @@ import type { GroupMember, StudyGroup } from "@/data/groups";
 import { GROUPS_EVENT, findGroup, isJoined, setJoined } from "@/lib/groups";
 import {
   addGroupPost,
+  applyGroupOverrides,
   canManageGroup,
   deleteGroupPost,
-  getGroupSettings,
   listGroupPosts,
-  listJoinRequests,
-  resolveJoinRequest,
   resolveMembers,
-  setMemberRole,
-  setMemberRemoved,
-  updateGroupSettings,
-  type GroupRole,
   type StoredPost,
 } from "@/lib/group-workspace";
 import { getSession } from "@/lib/session";
