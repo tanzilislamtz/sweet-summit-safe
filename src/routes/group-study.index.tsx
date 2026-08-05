@@ -61,7 +61,10 @@ function GroupStudyIndex() {
     setCreated(listCreatedGroups().map(hydrateCreatedGroup));
   }, [version]);
 
-  const all = useMemo(() => [...created, ...studyGroups], [created]);
+  const all = useMemo(
+    () => [...created, ...studyGroups].map(applyGroupOverrides),
+    [created],
+  );
   const myGroups = all.filter((g) => isJoined(g));
   const suggested = all.filter((g) => !isJoined(g));
 
