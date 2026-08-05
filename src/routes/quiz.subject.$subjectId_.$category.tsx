@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -19,6 +19,7 @@ export const Route = createFileRoute("/quiz/subject/$subjectId_/$category")({
 
 function ChapterPicker() {
   const { subjectId, category } = Route.useParams();
+  const navigate = useNavigate();
   const subject = subjects.find((s) => s.id === subjectId);
   const mode = practiceModes.find((m) => m.id === (category as PracticeMode));
 
@@ -42,7 +43,7 @@ function ChapterPicker() {
       {/* Breadcrumb */}
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
         <button
-          onClick={() => window.history.back()}
+          onClick={() => navigate({ to: "/quiz/subject/$subjectId", params: { subjectId } })}
           className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-border transition hover:border-primary/40 hover:text-primary"
           aria-label="Back"
         >
