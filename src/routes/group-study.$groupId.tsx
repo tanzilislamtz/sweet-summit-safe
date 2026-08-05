@@ -23,6 +23,8 @@ import {
   UserMinus,
   UserPlus,
   Search,
+  ChevronDown,
+  LogOut,
 } from "lucide-react";
 import type { GroupMember, StudyGroup } from "@/data/groups";
 import { GROUPS_EVENT, findGroup, isJoined, setJoined } from "@/lib/groups";
