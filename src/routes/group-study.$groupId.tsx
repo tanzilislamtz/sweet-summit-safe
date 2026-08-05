@@ -65,7 +65,7 @@ export const Route = createFileRoute("/group-study/$groupId")({
 });
 
 const BASE_TABS = ["Feed", "Rooms", "Members", "Files", "Events", "About"] as const;
-type Tab = (typeof BASE_TABS)[number] | "Manage";
+type Tab = (typeof BASE_TABS)[number];
 
 function GroupDetailPage() {
   const { groupId } = useParams({ from: "/group-study/$groupId" });
@@ -77,7 +77,7 @@ function GroupDetailPage() {
   useEffect(() => {
     const sync = () => {
       const g = findGroup(groupId);
-      setGroup(g);
+      setGroup(g ? applyGroupOverrides(g) : undefined);
       setJoinedState(g ? isJoined(g) : false);
       setTick((t) => t + 1);
     };
@@ -87,7 +87,7 @@ function GroupDetailPage() {
   }, [groupId]);
 
   const canManage = group ? canManageGroup(group, joined) : false;
-  const tabs: Tab[] = canManage ? [...BASE_TABS, "Manage"] : [...BASE_TABS];
+  const tabs: Tab[] = [...BASE_TABS];
 
   if (!group) {
     return (
@@ -129,11 +129,10 @@ function GroupDetailPage() {
 
       {tab === "Feed" && <FeedTab group={group} tick={tick} />}
       {tab === "Rooms" && <RoomsTab group={group} />}
-      {tab === "Members" && <MembersTab group={group} canManage={canManage} />}
+      {tab === "Members" && <MembersTab group={group} />}
       {tab === "Files" && <FilesTab group={group} />}
       {tab === "Events" && <EventsTab group={group} />}
       {tab === "About" && <AboutTab group={group} />}
-      {tab === "Manage" && canManage && <ManageTab group={group} />}
     </div>
   );
 }
