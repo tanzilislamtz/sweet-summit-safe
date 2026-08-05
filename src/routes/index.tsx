@@ -27,6 +27,7 @@ import {
   UserSearch,
   BookOpenCheck,
   UserCheck,
+  Star,
   Trophy,
   ChevronRight,
   ShieldCheck,
@@ -41,6 +42,7 @@ import {
 import { MobileNav } from "@/components/MobileNav";
 import { Topbar } from "@/components/Topbar";
 import { LeftNav } from "@/components/LeftNav";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { FeedToolbar } from "@/components/FeedToolbar";
 import {
   DropdownMenu,
