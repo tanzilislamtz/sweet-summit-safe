@@ -51,24 +51,34 @@ function FavoritesPage() {
     return () => window.removeEventListener(FAVORITES_EVENT, sync);
   }, []);
 
+  const subjectOf = (item: FavoriteItem): string =>
+    item.questionData?.subjectName ?? item.questionData?.subjectId ?? "Others";
+
+  const questionItems = items.filter((i) => i.type === "question");
+
+  /** Subject list is derived from the saved questions, so it grows automatically. */
+  const subjectCounts = questionItems.reduce<Record<string, number>>((acc, item) => {
+    const name = subjectOf(item);
+    acc[name] = (acc[name] ?? 0) + 1;
+    return acc;
+  }, {});
+  const subjects = Object.keys(subjectCounts).sort((a, b) => a.localeCompare(b));
+
+  // Drop a stale selection when its last question is removed.
+  useEffect(() => {
+    if (selectedSubject !== "All Subjects" && !subjects.includes(selectedSubject)) {
+      setSelectedSubject("All Subjects");
+    }
+  }, [subjects.join("|"), selectedSubject]);
+
   const filteredItems = items.filter((item) => {
     const matchTab = activeTab === "all" || item.type === activeTab;
-    const matchSubject =
-      selectedSubject === "All Subjects" ||
-      item.questionData?.subjectName === selectedSubject ||
-      item.questionData?.subjectId === selectedSubject;
-    return matchTab && (item.type !== "question" || matchSubject);
+    if (!matchTab) return false;
+    if (item.type !== "question") return true;
+    return selectedSubject === "All Subjects" || subjectOf(item) === selectedSubject;
   });
 
-  const subjects = [
-    "All Subjects",
-    ...new Set(
-      items
-        .filter((i) => i.type === "question")
-        .map((i) => i.questionData?.subjectName ?? i.questionData?.subjectId ?? "")
-        .filter(Boolean)
-    ),
-  ];
+  const showSubjectRail = (activeTab === "all" || activeTab === "question") && subjects.length > 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground lg:h-[100dvh] lg:overflow-hidden">
@@ -86,56 +96,110 @@ function FavoritesPage() {
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-2">
-              <div className="flex gap-1">
+              <div className="flex flex-wrap gap-1">
                 <TabBtn active={activeTab === "all"} onClick={() => setActiveTab("all")} icon={LayoutGrid} label="All" />
                 <TabBtn active={activeTab === "question"} onClick={() => setActiveTab("question")} icon={BookOpen} label="Questions" />
                 <TabBtn active={activeTab === "post"} onClick={() => setActiveTab("post")} icon={FileText} label="Posts" />
                 <TabBtn active={activeTab === "tutor"} onClick={() => setActiveTab("tutor")} icon={UserIcon} label="Tutors" />
                 <TabBtn active={activeTab === "student"} onClick={() => setActiveTab("student")} icon={UserIcon} label="Students" />
               </div>
-
-              {(activeTab === "all" || activeTab === "question") && subjects.length > 2 && (
-                <select
-                  value={selectedSubject}
-                  onChange={(e) => setSelectedSubject(e.target.value)}
-                  className="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/20"
-                >
-                  {subjects.map((s) => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-              )}
             </div>
           </header>
 
-          <AnimatePresence mode="popLayout">
-            {filteredItems.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="rounded-3xl border border-dashed border-border bg-surface p-12 text-center"
-              >
-                <Star className="mx-auto h-10 w-10 text-muted-foreground/30" />
-                <p className="mt-4 text-sm font-semibold">No favorites found</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Items you star across the academy will appear here.
-                </p>
-              </motion.div>
-            ) : (
-              <div className="grid grid-cols-1 gap-4">
-                {activeTab === "all" ? (
-                  <SectionedList items={filteredItems} />
+          <div className={showSubjectRail ? "grid gap-5 xl:grid-cols-[minmax(0,1fr)_220px]" : ""}>
+            <div className="min-w-0">
+              <AnimatePresence mode="popLayout">
+                {filteredItems.length === 0 ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="rounded-3xl border border-dashed border-border bg-surface p-12 text-center"
+                  >
+                    <Star className="mx-auto h-10 w-10 text-muted-foreground/30" />
+                    <p className="mt-4 text-sm font-semibold">No favorites found</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Items you star across the academy will appear here.
+                    </p>
+                  </motion.div>
                 ) : (
-                  filteredItems.map((item, i) => (
-                    <FavoriteCard key={item.key} item={item} index={i} />
-                  ))
+                  <div className="grid grid-cols-1 gap-4">
+                    {activeTab === "all" ? (
+                      <SectionedList items={filteredItems} />
+                    ) : (
+                      filteredItems.map((item, i) => (
+                        <FavoriteCard key={item.key} item={item} index={i} />
+                      ))
+                    )}
+                  </div>
                 )}
-              </div>
+              </AnimatePresence>
+            </div>
+
+            {showSubjectRail && (
+              <aside className="order-first xl:order-none">
+                <SubjectRail
+                  subjects={subjects}
+                  counts={subjectCounts}
+                  total={questionItems.length}
+                  selected={selectedSubject}
+                  onSelect={setSelectedSubject}
+                />
+              </aside>
             )}
-          </AnimatePresence>
+          </div>
         </div>
       </main>
+    </div>
+  );
+}
+
+function SubjectRail({
+  subjects,
+  counts,
+  total,
+  selected,
+  onSelect,
+}: {
+  subjects: string[];
+  counts: Record<string, number>;
+  total: number;
+  selected: string;
+  onSelect: (s: string) => void;
+}) {
+  const entries = [{ name: "All Subjects", count: total }, ...subjects.map((s) => ({ name: s, count: counts[s] ?? 0 }))];
+
+  return (
+    <div className="rounded-2xl border border-border bg-surface p-3 xl:sticky xl:top-2">
+      <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+        Subjects
+      </p>
+      <div className="flex gap-2 overflow-x-auto pb-1 xl:flex-col xl:overflow-visible xl:pb-0">
+        {entries.map((e) => {
+          const active = selected === e.name;
+          return (
+            <button
+              key={e.name}
+              type="button"
+              onClick={() => onSelect(e.name)}
+              className={`flex shrink-0 items-center justify-between gap-2 rounded-xl px-3 py-2 text-xs font-semibold transition xl:w-full xl:shrink ${
+                active
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              <span className="truncate">{e.name}</span>
+              <span
+                className={`rounded-full px-1.5 py-0.5 text-[10px] ${
+                  active ? "bg-white/20" : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {e.count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
