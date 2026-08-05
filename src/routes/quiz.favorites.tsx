@@ -41,7 +41,7 @@ export const Route = createFileRoute("/quiz/favorites")({
 function FavoritesPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [items, setItems] = useState<FavoriteItem[]>([]);
-  const [activeTab, setActiveTab] = useState<"all" | "question" | "post" | "user">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "question" | "post" | "user" | "tutor" | "student">("all");
   const [selectedSubject, setSelectedSubject] = useState<string>("All Subjects");
 
   useEffect(() => {
@@ -291,7 +291,7 @@ function FavoriteCard({ item, index }: { item: FavoriteItem; index: number }) {
     );
   }
 
-  if (item.type === "user" && item.userData) {
+  if (item.type === "student" && item.userData) {
     const u = item.userData;
     return (
       <motion.article

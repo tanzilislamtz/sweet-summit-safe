@@ -549,16 +549,20 @@ function ExamRunner({
               <div className="mt-3 flex justify-end">
                 <FavoriteButton
                   item={{
-                    questionId: q.id,
-                    text: q.text,
-                    options: q.options,
-                    answer: q.answer,
-                    explanation: q.explanation,
-                    figure: q.figure,
-                    subjectId: subjectIdForFav,
-                    subjectName,
-                    topic: q.topic,
-                    source: "mcq",
+                    id: q.id,
+                    type: "question",
+                    title: q.text,
+                    questionData: {
+                      text: q.text,
+                      options: q.options,
+                      answer: q.answer,
+                      explanation: q.explanation,
+                      figure: q.figure,
+                      subjectId: subjectIdForFav,
+                      subjectName,
+                      topic: q.topic,
+                      source: "mcq",
+                    },
                   }}
                 />
               </div>
@@ -812,15 +816,19 @@ function ReviewCard({
       <div className="mt-2 flex justify-end">
         <FavoriteButton
           item={{
-            questionId: question.id,
-            text: question.text,
-            options: question.options,
-            answer: question.answer,
-            explanation: question.explanation,
-            figure: question.figure,
-            subjectId,
-            topic: question.topic,
-            source: "mcq",
+            id: question.id,
+            type: "question",
+            title: question.text,
+            questionData: {
+              text: question.text,
+              options: question.options,
+              answer: question.answer,
+              explanation: question.explanation,
+              figure: question.figure,
+              subjectId,
+              topic: question.topic,
+              source: "mcq",
+            },
           }}
         />
       </div>
