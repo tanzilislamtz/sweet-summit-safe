@@ -171,22 +171,86 @@ function GroupHeader({
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <button
-            onClick={() => setJoined(group.id, !joined)}
-            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition ${
-              joined
-                ? "ring-1 ring-primary-foreground/30 hover:bg-primary-foreground/10"
-                : "bg-accent text-accent-foreground hover:brightness-95"
-            }`}
-          >
-            {joined ? <Check className="h-3.5 w-3.5" /> : <UserPlus className="h-3.5 w-3.5" />}
-            {joined ? "Joined" : "Join"}
-          </button>
+          {joined ? (
+            <JoinedMenu groupId={group.id} />
+          ) : (
+            <button
+              onClick={() => setJoined(group.id, true)}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground transition hover:brightness-95"
+            >
+              <UserPlus className="h-3.5 w-3.5" /> Join
+            </button>
+          )}
           <button className="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold ring-1 ring-primary-foreground/30 hover:bg-primary-foreground/10 sm:inline-flex">
             <Share2 className="h-3.5 w-3.5" /> Invite
           </button>
+          {canManage && (
+            <Link
+              to="/group-study/$groupId/manage"
+              params={{ groupId: group.id }}
+              aria-label="Admin tools"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary-foreground/15 px-3 py-2 text-xs font-semibold ring-1 ring-primary-foreground/30 transition hover:bg-primary-foreground/25"
+            >
+              <Settings2 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Admin tools</span>
+            </Link>
+          )}
         </div>
       </div>
+
+      <div className="flex flex-wrap gap-x-5 gap-y-1.5 border-t border-primary-foreground/15 bg-primary-foreground/5 px-4 py-2 text-[11px] font-medium text-primary-foreground/85">
+        {stats.map((s) => (
+          <span key={s.label} className="inline-flex items-center gap-1.5">
+            <s.icon className="h-3.5 w-3.5" />
+            <b className="font-bold">{s.value}</b> {s.label}
+          </span>
+        ))}
+      </div>
+    </header>
+  );
+}
+
+/** "Joined" pill with a small menu holding the leave-group action. */
+function JoinedMenu({ groupId }: { groupId: string }) {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    window.addEventListener("click", close);
+    return () => window.removeEventListener("click", close);
+  }, [open]);
+
+  return (
+    <div className="relative" onClick={(e) => e.stopPropagation()}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold ring-1 ring-primary-foreground/30 transition hover:bg-primary-foreground/10"
+      >
+        <Check className="h-3.5 w-3.5" /> Joined
+        <ChevronDown className="h-3 w-3" />
+      </button>
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 z-20 mt-1.5 w-44 overflow-hidden rounded-xl border border-border bg-surface text-foreground shadow-lg"
+        >
+          <button
+            role="menuitem"
+            onClick={() => {
+              setJoined(groupId, false);
+              setOpen(false);
+            }}
+            className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs font-semibold text-destructive hover:bg-destructive/10"
+          >
+            <LogOut className="h-3.5 w-3.5" /> Leave group
+          </button>
+        </div>
+      )}
+    </div>
+  );
 
       <div className="flex flex-wrap gap-x-5 gap-y-1.5 border-t border-primary-foreground/15 bg-primary-foreground/5 px-4 py-2 text-[11px] font-medium text-primary-foreground/85">
         {stats.map((s) => (
