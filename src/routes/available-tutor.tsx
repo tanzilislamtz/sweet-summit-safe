@@ -17,6 +17,7 @@ import {
 import { Topbar } from "@/components/Topbar";
 import { MobileNav } from "@/components/MobileNav";
 import { LeftNav } from "@/components/LeftNav";
+import { FavoriteButton } from "@/components/FavoriteButton";
 
 export const Route = createFileRoute("/available-tutor")({
   head: () => ({
@@ -293,14 +294,21 @@ function AvailableTutorPage() {
 
                           <p className="mt-0.5 truncate text-[13px] text-muted-foreground">{t.headline}</p>
                         </div>
-                        <button
-                          type="button"
-                          aria-label={isSaved ? "Unsave tutor" : "Save tutor"}
-                          onClick={() => setSaved((s) => ({ ...s, [t.id]: !s[t.id] }))}
-                          className="rounded-full p-1.5 text-muted-foreground transition hover:bg-rose-50 hover:text-rose-500"
-                        >
-                          <Heart className={`h-4 w-4 ${isSaved ? "fill-rose-500 text-rose-500" : ""}`} />
-                        </button>
+                        <FavoriteButton
+                          item={{
+                            id: t.id,
+                            type: "tutor",
+                            title: t.name,
+                            image: t.photo,
+                            userData: {
+                              role: "tutor",
+                              headline: t.headline,
+                              institute: t.location,
+                              subjects: t.subjects,
+                            }
+                          }}
+                          compact
+                        />
                       </div>
 
                       {/* Meta row */}
