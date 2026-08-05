@@ -338,9 +338,31 @@ function CqPractice() {
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
                   উদ্দীপক · Stimulus
                 </p>
-                <span className="ml-auto rounded-full bg-secondary/15 px-2.5 py-1 text-[11px] font-semibold text-secondary-foreground">
-                  {q.totalMarks} marks
-                </span>
+                <div className="ml-auto flex items-center gap-3">
+                  <FavoriteButton
+                    item={{
+                      id: q.id,
+                      type: "question",
+                      title: q.stem,
+                      questionData: {
+                        text: q.stem,
+                        options: q.parts.map(p => `${p.label}: ${p.question}`),
+                        answer: -1,
+                        explanation: "Written CQ practice",
+                        figure: q.figure,
+                        subjectId,
+                        subjectName: subject.name,
+                        topic: topic.name,
+                        chapterName: chapter.name,
+                        source: mode === "board" ? "board" : "cq",
+                      }
+                    }}
+                    compact
+                  />
+                  <span className="rounded-full bg-secondary/15 px-2.5 py-1 text-[11px] font-semibold text-secondary-foreground">
+                    {q.totalMarks} marks
+                  </span>
+                </div>
               </div>
               <p className="mt-3 whitespace-pre-line font-bangla text-[15px] leading-relaxed text-foreground">
                 {q.stem}
