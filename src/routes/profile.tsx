@@ -281,6 +281,7 @@ function ProfilePage() {
                   points={points}
                   level={level}
                   levelPct={levelPct}
+                  intoLevel={intoLevel}
                   streak={streak}
                   favorites={favorites.length}
                   groups={groupCount}
