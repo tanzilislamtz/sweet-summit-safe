@@ -720,7 +720,7 @@ function PointsTab({
                 <motion.circle
                   cx="50%"
                   cy="50%"
-                  r="46%"
+                  r="45%"
                   pathLength="100"
                   fill="none"
                   stroke="currentColor"
