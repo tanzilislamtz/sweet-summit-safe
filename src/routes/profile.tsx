@@ -507,7 +507,9 @@ function CompactStatBox({
       <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{label}</p>
       <p className="truncate text-[11px] font-black">{value}</p>
     </div>
+  );
 }
+
 
 
 function PreferenceBox({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
