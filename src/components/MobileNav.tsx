@@ -5,6 +5,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import { getSession, type Session } from "@/lib/session";
 import { ChevronRight } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 type NavItem = {
   icon: typeof Home;
@@ -139,8 +140,9 @@ export function MobileNav({ open, onClose }: { open: boolean; onClose: () => voi
               ))}
             </nav>
 
-            {/* Menu footer — profile */}
-            <div className="mt-3 shrink-0 border-t border-border pt-3">
+            {/* Menu footer — appearance + profile */}
+            <div className="mt-3 shrink-0 space-y-2.5 border-t border-border pt-3">
+              <ThemeToggle variant="menu" />
               <Link
                 to="/profile"
                 onClick={onClose}
