@@ -155,14 +155,32 @@ function Section({
 
 function GroupCard({ group, joined }: { group: StudyGroup; joined: boolean }) {
   const [isJoining, setIsJoining] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  const handleJoin = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (isJoining) return;
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handle = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
+    };
+    window.addEventListener("click", handle);
+    return () => window.removeEventListener("click", handle);
+  }, [menuOpen]);
+
+  const handleJoin = () => {
+    if (isJoining || joined) return;
     setIsJoining(true);
     setTimeout(() => {
-      setJoined(group.id, !joined);
+      setJoined(group.id, true);
+      setIsJoining(false);
+    }, 800);
+  };
+
+  const handleLeave = () => {
+    setMenuOpen(false);
+    setIsJoining(true);
+    setTimeout(() => {
+      setJoined(group.id, false);
       setIsJoining(false);
     }, 800);
   };
@@ -230,29 +248,73 @@ function GroupCard({ group, joined }: { group: StudyGroup; joined: boolean }) {
         </Link>
       </div>
 
-      <button
-        onClick={handleJoin}
-        disabled={isJoining}
-        className={`mt-2.5 inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-semibold transition ${
-          joined
-            ? "border border-border bg-muted/50 text-foreground hover:bg-muted"
-            : "bg-primary text-primary-foreground hover:brightness-110"
-        } disabled:cursor-not-allowed disabled:opacity-70`}
-      >
-        {isJoining ? (
-          <>
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            {joined ? "Leaving..." : "Joining..."}
-          </>
-        ) : joined ? (
-          <>
-            <Check className="h-3.5 w-3.5" />
-            Joined
-          </>
+      <div className="relative mt-2.5">
+        {joined ? (
+          <div ref={menuRef} className="relative">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setMenuOpen((s) => !s);
+              }}
+              disabled={isJoining}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-muted/50 px-3 py-2 text-[11px] font-semibold text-foreground transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {isJoining ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Check className="h-3.5 w-3.5" />
+              )}
+              {isJoining ? "Leaving..." : "Joined"}
+              <ChevronDown
+                className={`h-3.5 w-3.5 transition-transform ${menuOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            <AnimatePresence>
+              {menuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute left-0 right-0 top-[calc(100%+6px)] z-20 overflow-hidden rounded-xl border border-border bg-surface shadow-lg"
+                >
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleLeave();
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2.5 text-[11px] font-semibold text-destructive transition hover:bg-destructive/10"
+                  >
+                    <LogOut className="h-3.5 w-3.5" />
+                    Leave group
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         ) : (
-          "Join"
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleJoin();
+            }}
+            disabled={isJoining}
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-[11px] font-semibold text-primary-foreground transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isJoining ? (
+              <>
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                Joining...
+              </>
+            ) : (
+              "Join"
+            )}
+          </button>
         )}
-      </button>
+      </div>
     </motion.div>
   );
 }
