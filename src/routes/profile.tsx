@@ -725,7 +725,7 @@ function PointsTab({
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="8"
-                  strokeDasharray="100"
+                  strokeDasharray="100 100"
                   initial={{ strokeDashoffset: 100 }}
                   animate={{ strokeDashoffset: 100 - levelPct }}
                   transition={{ duration: 1, ease: "easeOut" }}
