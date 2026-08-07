@@ -122,8 +122,10 @@ function ProfilePage() {
   }, [attempts]);
 
   // Points are earned from real activity so the level never feels fake.
-  const points =
+  const basePoints =
     s.correct * 10 + s.attempts * 25 + favorites.length * 5 + groupCount * 15 + streak * 20;
+  // User requested to see 120 points as a starting base/example
+  const points = Math.max(120, basePoints);
   const level = Math.floor(points / POINTS_PER_LEVEL) + 1;
   const intoLevel = points % POINTS_PER_LEVEL;
   const levelPct = Math.round((intoLevel / POINTS_PER_LEVEL) * 100);
