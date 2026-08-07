@@ -701,7 +701,7 @@ function PointsTab({
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
           <div className="flex items-center gap-4 shrink-0">
             <div className="relative">
-              <div className="grid h-24 w-24 place-items-center rounded-full border-4 border-muted/30 bg-background sm:h-28 sm:w-28">
+              <div className="grid h-24 w-24 place-items-center rounded-full bg-background sm:h-28 sm:w-28">
                 <div className="text-center">
                   <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status</p>
                   <p className="text-sm font-black text-foreground sm:text-base">Level {level}</p>
