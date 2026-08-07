@@ -562,38 +562,106 @@ function InputGroup({
 
 
 function QaTab({ favorites }: { favorites: FavoriteItem[] }) {
-  const questions = favorites.filter((f) => f.type === "question");
+  const savedQuestions = favorites.filter((f) => f.type === "question");
+  const [userQuestions, setUserQuestions] = useState([
+    {
+      id: "q1",
+      title: "How to solve integration by parts for trigonometric functions?",
+      subject: "Higher Math",
+      askedAt: Date.now() - 3600000 * 2,
+      replies: 5,
+    },
+    {
+      id: "q2",
+      title: "What is the difference between mass and weight in physics?",
+      subject: "Physics",
+      askedAt: Date.now() - 3600000 * 24,
+      replies: 12,
+    },
+  ]);
+
   return (
-    <Card>
-      <CardHead
-        title="Q&A"
-        hint="Questions you saved from practice."
-        action={{ to: "/favorites", label: "Open favorites" }}
-      />
-      {questions.length === 0 ? (
-        <EmptyState
-          icon={<MessageCircle className="h-6 w-6 text-muted-foreground" />}
-          text="No saved questions yet."
-          cta={{ to: "/quiz", label: "Start practising" }}
-        />
-      ) : (
-        <div className="mt-4 space-y-2">
-          {questions.slice(0, 8).map((q) => (
-            <div
-              key={q.key}
-              className="rounded-2xl border border-border bg-background p-3.5 transition hover:border-primary/30"
-            >
-              <p className="line-clamp-2 text-sm font-medium">{q.title}</p>
-              <p className="mt-1 truncate text-[11px] text-muted-foreground">
-                {q.questionData?.subjectName ?? q.subtitle ?? "Practice question"}
-              </p>
-            </div>
-          ))}
+    <div className="space-y-5">
+      {/* Asked by Me Section */}
+      <Card>
+        <div className="flex items-center justify-between mb-4">
+          <CardHead title="Asked by Me" hint="Questions you posted to the community." />
+          <Link
+            to="/create-post"
+            className="rounded-xl bg-primary px-3 py-1.5 text-[11px] font-bold text-primary-foreground shadow-sm transition hover:opacity-90"
+          >
+            Ask Question
+          </Link>
         </div>
-      )}
-    </Card>
+        {userQuestions.length === 0 ? (
+          <EmptyState
+            icon={<MessageCircle className="h-6 w-6 text-muted-foreground" />}
+            text="You haven't asked any questions yet."
+            cta={{ to: "/create-post", label: "Ask Now" }}
+          />
+        ) : (
+          <div className="grid gap-3">
+            {userQuestions.map((q) => (
+              <div
+                key={q.id}
+                className="group flex items-center gap-3 rounded-2xl border border-border bg-background p-3.5 transition hover:border-primary/30"
+              >
+                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <MessageCircle className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold">{q.title}</p>
+                  <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground font-medium">
+                    <span className="rounded-full bg-muted px-2 py-0.5">{q.subject}</span>
+                    <span>• {q.replies} replies</span>
+                  </div>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5" />
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      {/* Saved from Practice Section */}
+      <Card>
+        <CardHead
+          title="Saved from Practice"
+          hint="Questions you starred during exams."
+          action={{ to: "/favorites", label: "See All" }}
+        />
+        {savedQuestions.length === 0 ? (
+          <EmptyState
+            icon={<Star className="h-6 w-6 text-muted-foreground" />}
+            text="No saved questions yet."
+            cta={{ to: "/quiz", label: "Start Practising" }}
+          />
+        ) : (
+          <div className="mt-4 grid gap-3">
+            {savedQuestions.slice(0, 5).map((q) => (
+              <div
+                key={q.key}
+                className="group flex items-center gap-3 rounded-2xl border border-border bg-background p-3.5 transition hover:border-primary/30"
+              >
+                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-secondary/15 text-secondary">
+                  <Star className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="line-clamp-1 text-sm font-semibold">{q.title}</p>
+                  <p className="mt-0.5 text-[10px] text-muted-foreground font-medium">
+                    {q.questionData?.subjectName ?? q.subtitle ?? "General Question"}
+                  </p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5" />
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+    </div>
   );
 }
+
 
 function PointsTab({
   s,
