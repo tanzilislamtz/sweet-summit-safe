@@ -9,8 +9,8 @@ const InputSchema = z.object({
   userIndex: z.number().int(),
   subject: z.string().optional(),
   topic: z.string().optional(),
-  /** Language the explanation must be written in. Bangla by default. */
-  language: z.string().default("Bangla (বাংলা)"),
+  /** Language the explanation must be written in. English by default. */
+  language: z.string().default("English"),
 });
 
 export const explainAnswer = createServerFn({ method: "POST" })
@@ -20,7 +20,7 @@ export const explainAnswer = createServerFn({ method: "POST" })
     const key = process.env["LOVABLE_API_KEY"];
     if (!key) {
       return {
-        explanation: `সঠিক উত্তর: ${correct}. (AI ব্যাখ্যা এই মুহূর্তে পাওয়া যাচ্ছে না।)`,
+        explanation: `Correct answer: ${correct}. (AI explanation is unavailable right now.)`,
         language: data.language,
       };
     }
@@ -84,19 +84,19 @@ Correct answer: ${correctLetter}. ${correct}`;
 
       if (res.status === 429) {
         return {
-          explanation: "অনেক বেশি অনুরোধ হয়ে গেছে — কিছুক্ষণ পর আবার চেষ্টা করুন।",
+          explanation: "Too many requests — please try again in a moment.",
           language: data.language,
         };
       }
       if (res.status === 402) {
         return {
-          explanation: "AI ক্রেডিট শেষ হয়ে গেছে। ওয়ার্কস্পেসে ক্রেডিট যোগ করুন।",
+          explanation: "AI credits have run out. Please add credits to your workspace.",
           language: data.language,
         };
       }
       if (!res.ok) {
         return {
-          explanation: `ব্যাখ্যা আনা যায়নি (status ${res.status}). সঠিক উত্তর: ${correct}.`,
+          explanation: `Could not load the explanation (status ${res.status}). Correct answer: ${correct}.`,
           language: data.language,
         };
       }
@@ -105,10 +105,10 @@ Correct answer: ${correctLetter}. ${correct}`;
         choices?: Array<{ message?: { content?: string } }>;
       };
       const text = json.choices?.[0]?.message?.content?.trim();
-      return { explanation: text || `সঠিক উত্তর: ${correct}.`, language: data.language };
+      return { explanation: text || `Correct answer: ${correct}.`, language: data.language };
     } catch {
       return {
-        explanation: `সঠিক উত্তর: ${correct}. (AI সার্ভিস সাময়িকভাবে বন্ধ আছে।)`,
+        explanation: `Correct answer: ${correct}. (The AI service is temporarily unavailable.)`,
         language: data.language,
       };
     }

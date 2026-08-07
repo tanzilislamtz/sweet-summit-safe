@@ -41,7 +41,7 @@ export const posts: PostData[] = [
     time: "1h · Public",
     kind: "question",
     title: "Why does light bend when it enters water from air?",
-    body: "Physics class 10 এ পড়াচ্ছে refraction, কিন্তু bending এর reason টা mathematically ঠিকমতো বুঝছি না। কেউ কি Snell's law টা সহজ ভাষায় explain করতে পারবেন?\n\nBook এ শুধু formula দেওয়া — n1 sinθ1 = n2 sinθ2 — কিন্তু কেন এটা হয়, physically কি ঘটছে জানতে চাই।",
+    body: "Physics class 10 is teaching refraction, but I don't properly understand the mathematical reason for the bending. Can someone explain Snell's law in simple terms?\n\nThe book only gives the formula — n1 sinθ1 = n2 sinθ2 — but I want to know why this happens and what's physically going on.",
     tag: "Physics · Refraction",
     tags: ["Class 10", "Optics"],
     stats: { likes: 87, comments: 24, shares: 5 },
@@ -55,7 +55,7 @@ export const posts: PostData[] = [
     verified: true,
     kind: "offering-tutor",
     title: "Free doubt-solving session tonight — Class 9 & 10 Math",
-    body: "আজ রাত ৯টায় ফ্রি ডাউট সলভিং সেশন। Algebra, Geometry, Trigonometry — যেকোনো প্রশ্ন নিয়ে আসুন। জুম লিঙ্ক কমেন্টে দেওয়া হবে।\n\n45 মিনিটের সেশন, শেষে ৫ মিনিট ১:১ সময় থাকবে যাদের personal doubt আছে।",
+    body: "Free doubt-solving session tonight at 9 PM. Bring any question — Algebra, Geometry, Trigonometry. The Zoom link will be posted in the comments.\n\nA 45-minute session, with 5 minutes of 1:1 time at the end for anyone with a personal doubt.",
     tag: "Class 9-10 Math",
     meta: [
       { label: "Subject", value: "Mathematics" },
@@ -73,7 +73,7 @@ export const posts: PostData[] = [
     time: "3h · Public",
     kind: "seeking-tutor",
     title: "Need a Chemistry tutor for HSC — Dhanmondi area",
-    body: "HSC 2nd year, Chemistry 2nd paper তে দুর্বলতা আছে। সপ্তাহে ৩ দিন, বিকেল ৫টার পর হলে ভালো হয়। Home tuition or nearby coaching দুটোই চলবে।\n\nEnglish medium background, তাই Bangla বা English দুই মাধ্যমেই comfortable।",
+    body: "I'm in HSC 2nd year and weak in Chemistry 2nd paper. Three days a week, preferably after 5 PM, would work well. Either home tuition or nearby coaching is fine.\n\nI have an English medium background, so I'm comfortable in both Bangla and English.",
     tag: "HSC · Chemistry",
     tags: ["Dhanmondi", "Home Tuition"],
     meta: [
@@ -105,7 +105,7 @@ export const posts: PostData[] = [
     time: "6h · Public",
     kind: "seeking-student",
     title: "Weekend group class — 3 seats left",
-    body: "ছুটির দিনে অনলাইন গ্রুপ ব্যাচ শুরু করছি। ছোট ব্যাচ (৫ জনের মধ্যে), interactive সেশন। আগ্রহী হলে DM করুন।\n\nSyllabus: Class 9-10 Science group, mock test প্রতি মাসে ২টা।",
+    body: "Starting an online group batch on weekends. Small batch (within 5 students), interactive sessions. DM me if interested.\n\nSyllabus: Class 9-10 Science group, 2 mock tests every month.",
     tag: "Weekend Batch",
     tags: ["Math", "Physics", "Chemistry"],
     meta: [
@@ -124,7 +124,7 @@ export const posts: PostData[] = [
     time: "Yesterday · Public",
     kind: "learning",
     title: "Study setup for finals week",
-    body: "একটা আপেল, কয়েকটা বই — ব্যস, এটাই এই সপ্তাহের রুটিন। Board exam ঠিক ১২ দিন দূরে।",
+    body: "An apple, a few books — that's this week's routine. The board exam is exactly 12 days away.",
     tag: "Motivation",
     stats: { likes: 421, comments: 66, shares: 12 },
     mediaUrl: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=1200&auto=format&fit=crop",
@@ -158,18 +158,18 @@ export function getRelatedPosts(id: string, n = 4): PostData[] {
 // Seed comments per post so the detail page feels populated
 export const seedComments: Record<string, { id: number; author: string; role: Role; text: string; time: string; likes: number }[]> = {
   "light-bend-water": [
-    { id: 1, author: "Dr. Kamal", role: "tutor", text: "সহজ ভাষায়: আলো air আর water এ different speed এ চলে। যখন medium change হয়, speed বদলায়, আর সেই কারণে direction ও বেঁকে যায় — ঠিক যেমন গাড়ির এক চাকা কাদায় পড়লে গাড়ি ঘুরে যায়।", time: "45m", likes: 34 },
-    { id: 2, author: "Sami Ahmed", role: "student", text: "Snell's law এর derivation Feynman's path integral দিয়ে দেখলে সবচেয়ে সুন্দর লাগে — light সবসময় shortest time এর path নেয়।", time: "30m", likes: 12 },
-    { id: 3, author: "Tania Rahman", role: "student", text: "ধন্যবাদ! গাড়ির analogy টা perfect বুঝেছি এখন।", time: "20m", likes: 5 },
-    { id: 4, author: "Nusrat", role: "student", text: "আমারও same doubt ছিল, thanks for asking 🙌", time: "10m", likes: 3 },
+    { id: 1, author: "Dr. Kamal", role: "tutor", text: "In simple terms: light travels at different speeds in air and water. When the medium changes, the speed changes, and that's why the direction bends too — just like a car turns when one wheel hits mud.", time: "45m", likes: 34 },
+    { id: 2, author: "Sami Ahmed", role: "student", text: "Snell's law looks most elegant when derived using Feynman's path integral — light always takes the path of shortest time.", time: "30m", likes: 12 },
+    { id: 3, author: "Tania Rahman", role: "student", text: "Thanks! The car analogy made it perfectly clear now.", time: "20m", likes: 5 },
+    { id: 4, author: "Nusrat", role: "student", text: "I had the same doubt, thanks for asking 🙌", time: "10m", likes: 3 },
   ],
   "alia-free-math": [
-    { id: 1, author: "Rakib Hasan", role: "student", text: "Zoom link টা কখন পাবো?", time: "1h", likes: 8 },
-    { id: 2, author: "Alia Bhatt", role: "tutor", text: "৮:৫০ এ pinned comment এ দিয়ে দেব। ততক্ষণ chapter revise করে রেখো!", time: "55m", likes: 22 },
-    { id: 3, author: "Munia", role: "student", text: "Trigonometry এর identity গুলা কি cover হবে?", time: "40m", likes: 4 },
+    { id: 1, author: "Rakib Hasan", role: "student", text: "When will we get the Zoom link?", time: "1h", likes: 8 },
+    { id: 2, author: "Alia Bhatt", role: "tutor", text: "I'll post it as a pinned comment at 8:50. Revise the chapter until then!", time: "55m", likes: 22 },
+    { id: 3, author: "Munia", role: "student", text: "Will the trigonometry identities be covered?", time: "40m", likes: 4 },
   ],
   "lily-baba-convo": [
-    { id: 1, author: "Miss Rehana", role: "tutor", text: "Beautifully written. Vocabulary চর্চার জন্য এই ধরনের dialog খুব কার্যকর।", time: "5d", likes: 41 },
-    { id: 2, author: "Rifat", role: "student", text: "আমার class এ এটা ব্যবহার করতে পারি? Credit দিয়ে দেব।", time: "3d", likes: 9 },
+    { id: 1, author: "Miss Rehana", role: "tutor", text: "Beautifully written. This kind of dialog is very effective for vocabulary practice.", time: "5d", likes: 41 },
+    { id: 2, author: "Rifat", role: "student", text: "Can I use this in my class? I'll give credit.", time: "3d", likes: 9 },
   ],
 };

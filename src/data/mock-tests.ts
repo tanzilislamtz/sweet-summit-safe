@@ -44,7 +44,7 @@ export const mockCategories: MockCategory[] = [
   {
     id: "model",
     name: "Live Model Tests",
-    nameBn: "মডেল টেস্ট",
+    nameBn: "Model Test",
     desc: "Full-length papers that mirror the real board exam.",
     emoji: "🎯",
     tone: "primary",
@@ -53,7 +53,7 @@ export const mockCategories: MockCategory[] = [
   {
     id: "chapter",
     name: "Chapter-wise Tests",
-    nameBn: "অধ্যায়ভিত্তিক",
+    nameBn: "Chapter-wise",
     desc: "Short tests to lock a single chapter before moving on.",
     emoji: "📚",
     tone: "secondary",
@@ -61,7 +61,7 @@ export const mockCategories: MockCategory[] = [
   {
     id: "subject",
     name: "Subject-wise Tests",
-    nameBn: "বিষয়ভিত্তিক",
+    nameBn: "Subject-wise",
     desc: "Full subject coverage in one sitting.",
     emoji: "🧠",
     tone: "accent",
@@ -69,7 +69,7 @@ export const mockCategories: MockCategory[] = [
   {
     id: "previous",
     name: "Previous Year Papers",
-    nameBn: "বিগত সালের প্রশ্ন",
+    nameBn: "Previous Year Papers",
     desc: "Real board questions from the last five years.",
     emoji: "🗂️",
     tone: "muted",

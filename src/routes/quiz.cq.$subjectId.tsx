@@ -249,7 +249,7 @@ function CqPractice() {
         <div className="relative flex flex-wrap items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/60">
-              {mode === "board" ? "Board Question" : "CQ Practice"} · সৃজনশীল · লিখিত
+              {mode === "board" ? "Board Question" : "CQ Practice"} · Creative · Written
             </p>
             <h1 className="truncate text-xl font-bold tracking-tight sm:text-2xl">{topic.name}</h1>
             <p className="mt-1 truncate text-xs text-primary-foreground/70">
@@ -286,10 +286,10 @@ function CqPractice() {
               <div className="min-w-0 flex-1">
                 <h2 className="text-lg font-semibold text-foreground">
                   {score.percent >= 70
-                    ? "দারুণ লিখেছো! 🎉"
+                    ? "Excellent writing! 🎉"
                     : score.percent >= 40
-                      ? "ভালো চেষ্টা — আরও গুছিয়ে লেখো"
-                      : "আরেকবার প্র্যাকটিস করা দরকার"}
+                      ? "Good attempt — write more clearly"
+                      : "You need a bit more practice"}
                 </h2>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {score.total} parts · {fmtClock(elapsed)} spent · saved to your progress
@@ -336,7 +336,7 @@ function CqPractice() {
                   {index + 1}
                 </span>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
-                  উদ্দীপক · Stimulus
+                  Stimulus
                 </p>
                 <div className="ml-auto flex items-center gap-3">
                   <FavoriteButton
@@ -395,7 +395,7 @@ function CqPractice() {
       {!submitted && (
         <p className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
           <PenLine className="h-3.5 w-3.5" />
-          সব প্রশ্নের উত্তর লিখে একবারেই সাবমিট করো — তারপর ফলাফল ও মডেল উত্তর দেখতে পাবে।
+          Answer every question and submit once — then you will see your result and the model answers.
         </p>
       )}
 
@@ -447,9 +447,9 @@ function CqPractice() {
               <h3 className="text-base font-semibold text-foreground">Submit this paper?</h3>
               <p className="mt-1 text-xs text-muted-foreground">
                 {totalParts - writtenParts > 0
-                  ? `${totalParts - writtenParts} টি উত্তর এখনো লেখা হয়নি।`
-                  : "সব উত্তর লেখা হয়েছে।"}{" "}
-                সাবমিট করলে ফলাফল ও মডেল উত্তর দেখানো হবে।
+                  ? `${totalParts - writtenParts} answers are still unwritten.`
+                  : "All answers are written."}{" "}
+                Submitting will show your result and the model answers.
               </p>
               <div className="mt-4 flex gap-2">
                 <button
@@ -551,7 +551,7 @@ function PartEditor({
         onChange={(e) => onChange(e.target.value.slice(0, 2000))}
         rows={part.marks + 2}
         readOnly={submitted}
-        placeholder="এখানে তোমার উত্তর লিখো..."
+        placeholder="Write your answer here..."
         className={cn(
           "mt-2.5 w-full resize-y rounded-2xl border border-border bg-background px-3.5 py-3 font-bangla text-sm leading-relaxed outline-none transition placeholder:text-muted-foreground focus:border-primary/50 focus:ring-2 focus:ring-primary/15",
           submitted && "cursor-default opacity-90",

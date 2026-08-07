@@ -70,8 +70,8 @@ function RequestThread() {
           {req.mutual && <p className="mt-1 text-[11px] text-primary">{req.mutual}</p>}
           <p className="mt-3 text-[12px] leading-relaxed text-muted-foreground font-bangla">
             {accepted
-              ? "Request accept করা হয়েছে — এখন থেকে unlimited message করা যাবে।"
-              : "Accept করলে conversation আপনার inbox-এ চলে আসবে। Accept না করলে উনি আপনার message পাবেন না।"}
+              ? "Request accepted — you can now exchange unlimited messages."
+              : "Accepting moves this conversation to your inbox. Until then they cannot receive your messages."}
           </p>
         </div>
 
@@ -111,7 +111,7 @@ function RequestThread() {
             <div className="mt-2 flex items-start gap-2 rounded-2xl border border-dashed border-border bg-accent/20 px-3 py-2.5">
               <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
               <p className="text-[12px] leading-relaxed text-foreground/80 font-bangla">
-                উনি limit শেষ করে ফেলেছেন — আপনি accept না করা পর্যন্ত আর message পাঠাতে পারবেন না।
+                They have reached the limit — they cannot send more messages until you accept.
               </p>
             </div>
           )}

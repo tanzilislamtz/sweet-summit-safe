@@ -29,8 +29,8 @@ export const messageRequests: MessageRequest[] = [
     avatarColor: "linear-gradient(135deg,#ec4899,#f97316)",
     mutual: "2 mutual connections",
     messages: [
-      { id: "1", from: "them", text: "আসসালামু আলাইকুম আপু, আপনি কি Physics পড়ান?", at: m(24) },
-      { id: "2", from: "them", text: "Class 9-এর জন্য weekly 3 দিন লাগবে।", at: m(22) },
+      { id: "1", from: "them", text: "Assalamu Alaikum apu, do you teach Physics?", at: m(24) },
+      { id: "2", from: "them", text: "I need 3 days a week for Class 9.", at: m(22) },
     ],
   },
   {
@@ -41,9 +41,9 @@ export const messageRequests: MessageRequest[] = [
     initials: "TH",
     avatarColor: "linear-gradient(135deg,#0ea5e9,#6366f1)",
     messages: [
-      { id: "1", from: "them", text: "Hi! আপনার post দেখে message দিলাম।", at: m(180) },
-      { id: "2", from: "them", text: "আমি ICT-তে 3 বছর পড়াচ্ছি।", at: m(178) },
-      { id: "3", from: "them", text: "Demo class নিতে চাইলে জানাবেন।", at: m(176) },
+      { id: "1", from: "them", text: "Hi! I'm messaging after seeing your post.", at: m(180) },
+      { id: "2", from: "them", text: "I've been teaching ICT for 3 years.", at: m(178) },
+      { id: "3", from: "them", text: "Let me know if you'd like a demo class.", at: m(176) },
     ],
   },
   {
@@ -55,7 +55,7 @@ export const messageRequests: MessageRequest[] = [
     avatarColor: "linear-gradient(135deg,#7c3aed,#ec4899)",
     mutual: "1 mutual connection",
     messages: [
-      { id: "1", from: "them", text: "আমার মেয়ের জন্য Math tutor খুঁজছি।", at: m(600) },
+      { id: "1", from: "them", text: "I'm looking for a Math tutor for my daughter.", at: m(600) },
     ],
   },
 ];

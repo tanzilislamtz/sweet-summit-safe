@@ -253,19 +253,19 @@ const englishFactories: Factory[] = [
 
 const banglaFactories: Factory[] = [
   (r) => ({
-    text: "'চন্দ্র' শব্দের সমার্থক শব্দ কোনটি?",
-    ...choice("শশী", ["রবি", "ভানু", "দিবাকর"], int(r, 0, 3)),
-    explanation: "শশী অর্থ চাঁদ; বাকিগুলো সূর্যের সমার্থক।",
+    text: "Which word is a synonym of 'moon'?",
+    ...choice("Moon (synonym)", ["Sun", "Radiance", "Day-maker"], int(r, 0, 3)),
+    explanation: "The correct option means 'moon'; the rest are synonyms of the sun.",
   }),
   (r) => ({
-    text: "'অগ্নিপরীক্ষা' বাগধারার অর্থ কী?",
-    ...choice("কঠিন পরীক্ষা", ["সহজ কাজ", "উৎসব", "রান্নার কাজ"], int(r, 0, 3)),
-    explanation: "'অগ্নিপরীক্ষা' মানে অত্যন্ত কঠিন পরীক্ষা।",
+    text: "What does the idiom 'trial by fire' mean?",
+    ...choice("A difficult test", ["An easy task", "A festival", "A cooking task"], int(r, 0, 3)),
+    explanation: "'Trial by fire' means an extremely difficult test.",
   }),
   (r, topic) => ({
-    text: `${topic} — এই অংশে 'বই' শব্দটি কোন পদ?`,
-    ...choice("বিশেষ্য", ["সর্বনাম", "ক্রিয়া", "বিশেষণ"], int(r, 0, 3)),
-    explanation: "'বই' একটি বিশেষ্য পদ।",
+    text: `${topic} — in this part, what part of speech is the word 'book'?`,
+    ...choice("Noun", ["Pronoun", "Verb", "Adjective"], int(r, 0, 3)),
+    explanation: "'Book' is a noun.",
   }),
 ];
 
@@ -356,12 +356,12 @@ const figureFactories: Factory[] = [
     const b = int(r, 6, 16);
     const h = int(r, 5, 14);
     return {
-      text: "চিত্রের ত্রিভুজটির ক্ষেত্রফল কত?",
-      ...numeric((b * h) / 2, [b * h, b + h, (b * h) / 4], " বর্গসেমি"),
-      explanation: `ক্ষেত্রফল = ½ × ${b} × ${h} = ${(b * h) / 2} বর্গসেমি।`,
+      text: "What is the area of the triangle shown in the figure?",
+      ...numeric((b * h) / 2, [b * h, b + h, (b * h) / 4], " sq. cm"),
+      explanation: `Area = ½ × ${b} × ${h} = ${(b * h) / 2} sq. cm.`,
       figure: {
         kind: "triangle",
-        caption: "চিত্র: ABC ত্রিভুজ",
+        caption: "Figure: triangle ABC",
         labels: ["A", "B", "C", `b = ${b} cm`, `h = ${h} cm`],
       },
     };
@@ -371,12 +371,12 @@ const figureFactories: Factory[] = [
     const r1 = int(r, 2, 8);
     const r2 = int(r, 2, 8);
     return {
-      text: "চিত্রের বর্তনীর তুল্য রোধ কত?",
+      text: "What is the equivalent resistance of the circuit shown in the figure?",
       ...numeric(r1 + r2, [r1 * r2, Math.abs(r1 - r2), v], " Ω"),
-      explanation: `শ্রেণি সমবায়ে R = R₁ + R₂ = ${r1} + ${r2} = ${r1 + r2} Ω।`,
+      explanation: `In series, R = R₁ + R₂ = ${r1} + ${r2} = ${r1 + r2} Ω.`,
       figure: {
         kind: "circuit",
-        caption: "চিত্র: শ্রেণি সমবায়ে যুক্ত বর্তনী",
+        caption: "Figure: circuit with resistors in series",
         labels: [`V = ${v} V`, `R₁ = ${r1} Ω`, `R₂ = ${r2} Ω`],
       },
     };
@@ -384,33 +384,33 @@ const figureFactories: Factory[] = [
   (r) => {
     const vals = [0, int(r, 4, 10), int(r, 12, 20), int(r, 22, 30), int(r, 32, 45)];
     return {
-      text: "লেখচিত্র অনুযায়ী বস্তুটির গতি সম্পর্কে কোনটি সঠিক?",
+      text: "According to the graph, which statement about the body's motion is correct?",
       ...choice(
-        "বেগ সময়ের সাথে বাড়ছে, অর্থাৎ বস্তুটি ত্বরিত",
-        ["বস্তুটি স্থির", "বেগ কমছে", "বস্তুটি সমবেগে চলছে"],
+        "Velocity is increasing with time, i.e., the body is accelerating",
+        ["The body is at rest", "Velocity is decreasing", "The body moves at constant velocity"],
         int(r, 0, 3),
       ),
-      explanation: "লেখচিত্রের ঢাল ধনাত্মক, তাই ত্বরণ ধনাত্মক এবং বেগ বাড়ছে।",
+      explanation: "The graph's slope is positive, so acceleration is positive and velocity is increasing.",
       figure: {
         kind: "graph",
-        caption: "চিত্র: বেগ–সময় লেখচিত্র",
+        caption: "Figure: velocity–time graph",
         labels: ["time (s)", "v (m/s)"],
         values: vals,
       },
     };
   },
   (r) => ({
-    text: "চিত্রে চিহ্নিত অঙ্গাণুটির প্রধান কাজ কী?",
+    text: "What is the main function of the organelle marked in the figure?",
     ...choice(
-      "ATP তৈরি করে কোষে শক্তি সরবরাহ করা",
-      ["প্রোটিন সংশ্লেষ বন্ধ করা", "কোষপ্রাচীর গঠন করা", "আলো শোষণ করে খাদ্য তৈরি"],
+      "Producing ATP to supply energy to the cell",
+      ["Stopping protein synthesis", "Forming the cell wall", "Absorbing light to make food"],
       int(r, 0, 3),
     ),
-    explanation: "মাইটোকন্ড্রিয়া বায়বীয় শ্বসনে ATP তৈরি করে — তাই একে শক্তিঘর বলা হয়।",
+    explanation: "Mitochondria produce ATP through aerobic respiration — hence called the powerhouse of the cell.",
     figure: {
       kind: "cell",
-      caption: "চিত্র: প্রাণিকোষ (মাইটোকন্ড্রিয়া চিহ্নিত)",
-      labels: ["নিউক্লিয়াস", "মাইটোকন্ড্রিয়া"],
+      caption: "Figure: animal cell (mitochondria marked)",
+      labels: ["Nucleus", "Mitochondria"],
     },
   }),
 ];

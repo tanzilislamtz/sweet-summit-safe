@@ -312,10 +312,10 @@ function PostTab({
       </section>
 
       <Card>
-        <CardHead title="Your posts" hint="তোমার শেয়ার করা পোস্ট এখানে দেখা যাবে।" />
+        <CardHead title="Your posts" hint="Posts you share will show up here." />
         <EmptyState
           icon={<PenLine className="h-6 w-6 text-muted-foreground" />}
-          text="এখনো কোনো পোস্ট করা হয়নি। প্রথম পোস্টটা শেয়ার করে ফেলো।"
+          text="No posts yet. Share your first post."
           cta={{ to: "/create-post", label: "Create post" }}
         />
       </Card>
@@ -374,13 +374,13 @@ function QaTab({ favorites }: { favorites: FavoriteItem[] }) {
     <Card>
       <CardHead
         title="Q&A"
-        hint="তোমার প্র্যাকটিস থেকে সেভ করা প্রশ্নগুলো।"
+        hint="Questions you saved from practice."
         action={{ to: "/favorites", label: "Open favorites" }}
       />
       {questions.length === 0 ? (
         <EmptyState
           icon={<MessageCircle className="h-6 w-6 text-muted-foreground" />}
-          text="এখনো কোনো প্রশ্ন সেভ করা হয়নি।"
+          text="No saved questions yet."
           cta={{ to: "/quiz", label: "Start practising" }}
         />
       ) : (
@@ -436,7 +436,7 @@ function PointsTab({
       <Card>
         <CardHead
           title="Points & Level"
-          hint="Practice, saved items আর group activity থেকে পয়েন্ট জমা হয়।"
+          hint="Points come from practice, saved items and group activity."
         />
         <div className="mt-5 flex flex-col gap-6 sm:flex-row sm:items-center">
           <div className="flex items-center gap-4">
@@ -467,7 +467,7 @@ function PointsTab({
             ))}
             {s.bySubject.length === 0 && (
               <p className="rounded-2xl border border-dashed border-border p-6 text-center text-xs text-muted-foreground">
-                সাবজেক্ট-ওয়াইজ পারফরম্যান্স দেখতে একটা প্র্যাকটিস পেপার সাবমিট করো।
+                Submit a practice paper to see your subject-wise performance.
               </p>
             )}
           </div>
@@ -562,7 +562,7 @@ function FavoritesTab({ favorites }: { favorites: FavoriteItem[] }) {
       {favorites.length === 0 ? (
         <EmptyState
           icon={<Star className="h-6 w-6 text-muted-foreground" />}
-          text="এখনো কিছু সেভ করা হয়নি।"
+          text="Nothing saved yet."
           cta={{ to: "/quiz", label: "Explore practice" }}
         />
       ) : (
