@@ -233,7 +233,7 @@ function GroupCard({ group, joined }: { group: StudyGroup; joined: boolean }) {
         disabled={isJoining}
         className={`mt-2.5 inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-semibold transition ${
           joined
-            ? "border border-border text-foreground hover:bg-muted"
+            ? "border border-border bg-muted/50 text-foreground hover:bg-muted"
             : "bg-primary text-primary-foreground hover:brightness-110"
         } disabled:cursor-not-allowed disabled:opacity-70`}
       >
@@ -242,8 +242,13 @@ function GroupCard({ group, joined }: { group: StudyGroup; joined: boolean }) {
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
             {joined ? "Leaving..." : "Joining..."}
           </>
+        ) : joined ? (
+          <>
+            <Check className="h-3.5 w-3.5" />
+            Joined
+          </>
         ) : (
-          <>{joined ? "Joined" : "Join"}</>
+          "Join"
         )}
       </button>
     </motion.div>
