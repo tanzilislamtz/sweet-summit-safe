@@ -98,11 +98,14 @@ export function Topbar({
               <button className="ml-1 hidden items-center gap-1.5 rounded-full bg-primary px-3.5 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-95 sm:inline-flex">
                 <Plus className="h-4 w-4" /> New Post
               </button>
-              <div className="ml-2 h-9 w-9 overflow-hidden rounded-full border-2 border-accent bg-muted">
+              <Link
+                to="/profile"
+                className="ml-2 h-9 w-9 overflow-hidden rounded-full border-2 border-accent bg-muted transition hover:opacity-80 active:scale-95"
+              >
                 <div className="grid h-full w-full place-items-center bg-primary text-sm font-bold text-primary-foreground">
                   A
                 </div>
-              </div>
+              </Link>
             </div>
           </>
         ) : (
