@@ -711,20 +711,20 @@ function PointsTab({
                 <circle
                   cx="50%"
                   cy="50%"
-                  r="45%"
+                  r="44%"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="8"
-                  className="text-muted/20"
+                  strokeWidth="10"
+                  className="text-muted/30"
                 />
                 <motion.circle
                   cx="50%"
                   cy="50%"
-                  r="45%"
+                  r="44%"
                   pathLength="100"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="8"
+                  strokeWidth="10"
                   strokeDasharray="100 100"
                   initial={{ strokeDashoffset: 100 }}
                   animate={{ strokeDashoffset: 100 - levelPct }}
