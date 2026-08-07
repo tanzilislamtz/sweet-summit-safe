@@ -45,6 +45,7 @@ import {
 import { AuthShell, Field, SocialBtn } from "./login";
 import { AvatarCropper } from "@/components/AvatarCropper";
 import { signIn } from "@/lib/session";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
@@ -264,6 +265,9 @@ function RegisterPage() {
       >
         <div className="flex items-center gap-2">
           <img src={logoAsset.url} alt="Learns Academy" className="h-11 w-auto" />
+          <div className="ml-auto">
+            <ThemeToggle />
+          </div>
         </div>
 
 
