@@ -68,8 +68,7 @@ function ProgressPage() {
           <div className="mt-8 rounded-2xl border border-dashed border-border p-10 text-center">
             <Target className="mx-auto h-6 w-6 text-muted-foreground" />
             <p className="mt-3 text-sm text-muted-foreground">
-              এখনো কোনো পেপার সাবমিট করোনি — একটা MCQ বা CQ প্র্যাকটিস শেষ করলেই এখানে পার্সেন্টেজ
-              দেখা যাবে।
+              No papers submitted yet — finish an MCQ or CQ practice and your percentage will show up here.
             </p>
             <Link
               to="/quiz"

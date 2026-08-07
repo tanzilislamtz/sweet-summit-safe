@@ -291,12 +291,12 @@ function ThreadView() {
                 onClick={() => setOpenMenu(null)}
                 className="mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm hover:bg-muted"
               >
-                <User className="h-4 w-4 text-primary" /> প্রোফাইল ভিজিট করুন
+                <User className="h-4 w-4 text-primary" /> Visit profile
                 <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground" />
               </Link>
               <MenuItem
                 icon={<Search className="h-4 w-4 text-primary" />}
-                label="চ্যাটে খুঁজুন"
+                label="Search in chat"
                 onClick={() => {
                   setOpenMenu(null);
                   setQuery("");
@@ -305,7 +305,7 @@ function ThreadView() {
               />
               <MenuItem
                 icon={<ImageIcon className="h-4 w-4 text-primary" />}
-                label="মিডিয়া ও ফাইল দেখুন"
+                label="View media and files"
                 onClick={() => {
                   setOpenMenu(null);
                   setPanel("media");

@@ -5,8 +5,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { explainAnswer } from "@/lib/ai-explain.functions";
 
 export const EXPLAIN_LANGUAGES = [
-  { id: "bn", label: "বাংলা", prompt: "Bangla (বাংলা)" },
   { id: "en", label: "English", prompt: "English" },
+  { id: "bn", label: "Bangla", prompt: "Bangla" },
   { id: "hi", label: "हिन्दी", prompt: "Hindi (हिन्दी)" },
   { id: "ar", label: "العربية", prompt: "Arabic (العربية)" },
   { id: "ur", label: "اردو", prompt: "Urdu (اردو)" },
@@ -25,7 +25,7 @@ export interface AiExplanationProps {
   topic?: string;
   /** Fallback text when the AI service is unreachable. */
   fallback?: string;
-  /** Load the Bangla explanation as soon as the block mounts. */
+  /** Load the English explanation as soon as the block mounts. */
   autoLoad?: boolean;
   className?: string;
 }
@@ -33,7 +33,7 @@ export interface AiExplanationProps {
 /**
  * AI explanation block with a language switcher.
  *
- * The default language is Bangla; every other language is fetched on demand and
+ * The default language is English; every other language is fetched on demand and
  * cached per-language so switching back and forth costs nothing.
  */
 export function AiExplanation({
@@ -48,7 +48,7 @@ export function AiExplanation({
   className,
 }: AiExplanationProps) {
   const explain = useServerFn(explainAnswer);
-  const [lang, setLang] = useState<ExplainLanguageId>("bn");
+  const [lang, setLang] = useState<ExplainLanguageId>("en");
   const [cache, setCache] = useState<Partial<Record<ExplainLanguageId, string>>>({});
   const [loadingLang, setLoadingLang] = useState<ExplainLanguageId | null>(null);
   const [picker, setPicker] = useState(false);
@@ -86,8 +86,8 @@ export function AiExplanation({
   };
 
   // Kick off the default Bangla explanation once.
-  if (autoLoad && !cache.bn && loadingLang === null && lang === "bn") {
-    void load("bn");
+  if (autoLoad && !cache.en && loadingLang === null && lang === "en") {
+    void load("en");
   }
 
   const text = cache[lang];

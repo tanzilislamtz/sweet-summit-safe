@@ -1,9 +1,9 @@
 import type { FigureSpec } from "./figures";
 
 /**
- * Deterministic CQ (সৃজনশীল / creative question) generator.
+ * Deterministic CQ (creative question / সৃজনশীল) generator.
  *
- * A CQ is NOT an MCQ: the learner reads a stimulus (উদ্দীপক) — often with a
+ * A CQ is NOT an MCQ: the learner reads a stimulus (উদ্দীপক / prompt) — often with a
  * figure — and then *writes* short answers to four graded sub-questions:
  *   ক (knowledge, 1)  খ (comprehension, 2)  গ (application, 3)  ঘ (higher skill, 4)
  *
@@ -58,7 +58,7 @@ export type CqQuestion = {
   subject: string;
   chapter: string;
   topic: string;
-  /** উদ্দীপক — the stimulus paragraph. */
+  /** Stimulus — the prompt paragraph. */
   stem: string;
   figure?: FigureSpec;
   parts: CqPart[];
@@ -87,38 +87,38 @@ const physicsFactories: Factory[] = [
     const t = int(r, 3, 8);
     const v = u + a * t;
     return {
-      stem: `একটি ${m} kg ভরের বস্তু ${u} m/s আদি বেগে যাত্রা শুরু করে এবং ${a} m/s² সুষম ত্বরণে ${t} সেকেন্ড চলে। নিচের লেখচিত্রে বস্তুটির বেগ–সময় সম্পর্ক দেখানো হয়েছে।`,
+      stem: `A body of mass ${m} kg starts with an initial velocity of ${u} m/s and moves with a uniform acceleration of ${a} m/s² for ${t} seconds. The graph below shows the body's velocity–time relationship.`,
       figure: {
         kind: "graph",
-        caption: `চিত্র: বস্তুটির বেগ–সময় লেখচিত্র (${topicless()})`,
+        caption: `Figure: velocity–time graph of the body (${topicless()})`,
         labels: ["time (s)", "v (m/s)"],
         values: [u, u + a, u + 2 * a, u + 3 * a, u + a * t],
       },
       parts: [
         {
-          prompt: "ত্বরণ কাকে বলে?",
+          prompt: "What is acceleration?",
           modelAnswer:
-            "একক সময়ে বেগের পরিবর্তনের হারকে ত্বরণ বলে। এর একক m/s² এবং এটি একটি ভেক্টর রাশি।",
-          keywords: ["বেগের পরিবর্তনের হার", "m/s²", "ভেক্টর"],
+            "The rate of change of velocity per unit time is called acceleration. Its unit is m/s² and it is a vector quantity.",
+          keywords: ["rate of change of velocity", "m/s²", "vector"],
           minWords: 12,
         },
         {
-          prompt: "লেখচিত্রের ঢাল কী নির্দেশ করে — ব্যাখ্যা করো।",
+          prompt: "What does the slope of the graph indicate — explain.",
           modelAnswer:
-            "বেগ–সময় লেখচিত্রের ঢাল = বেগের পরিবর্তন ÷ সময়, অর্থাৎ ত্বরণ। ঢাল ধ্রুবক হলে ত্বরণ সুষম, আর লেখের নিচের ক্ষেত্রফল অতিক্রান্ত দূরত্ব নির্দেশ করে।",
-          keywords: ["ঢাল", "ত্বরণ", "ক্ষেত্রফল", "দূরত্ব"],
+            "The slope of a velocity–time graph = change in velocity ÷ time, i.e., acceleration. A constant slope means uniform acceleration, and the area under the graph indicates the distance travelled.",
+          keywords: ["slope", "acceleration", "area", "distance"],
           minWords: 25,
         },
         {
-          prompt: `${t} সেকেন্ড পরে বস্তুটির বেগ নির্ণয় করো।`,
-          modelAnswer: `v = u + at = ${u} + ${a}×${t} = ${v} m/s। অতএব ${t} s পরে বেগ ${v} m/s।`,
+          prompt: `Find the velocity of the body after ${t} seconds.`,
+          modelAnswer: `v = u + at = ${u} + ${a}×${t} = ${v} m/s. So after ${t} s the velocity is ${v} m/s.`,
           keywords: ["v = u + at", `${v}`],
           minWords: 15,
         },
         {
-          prompt: "ভর দ্বিগুণ হলে একই বল প্রয়োগে গতির কী পরিবর্তন হবে — গাণিতিক যুক্তিসহ মতামত দাও।",
-          modelAnswer: `F = ma অনুসারে বল ধ্রুবক রেখে ভর দ্বিগুণ করলে ত্বরণ অর্ধেক হবে (a′ = ${a}/2 = ${(a / 2).toFixed(1)} m/s²)। ফলে একই সময়ে অর্জিত বেগ ও অতিক্রান্ত দূরত্ব দুটোই কমে যাবে — অর্থাৎ ভারী বস্তুর গতি পরিবর্তন করা কঠিন, যা জড়তার ধারণা সমর্থন করে।`,
-          keywords: ["F = ma", "ত্বরণ অর্ধেক", "জড়তা"],
+          prompt: "If the mass is doubled, what change occurs in the motion under the same applied force — give your opinion with mathematical reasoning.",
+          modelAnswer: `According to F = ma, keeping the force constant while doubling the mass halves the acceleration (a′ = ${a}/2 = ${(a / 2).toFixed(1)} m/s²). As a result, both the velocity gained and the distance travelled in the same time will decrease — that is, it is harder to change the motion of a heavier body, which supports the concept of inertia.`,
+          keywords: ["F = ma", "acceleration halved", "inertia"],
           minWords: 40,
         },
       ],

@@ -39,7 +39,7 @@ function ChapterTopics() {
 
   /**
    * MCQ topics open the click-based exam runner; CQ / Board topics open the
-   * written (সৃজনশীল) practice page where the learner types the answers.
+   * written (creative question) practice page where the learner types the answers.
    */
   const startLinkProps = (topicId: string) =>
     isWritten

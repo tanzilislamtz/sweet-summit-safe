@@ -11,14 +11,14 @@ export type Subject = {
 
 // SSC · Science group (profile-driven; hardcoded for the demo UI)
 export const subjects: Subject[] = [
-  { id: "math", name: "Mathematics", nameBn: "গণিত", emoji: "📐", color: "from-indigo-500 to-purple-500", questions: 12400 },
-  { id: "hmath", name: "Higher Math", nameBn: "উচ্চতর গণিত", emoji: "∑", color: "from-violet-500 to-fuchsia-500", questions: 8100 },
-  { id: "physics", name: "Physics", nameBn: "পদার্থবিজ্ঞান", emoji: "⚛️", color: "from-blue-500 to-cyan-500", questions: 9800 },
-  { id: "chem", name: "Chemistry", nameBn: "রসায়ন", emoji: "🧪", color: "from-emerald-500 to-teal-500", questions: 8600 },
-  { id: "bio", name: "Biology", nameBn: "জীববিজ্ঞান", emoji: "🧬", color: "from-rose-500 to-pink-500", questions: 7200 },
-  { id: "english", name: "English", nameBn: "ইংরেজি", emoji: "🔤", color: "from-amber-500 to-orange-500", questions: 6500 },
-  { id: "bangla", name: "Bangla", nameBn: "বাংলা", emoji: "📖", color: "from-fuchsia-500 to-pink-500", questions: 5400 },
-  { id: "ict", name: "ICT", nameBn: "তথ্য প্রযুক্তি", emoji: "💻", color: "from-sky-500 to-indigo-500", questions: 3200 },
+  { id: "math", name: "Mathematics", nameBn: "Math", emoji: "📐", color: "from-indigo-500 to-purple-500", questions: 12400 },
+  { id: "hmath", name: "Higher Math", nameBn: "Higher Math", emoji: "∑", color: "from-violet-500 to-fuchsia-500", questions: 8100 },
+  { id: "physics", name: "Physics", nameBn: "Physics", emoji: "⚛️", color: "from-blue-500 to-cyan-500", questions: 9800 },
+  { id: "chem", name: "Chemistry", nameBn: "Chemistry", emoji: "🧪", color: "from-emerald-500 to-teal-500", questions: 8600 },
+  { id: "bio", name: "Biology", nameBn: "Biology", emoji: "🧬", color: "from-rose-500 to-pink-500", questions: 7200 },
+  { id: "english", name: "English", nameBn: "English", emoji: "🔤", color: "from-amber-500 to-orange-500", questions: 6500 },
+  { id: "bangla", name: "Bangla", nameBn: "Bangla", emoji: "📖", color: "from-fuchsia-500 to-pink-500", questions: 5400 },
+  { id: "ict", name: "ICT", nameBn: "ICT", emoji: "💻", color: "from-sky-500 to-indigo-500", questions: 3200 },
 ];
 
 export type Board = {
@@ -94,11 +94,11 @@ const seed: Question[] = [
   { id: "english-4", subject: "english", topic: "Preposition", text: "'He is fond ___ music.'", options: ["of", "in", "at", "on"], answer: 0, explanation: "Idiomatic collocation: fond of.", difficulty: "easy" },
   { id: "english-5", subject: "english", topic: "Article", text: "'He is ___ honest man.'", options: ["a", "an", "the", "no article"], answer: 1, explanation: "'Honest' begins with a vowel sound, use 'an'.", difficulty: "easy" },
 
-  { id: "bangla-1", subject: "bangla", topic: "Synonym", text: "'চন্দ্র' শব্দের সমার্থক শব্দ কোনটি?", options: ["রবি", "শশী", "ভানু", "দিবাকর"], answer: 1, explanation: "শশী মানে চাঁদ। বাকিগুলো সূর্যের সমার্থক।", difficulty: "easy" },
-  { id: "bangla-2", subject: "bangla", topic: "Grammar", text: "'বই' শব্দটি কোন ধরনের?", options: ["সর্বনাম", "বিশেষ্য", "ক্রিয়া", "বিশেষণ"], answer: 1, explanation: "বই একটি বিশেষ্য (Noun)।", difficulty: "easy" },
-  { id: "bangla-3", subject: "bangla", topic: "Vocabulary", text: "'সমুদ্র' এর প্রতিশব্দ কোনটি?", options: ["পবন", "সাগর", "নীর", "জলদ"], answer: 1, explanation: "সাগর অর্থ সমুদ্র।", difficulty: "easy" },
-  { id: "bangla-4", subject: "bangla", topic: "Idiom", text: "'অগ্নিপরীক্ষা' বাগধারার অর্থ:", options: ["সহজ কাজ", "কঠিন পরীক্ষা", "রান্না", "উৎসব"], answer: 1, explanation: "'অগ্নিপরীক্ষা' মানে কঠিন পরীক্ষা।", difficulty: "medium" },
-  { id: "bangla-5", subject: "bangla", topic: "Author", text: "'পথের পাঁচালী' এর রচয়িতা কে?", options: ["রবীন্দ্রনাথ", "বিভূতিভূষণ", "শরৎচন্দ্র", "নজরুল"], answer: 1, explanation: "বিভূতিভূষণ বন্দ্যোপাধ্যায়ের রচনা।", difficulty: "medium" },
+  { id: "bangla-1", subject: "bangla", topic: "Synonym", text: "Which word is a synonym of 'moon'?", options: ["Sun", "Moon (synonym)", "Sun (radiance)", "Sun (day-maker)"], answer: 1, explanation: "The second option means 'moon'; the rest are synonyms of the sun.", difficulty: "easy" },
+  { id: "bangla-2", subject: "bangla", topic: "Grammar", text: "What part of speech is the word 'book'?", options: ["Pronoun", "Noun", "Verb", "Adjective"], answer: 1, explanation: "'Book' is a noun.", difficulty: "easy" },
+  { id: "bangla-3", subject: "bangla", topic: "Vocabulary", text: "Which word is a synonym of 'ocean'?", options: ["Wind", "Sea", "Water", "Cloud"], answer: 1, explanation: "'Sea' means ocean.", difficulty: "easy" },
+  { id: "bangla-4", subject: "bangla", topic: "Idiom", text: "The idiom 'trial by fire' means:", options: ["An easy task", "A difficult test", "Cooking", "A festival"], answer: 1, explanation: "'Trial by fire' means a difficult test.", difficulty: "medium" },
+  { id: "bangla-5", subject: "bangla", topic: "Author", text: "Who is the author of 'Pather Panchali'?", options: ["Rabindranath", "Bibhutibhushan", "Sharatchandra", "Nazrul"], answer: 1, explanation: "It is a work by Bibhutibhushan Bandyopadhyay.", difficulty: "medium" },
 
   { id: "ict-1", subject: "ict", topic: "Networking", text: "Full form of HTTP?", options: ["HyperText Transfer Protocol", "HyperText Transmission Protocol", "HighText Transfer Protocol", "HyperTool Transfer Protocol"], answer: 0, explanation: "HTTP = HyperText Transfer Protocol.", difficulty: "easy" },
   { id: "ict-2", subject: "ict", topic: "Hardware", text: "The 'brain' of the computer is the:", options: ["RAM", "CPU", "SSD", "GPU"], answer: 1, explanation: "The CPU executes instructions — the brain.", difficulty: "easy" },
@@ -181,9 +181,9 @@ export type Category = {
 export const categories: Category[] = [
   { id: "mcq",   name: "MCQ",              nameBn: "MCQ",           tagline: "25 multiple-choice questions", emoji: "📝", color: "from-blue-500 to-indigo-500",     perPaper: 25 },
   { id: "cq",    name: "Creative Question",nameBn: "CQ",            tagline: "Structured 4-part questions",  emoji: "🖋️", color: "from-amber-400 to-orange-500",    perPaper: 6  },
-  { id: "ka",    name: "Ka Bhandar",       nameBn: "ক ভাণ্ডার",     tagline: "Knowledge-based questions",    emoji: "📚", color: "from-sky-500 to-blue-600",        perPaper: 15 },
-  { id: "kha",   name: "Kha Bhandar",      nameBn: "খ ভাণ্ডার",     tagline: "Comprehension questions",      emoji: "📗", color: "from-emerald-500 to-green-600",   perPaper: 15 },
-  { id: "short", name: "Short Question",   nameBn: "সংক্ষিপ্ত প্রশ্ন", tagline: "Quick 1-line answers",     emoji: "⏱️", color: "from-fuchsia-500 to-purple-600",  perPaper: 20 },
+  { id: "ka",    name: "Ka Bhandar",       nameBn: "Ka Bhandar",     tagline: "Knowledge-based questions",    emoji: "📚", color: "from-sky-500 to-blue-600",        perPaper: 15 },
+  { id: "kha",   name: "Kha Bhandar",      nameBn: "Kha Bhandar",     tagline: "Comprehension questions",      emoji: "📗", color: "from-emerald-500 to-green-600",   perPaper: 15 },
+  { id: "short", name: "Short Question",   nameBn: "Short Question", tagline: "Quick 1-line answers",     emoji: "⏱️", color: "from-fuchsia-500 to-purple-600",  perPaper: 20 },
 ];
 
 // Written-style prompts derived from the MCQ seed (topic + text) so the UI
