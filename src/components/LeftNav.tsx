@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, BookOpen, UserCheck, MessagesSquare, Timer, Star, Users, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getSession, type Session } from "@/lib/session";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const items = [
   { icon: Home, label: "Home", to: "/" as const, match: "home" as const },
@@ -71,8 +72,9 @@ export function LeftNav({ stickyClass = "sticky top-24" }: { stickyClass?: strin
         })}
         </div>
 
-        {/* Menu footer — profile */}
-        <div className="mt-3 shrink-0 border-t border-border pt-3">
+        {/* Menu footer — appearance + profile */}
+        <div className="mt-3 shrink-0 space-y-2.5 border-t border-border pt-3">
+          <ThemeToggle variant="menu" />
           <Link
             to="/profile"
             className="group flex items-center gap-3 rounded-xl border border-border bg-surface p-2.5 transition hover:border-primary/40 hover:bg-muted"

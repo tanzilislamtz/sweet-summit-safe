@@ -10,6 +10,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { hasWelcomed, isAuthed, markWelcomed } from "@/lib/session";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import logoAsset from "@/assets/learns-academy-logo.png.asset.json";
 
 export const Route = createFileRoute("/welcome")({
@@ -103,6 +104,8 @@ function WelcomePage() {
             <img src={logoAsset.url} alt="Learns Academy" className="h-10 w-auto" />
           </div>
 
+          <div className="ml-auto flex items-center gap-1">
+            <ThemeToggle />
           {!isLast && (
             <button
               type="button"
@@ -112,6 +115,7 @@ function WelcomePage() {
               Skip
             </button>
           )}
+          </div>
         </div>
 
         {/* Slide */}

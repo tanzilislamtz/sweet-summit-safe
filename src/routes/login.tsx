@@ -16,6 +16,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { signIn } from "@/lib/session";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -66,6 +67,9 @@ function LoginPage() {
       >
         <div className="flex items-center gap-2">
           <img src={logoAsset.url} alt="Learns Academy" className="h-11 w-auto" />
+          <div className="ml-auto">
+            <ThemeToggle />
+          </div>
         </div>
 
 
