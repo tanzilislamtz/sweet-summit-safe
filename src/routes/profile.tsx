@@ -455,29 +455,34 @@ function AboutTab({
         </div>
       </div>
 
-      {/* Additional Stats & Info Boxes (Creative) */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-3xl border border-border bg-surface p-5 text-center transition hover:border-primary/40 hover:shadow-md group">
-           <Calendar className="h-6 w-6 mx-auto text-primary mb-3 transition-transform group-hover:scale-110" />
-           <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground mb-1">Academy Journey</p>
-           <p className="text-sm font-black text-foreground">Joined {joinedAt ? new Date(joinedAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : "Aug 2026"}</p>
-        </div>
-        <div className="rounded-3xl border border-border bg-surface p-5 text-center transition hover:border-primary/40 hover:shadow-md group">
-           <Users className="h-6 w-6 mx-auto text-secondary mb-3 transition-transform group-hover:scale-110" />
-           <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground mb-1">Study Groups</p>
-           <p className="text-sm font-black text-foreground">{groupCount} Active Communities</p>
-        </div>
-        <div className="rounded-3xl border border-border bg-surface p-5 text-center transition hover:border-primary/40 hover:shadow-md group">
-           <Award className="h-6 w-6 mx-auto text-accent-foreground mb-3 transition-transform group-hover:scale-110" />
-           <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground mb-1">Reputation</p>
-           <p className="text-sm font-black text-foreground">Rising Scholar</p>
-        </div>
-        <div className="rounded-3xl border border-border bg-surface p-5 text-center transition hover:border-primary/40 hover:shadow-md group">
-           <Globe className="h-6 w-6 mx-auto text-primary mb-3 transition-transform group-hover:scale-110" />
-           <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground mb-1">Contribution</p>
-           <p className="text-sm font-black text-foreground">Verified Member</p>
-        </div>
+      {/* Additional Stats & Info Boxes (Compact 4-column row) */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <CompactStatBox
+          icon={<Calendar className="h-4 w-4" />}
+          label="Journey"
+          value={joinedAt ? new Date(joinedAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : "Aug 2026"}
+          color="text-primary"
+        />
+        <CompactStatBox
+          icon={<Users className="h-4 w-4" />}
+          label="Groups"
+          value={`${groupCount} Active`}
+          color="text-secondary"
+        />
+        <CompactStatBox
+          icon={<Award className="h-4 w-4" />}
+          label="Reputation"
+          value="Scholar"
+          color="text-accent-foreground"
+        />
+        <CompactStatBox
+          icon={<Globe className="h-4 w-4" />}
+          label="Status"
+          value="Verified"
+          color="text-primary"
+        />
       </div>
+
 
     </div>
   );
