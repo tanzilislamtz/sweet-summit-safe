@@ -84,18 +84,18 @@ export const threads: ChatThread[] = [
 
 const seed: Record<string, ChatMessage[]> = {
   rafiq: [
-    { id: "1", threadId: "rafiq", from: "them", text: "আজকে integration-এর chapter টা শেষ করতে পারবা?", at: Date.now() - 1000 * 60 * 40 },
-    { id: "2", threadId: "rafiq", from: "me", text: "Yes sir, শুধু last exercise টা বাকি।", at: Date.now() - 1000 * 60 * 38, status: "read" },
-    { id: "3", threadId: "rafiq", from: "them", text: "Great. Class-এ ওইটা একসাথে solve করব।", at: Date.now() - 1000 * 60 * 30 },
+    { id: "1", threadId: "rafiq", from: "them", text: "Can you finish the integration chapter today?", at: Date.now() - 1000 * 60 * 40 },
+    { id: "2", threadId: "rafiq", from: "me", text: "Yes sir, only the last exercise is left.", at: Date.now() - 1000 * 60 * 38, status: "read" },
+    { id: "3", threadId: "rafiq", from: "them", text: "Great. We'll solve that together in class.", at: Date.now() - 1000 * 60 * 30 },
   ],
   nusrat: [
-    { id: "1", threadId: "nusrat", from: "them", text: "Bhaiya, Newton's 3rd law একটু explain করবেন?", at: Date.now() - 1000 * 60 * 12 },
+    { id: "1", threadId: "nusrat", from: "them", text: "Bhaiya, could you explain Newton's 3rd law a bit?", at: Date.now() - 1000 * 60 * 12 },
   ],
   shahed: [
-    { id: "1", threadId: "shahed", from: "me", text: "Sir, tomorrow's class-এ passive voice কি cover হবে?", at: Date.now() - 1000 * 60 * 60 * 3, status: "delivered" },
+    { id: "1", threadId: "shahed", from: "me", text: "Sir, will passive voice be covered in tomorrow's class?", at: Date.now() - 1000 * 60 * 60 * 3, status: "delivered" },
   ],
   "parent-tania": [
-    { id: "1", threadId: "parent-tania", from: "them", text: "Ayman-এর progress report টা কবে পাব?", at: Date.now() - 1000 * 60 * 60 * 26 },
+    { id: "1", threadId: "parent-tania", from: "them", text: "When will I get Ayman's progress report?", at: Date.now() - 1000 * 60 * 60 * 26 },
   ],
   mahin: [
     { id: "1", threadId: "mahin", from: "them", text: "vaia notes ta share korben?", at: Date.now() - 1000 * 60 * 6 },
@@ -275,7 +275,7 @@ export function sendMessage(threadId: string, text: string, replyTo?: ChatMessag
       "Got it 👍",
       "Thanks for letting me know!",
       "Ok, ami dekhchi.",
-      "Sure, একটু পরে reply দিচ্ছি।",
+      "Sure, replying in a bit.",
       "Noted 🙌",
     ];
     const reply: ChatMessage = {

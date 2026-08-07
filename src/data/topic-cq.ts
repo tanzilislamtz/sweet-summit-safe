@@ -1,11 +1,11 @@
 import type { FigureSpec } from "./figures";
 
 /**
- * Deterministic CQ (creative question / সৃজনশীল) generator.
+ * Deterministic CQ (creative question) generator.
  *
- * A CQ is NOT an MCQ: the learner reads a stimulus (উদ্দীপক / prompt) — often with a
+ * A CQ is NOT an MCQ: the learner reads a stimulus — often with a
  * figure — and then *writes* short answers to four graded sub-questions:
- *   ক (knowledge, 1)  খ (comprehension, 2)  গ (application, 3)  ঘ (higher skill, 4)
+ *   a (knowledge, 1)  b (comprehension, 2)  c (application, 3)  d (higher skill, 4)
  *
  * The same (subject, chapter, topic) triple always yields the same paper, so a
  * learner's written drafts stay attached to the right question between visits.
@@ -40,7 +40,7 @@ const int = (rnd: () => number, min: number, max: number) =>
 // --- public types ------------------------------------------------------------
 
 export type CqPart = {
-  /** ক / খ / গ / ঘ */
+  /** a / b / c / d */
   label: string;
   level: "Knowledge" | "Comprehension" | "Application" | "Higher skill";
   marks: number;
@@ -73,7 +73,7 @@ type Blueprint = {
 
 type Factory = (rnd: () => number, topic: string, chapter: string) => Blueprint;
 
-const LABELS = ["ক", "খ", "গ", "ঘ"] as const;
+const LABELS = ["a", "b", "c", "d"] as const;
 const LEVELS: CqPart["level"][] = ["Knowledge", "Comprehension", "Application", "Higher skill"];
 const MARKS = [1, 2, 3, 4];
 
@@ -130,37 +130,37 @@ const physicsFactories: Factory[] = [
     const r2 = int(r, 2, 8);
     const series = r1 + r2;
     return {
-      stem: `একটি বর্তনীতে ${v} V উৎসের সাথে R₁ = ${r1} Ω ও R₂ = ${r2} Ω রোধ দুটি শ্রেণিতে যুক্ত করা হয়েছে।`,
+      stem: `In a circuit, resistors R₁ = ${r1} Ω and R₂ = ${r2} Ω are connected in series with a ${v} V source.`,
       figure: {
         kind: "circuit",
-        caption: "চিত্র: শ্রেণি সমবায়ে যুক্ত রোধসহ বর্তনী",
+        caption: "Figure: circuit with resistors connected in series",
         labels: [`V = ${v} V`, `R₁ = ${r1} Ω`, `R₂ = ${r2} Ω`],
       },
       parts: [
         {
-          prompt: "রোধ কাকে বলে?",
+          prompt: "What is resistance?",
           modelAnswer:
-            "পরিবাহীর যে ধর্মের জন্য এর মধ্য দিয়ে তড়িৎ প্রবাহ বাধাপ্রাপ্ত হয় তাকে রোধ বলে; একক ওহম (Ω)।",
-          keywords: ["বাধা", "ওহম", "Ω"],
+            "The property of a conductor due to which electric current is opposed while passing through it is called resistance; its unit is ohm (Ω).",
+          keywords: ["opposition", "ohm", "Ω"],
           minWords: 12,
         },
         {
-          prompt: "ওহমের সূত্রটি ব্যাখ্যা করো।",
+          prompt: "Explain Ohm's law.",
           modelAnswer:
-            "নির্দিষ্ট তাপমাত্রায় পরিবাহীর দুই প্রান্তের বিভব পার্থক্য V, প্রবাহ I-এর সমানুপাতিক; V = IR, যেখানে R রোধ ধ্রুবক।",
-          keywords: ["V = IR", "সমানুপাতিক", "তাপমাত্রা"],
+            "At a constant temperature, the potential difference V across the ends of a conductor is proportional to the current I; V = IR, where R (resistance) is constant.",
+          keywords: ["V = IR", "proportional", "temperature"],
           minWords: 25,
         },
         {
-          prompt: "বর্তনীর তুল্য রোধ ও প্রবাহ নির্ণয় করো।",
-          modelAnswer: `শ্রেণিতে R = R₁ + R₂ = ${r1} + ${r2} = ${series} Ω। I = V/R = ${v}/${series} = ${(v / series).toFixed(2)} A।`,
+          prompt: "Find the equivalent resistance and current of the circuit.",
+          modelAnswer: `In series, R = R₁ + R₂ = ${r1} + ${r2} = ${series} Ω. I = V/R = ${v}/${series} = ${(v / series).toFixed(2)} A.`,
           keywords: [`${series}`, "I = V/R"],
           minWords: 15,
         },
         {
-          prompt: "রোধ দুটি সমান্তরালে যুক্ত করলে প্রবাহের কী পরিবর্তন হবে — বিশ্লেষণ করো।",
-          modelAnswer: `সমান্তরালে 1/R = 1/${r1} + 1/${r2} → R = ${( (r1 * r2) / (r1 + r2) ).toFixed(2)} Ω, যা শ্রেণির চেয়ে অনেক কম। রোধ কমায় I = V/R অনুসারে প্রবাহ বেড়ে ${(v / ((r1 * r2) / (r1 + r2))).toFixed(2)} A হবে। তাই গৃহস্থালিতে সমান্তরাল সংযোগ ব্যবহৃত হয়, যাতে প্রতিটি যন্ত্র পূর্ণ বিভব পায়।`,
-          keywords: ["সমান্তরাল", "রোধ কম", "প্রবাহ বৃদ্ধি"],
+          prompt: "If the resistors were connected in parallel instead, what change would occur in the current — analyse.",
+          modelAnswer: `In parallel, 1/R = 1/${r1} + 1/${r2} → R = ${( (r1 * r2) / (r1 + r2) ).toFixed(2)} Ω, which is much lower than in series. As resistance decreases, by I = V/R the current increases to ${(v / ((r1 * r2) / (r1 + r2))).toFixed(2)} A. That is why parallel connections are used in households, so that every appliance gets the full voltage.`,
+          keywords: ["parallel", "lower resistance", "current increase"],
           minWords: 40,
         },
       ],
@@ -173,36 +173,36 @@ const mathFactories: Factory[] = [
     const b = int(r, 6, 16);
     const h = int(r, 5, 14);
     return {
-      stem: `ABC ত্রিভুজের ভূমি AB = ${b} সেমি এবং উচ্চতা CD = ${h} সেমি। নিচের চিত্রে ত্রিভুজটি দেখানো হলো।`,
+      stem: `Triangle ABC has base AB = ${b} cm and height CD = ${h} cm. The triangle is shown in the figure below.`,
       figure: {
         kind: "triangle",
-        caption: "চিত্র: ABC ত্রিভুজ",
+        caption: "Figure: triangle ABC",
         labels: ["A", "B", "C", `b = ${b} cm`, `h = ${h} cm`],
       },
       parts: [
         {
-          prompt: "ত্রিভুজের ক্ষেত্রফলের সূত্রটি লেখো।",
-          modelAnswer: "ক্ষেত্রফল = ½ × ভূমি × উচ্চতা।",
-          keywords: ["½", "ভূমি", "উচ্চতা"],
+          prompt: "Write the formula for the area of a triangle.",
+          modelAnswer: "Area = ½ × base × height.",
+          keywords: ["½", "base", "height"],
           minWords: 8,
         },
         {
-          prompt: "ত্রিভুজের তিন কোণের সমষ্টি ১৮০° — যুক্তি দিয়ে ব্যাখ্যা করো।",
+          prompt: "The sum of the three angles of a triangle is 180° — explain with reasoning.",
           modelAnswer:
-            "একটি বাহুর সমান্তরাল রেখা টানলে বিপরীত কোণ ও একান্তর কোণের সমতা থেকে তিন কোণ একটি সরলরেখায় বসে, তাই সমষ্টি এক সরলকোণ অর্থাৎ ১৮০°।",
-          keywords: ["সমান্তরাল", "একান্তর কোণ", "সরলকোণ", "১৮০"],
+            "Drawing a line parallel to one side, the equality of corresponding angles and alternate angles shows that the three angles lie along a straight line, so their sum equals a straight angle, i.e., 180°.",
+          keywords: ["parallel", "alternate angle", "straight angle", "180"],
           minWords: 25,
         },
         {
-          prompt: "ত্রিভুজটির ক্ষেত্রফল নির্ণয় করো।",
-          modelAnswer: `ক্ষেত্রফল = ½ × ${b} × ${h} = ${(b * h) / 2} বর্গসেমি।`,
-          keywords: [`${(b * h) / 2}`, "বর্গসেমি"],
+          prompt: "Find the area of the triangle.",
+          modelAnswer: `Area = ½ × ${b} × ${h} = ${(b * h) / 2} sq. cm.`,
+          keywords: [`${(b * h) / 2}`, "sq. cm"],
           minWords: 10,
         },
         {
-          prompt: "উচ্চতা দ্বিগুণ ও ভূমি অর্ধেক করলে ক্ষেত্রফলের পরিবর্তন বিশ্লেষণ করো।",
-          modelAnswer: `নতুন ক্ষেত্রফল = ½ × (${b}/2) × (2×${h}) = ${(b * h) / 2} বর্গসেমি — অর্থাৎ অপরিবর্তিত। কারণ ক্ষেত্রফল ভূমি ও উচ্চতার গুণফলের সমানুপাতিক; একটিকে অর্ধেক ও অন্যটিকে দ্বিগুণ করলে গুণফল একই থাকে।`,
-          keywords: ["অপরিবর্তিত", "গুণফল", "সমানুপাতিক"],
+          prompt: "Analyse the change in area if the height is doubled and the base is halved.",
+          modelAnswer: `New area = ½ × (${b}/2) × (2×${h}) = ${(b * h) / 2} sq. cm — i.e., unchanged. This is because area is proportional to the product of base and height; halving one and doubling the other keeps the product the same.`,
+          keywords: ["unchanged", "product", "proportional"],
           minWords: 35,
         },
       ],
@@ -214,37 +214,37 @@ const chemFactories: Factory[] = [
   (r) => {
     const mol = int(r, 1, 4);
     return {
-      stem: `একটি বিকারে ${mol} মোল HCl দ্রবণ নেওয়া হলো এবং তাতে সমপরিমাণ NaOH যোগ করা হলো।`,
+      stem: `A beaker contains ${mol} mol of HCl solution, to which an equal amount of NaOH is added.`,
       figure: {
         kind: "beaker",
-        caption: "চিত্র: প্রশমন বিক্রিয়ার সেটআপ",
+        caption: "Figure: neutralisation reaction setup",
         labels: [`${mol} mol HCl`, "+ NaOH"],
       },
       parts: [
         {
-          prompt: "প্রশমন বিক্রিয়া কাকে বলে?",
-          modelAnswer: "অ্যাসিড ও ক্ষারের বিক্রিয়ায় লবণ ও পানি উৎপন্ন হওয়ার প্রক্রিয়াকে প্রশমন বিক্রিয়া বলে।",
-          keywords: ["অ্যাসিড", "ক্ষার", "লবণ", "পানি"],
+          prompt: "What is a neutralisation reaction?",
+          modelAnswer: "The process in which an acid reacts with a base to produce a salt and water is called a neutralisation reaction.",
+          keywords: ["acid", "base", "salt", "water"],
           minWords: 10,
         },
         {
-          prompt: "মোল ধারণাটি ব্যাখ্যা করো।",
+          prompt: "Explain the concept of the mole.",
           modelAnswer:
-            "১ মোল = ৬.০২২×১০²³ টি কণা (অ্যাভোগাড্রো সংখ্যা), যা পদার্থের আণবিক ভরের সমান গ্রাম পরিমাণে থাকে।",
-          keywords: ["৬.০২২", "অ্যাভোগাড্রো", "আণবিক ভর"],
+            "1 mole = 6.022×10²³ particles (Avogadro's number), which is present in an amount of grams equal to the substance's molecular mass.",
+          keywords: ["6.022", "Avogadro", "molecular mass"],
           minWords: 20,
         },
         {
-          prompt: `${mol} মোল HCl-এ কতটি অণু আছে নির্ণয় করো।`,
-          modelAnswer: `অণুর সংখ্যা = ${mol} × ৬.০২২×১০²³ = ${(mol * 6.022).toFixed(3)}×১০²³ টি।`,
-          keywords: ["৬.০২২", `${mol}`],
+          prompt: `Find the number of molecules present in ${mol} mole of HCl.`,
+          modelAnswer: `Number of molecules = ${mol} × 6.022×10²³ = ${(mol * 6.022).toFixed(3)}×10²³.`,
+          keywords: ["6.022", `${mol}`],
           minWords: 12,
         },
         {
-          prompt: "বিক্রিয়া শেষে দ্রবণের pH কেমন হবে — যুক্তিসহ মতামত দাও।",
+          prompt: "What will be the pH of the solution after the reaction — give your opinion with reasoning.",
           modelAnswer:
-            "সমপরিমাণ শক্তিশালী অ্যাসিড ও শক্তিশালী ক্ষার সম্পূর্ণ প্রশমিত হয়ে NaCl ও H₂O দেয়, তাই দ্রবণ নিরপেক্ষ, pH ≈ ৭। NaOH বেশি হলে pH > ৭ এবং HCl বেশি হলে pH < ৭ হতো।",
-          keywords: ["pH ৭", "নিরপেক্ষ", "NaCl"],
+            "Equal amounts of a strong acid and a strong base are completely neutralised, producing NaCl and H₂O, so the solution is neutral, pH ≈ 7. If NaOH were in excess pH > 7, and if HCl were in excess pH < 7.",
+          keywords: ["pH 7", "neutral", "NaCl"],
           minWords: 35,
         },
       ],
@@ -254,38 +254,38 @@ const chemFactories: Factory[] = [
 
 const bioFactories: Factory[] = [
   () => ({
-    stem: "নিচের চিত্রে একটি প্রাণিকোষের গঠন দেখানো হয়েছে। কোষটির বিভিন্ন অঙ্গাণু বিপাকীয় কাজে অংশ নেয়।",
+    stem: "The figure below shows the structure of an animal cell. The cell's various organelles take part in metabolic activities.",
     figure: {
       kind: "cell",
-      caption: "চিত্র: প্রাণিকোষের গঠন",
-      labels: ["নিউক্লিয়াস", "মাইটোকন্ড্রিয়া"],
+      caption: "Figure: structure of an animal cell",
+      labels: ["Nucleus", "Mitochondria"],
     },
     parts: [
       {
-        prompt: "কোষ কাকে বলে?",
-        modelAnswer: "জীবদেহের গঠন ও কাজের ক্ষুদ্রতম একককে কোষ বলে।",
-        keywords: ["গঠন", "একক"],
+        prompt: "What is a cell?",
+        modelAnswer: "The smallest structural and functional unit of a living organism is called a cell.",
+        keywords: ["structure", "unit"],
         minWords: 8,
       },
       {
-        prompt: "মাইটোকন্ড্রিয়াকে কোষের শক্তিঘর বলা হয় কেন — ব্যাখ্যা করো।",
+        prompt: "Why is the mitochondrion called the powerhouse of the cell — explain.",
         modelAnswer:
-          "মাইটোকন্ড্রিয়ায় বায়বীয় শ্বসনের মাধ্যমে গ্লুকোজ জারিত হয়ে ATP তৈরি হয়, যা কোষের সব কাজে শক্তি সরবরাহ করে — তাই একে শক্তিঘর বলা হয়।",
-        keywords: ["ATP", "শ্বসন", "শক্তি"],
+          "In the mitochondrion, glucose is oxidised through aerobic respiration to produce ATP, which supplies energy for all the cell's activities — hence it is called the powerhouse.",
+        keywords: ["ATP", "respiration", "energy"],
         minWords: 22,
       },
       {
-        prompt: "চিত্রের চিহ্নিত অঙ্গাণুটির গঠন ও কাজ বর্ণনা করো।",
+        prompt: "Describe the structure and function of the labelled organelle in the figure.",
         modelAnswer:
-          "নিউক্লিয়াস দ্বিস্তরী পর্দা, নিউক্লিওপ্লাজম, নিউক্লিওলাস ও ক্রোমাটিন জালিকা নিয়ে গঠিত। এটি বংশগতির বাহক DNA ধারণ করে এবং কোষের সব কাজ নিয়ন্ত্রণ করে।",
-        keywords: ["দ্বিস্তরী পর্দা", "DNA", "নিয়ন্ত্রণ"],
+          "The nucleus is made up of a double-layered membrane, nucleoplasm, nucleolus, and chromatin network. It contains the hereditary carrier DNA and controls all the cell's activities.",
+        keywords: ["double-layered membrane", "DNA", "control"],
         minWords: 30,
       },
       {
-        prompt: "উদ্ভিদকোষ ও প্রাণিকোষের পার্থক্য বিশ্লেষণ করে মতামত দাও।",
+        prompt: "Analyse the difference between plant cells and animal cells and give your opinion.",
         modelAnswer:
-          "উদ্ভিদকোষে কোষপ্রাচীর, প্লাস্টিড ও বড় কোষগহ্বর থাকে যা প্রাণিকোষে নেই; আবার প্রাণিকোষে সেন্ট্রিওল থাকে। এ পার্থক্যই উদ্ভিদকে খাদ্য প্রস্তুতে (সালোকসংশ্লেষণ) এবং প্রাণীকে চলনক্ষম হতে সাহায্য করে।",
-        keywords: ["কোষপ্রাচীর", "প্লাস্টিড", "সেন্ট্রিওল", "সালোকসংশ্লেষণ"],
+          "Plant cells have a cell wall, plastids, and a large vacuole, which animal cells lack; animal cells, in turn, have centrioles. This difference helps plants prepare food (photosynthesis) and helps animals move around.",
+        keywords: ["cell wall", "plastid", "centriole", "photosynthesis"],
         minWords: 40,
       },
     ],
@@ -296,32 +296,32 @@ const ictFactories: Factory[] = [
   (r) => {
     const n = int(r, 9, 60);
     return {
-      stem: `রাফি একটি ডিজিটাল ডিভাইসে ${n} সংখ্যাটি ইনপুট দিলে ডিভাইসটি তা বাইনারিতে রূপান্তর করে প্রদর্শন করে।`,
+      stem: `Rafi inputs the number ${n} into a digital device, and the device converts it to binary and displays it.`,
       parts: [
         {
-          prompt: "বাইনারি সংখ্যা পদ্ধতি কী?",
-          modelAnswer: "যে সংখ্যা পদ্ধতিতে কেবল ০ ও ১ ব্যবহার করা হয় এবং ভিত্তি ২, তাকে বাইনারি পদ্ধতি বলে।",
-          keywords: ["০", "১", "ভিত্তি ২"],
+          prompt: "What is the binary number system?",
+          modelAnswer: "The number system that uses only 0 and 1, with base 2, is called the binary system.",
+          keywords: ["0", "1", "base 2"],
           minWords: 10,
         },
         {
-          prompt: "কম্পিউটার বাইনারি ব্যবহার করে কেন — ব্যাখ্যা করো।",
+          prompt: "Why does a computer use binary — explain.",
           modelAnswer:
-            "ইলেকট্রনিক বর্তনীর দুটি স্থিতিশীল অবস্থা (অন/অফ, উচ্চ/নিম্ন ভোল্টেজ) থাকায় দুই অঙ্কের বাইনারি সবচেয়ে নির্ভরযোগ্য ও ত্রুটিমুক্তভাবে উপস্থাপন করা যায়।",
-          keywords: ["অন/অফ", "ভোল্টেজ", "নির্ভরযোগ্য"],
+            "Since electronic circuits have two stable states (on/off, high/low voltage), the two-digit binary system can be represented most reliably and error-free.",
+          keywords: ["on/off", "voltage", "reliable"],
           minWords: 25,
         },
         {
-          prompt: `${n} দশমিক সংখ্যাটিকে বাইনারিতে রূপান্তর করো।`,
-          modelAnswer: `ক্রমাগত ২ দিয়ে ভাগ করে ভাগশেষ নিচ থেকে উপরে সাজিয়ে পাই ${n}₁₀ = ${n.toString(2)}₂।`,
-          keywords: [n.toString(2), "ভাগশেষ"],
+          prompt: `Convert the decimal number ${n} into binary.`,
+          modelAnswer: `Dividing repeatedly by 2 and arranging the remainders from bottom to top, we get ${n}₁₀ = ${n.toString(2)}₂.`,
+          keywords: [n.toString(2), "remainder"],
           minWords: 15,
         },
         {
-          prompt: "ডিজিটাল ডিভাইসে তথ্য নিরাপত্তা রক্ষায় করণীয় বিশ্লেষণ করো।",
+          prompt: "Analyse what should be done to protect information security on digital devices.",
           modelAnswer:
-            "শক্তিশালী দীর্ঘ পাসওয়ার্ড, দুই-ধাপ যাচাই, নিয়মিত সফটওয়্যার হালনাগাদ, অজানা লিংক এড়িয়ে চলা ও ব্যাকআপ রাখা — এগুলো তথ্য চুরি ও ম্যালওয়্যার থেকে রক্ষা করে।",
-          keywords: ["পাসওয়ার্ড", "দুই-ধাপ", "হালনাগাদ", "ব্যাকআপ"],
+            "Strong long passwords, two-step verification, regular software updates, avoiding unknown links, and keeping backups — these protect against data theft and malware.",
+          keywords: ["password", "two-step", "update", "backup"],
           minWords: 35,
         },
       ],
@@ -332,31 +332,31 @@ const ictFactories: Factory[] = [
 /** Works for any subject/topic — keeps every CQ paper full. */
 const genericFactories: Factory[] = [
   (_r, topic, chapter) => ({
-    stem: `শ্রেণিকক্ষে শিক্ষক "${chapter}" অধ্যায়ের "${topic}" অংশটি আলোচনা করছিলেন। তিনি বললেন, এই ধারণাটি বুঝতে পারলে অধ্যায়ের বাকি সমস্যাগুলোও সহজ হয়ে যায়।`,
+    stem: `In the classroom, the teacher was discussing the "${topic}" section of the "${chapter}" chapter. She said that understanding this concept makes the rest of the chapter's problems easier too.`,
     parts: [
       {
-        prompt: `${topic} কাকে বলে?`,
-        modelAnswer: `"${topic}" হলো "${chapter}" অধ্যায়ের সেই মূল ধারণা, যার সংজ্ঞা ও বৈশিষ্ট্য পাঠ্যবইয়ে নির্দিষ্টভাবে উল্লেখ আছে।`,
-        keywords: [topic, "সংজ্ঞা"],
+        prompt: `What is ${topic}?`,
+        modelAnswer: `"${topic}" is the core concept of the "${chapter}" chapter, whose definition and characteristics are specifically mentioned in the textbook.`,
+        keywords: [topic, "definition"],
         minWords: 10,
       },
       {
-        prompt: `${topic}-এর গুরুত্ব ব্যাখ্যা করো।`,
-        modelAnswer: `${topic} ছাড়া ${chapter} অধ্যায়ের পরবর্তী ধারণাগুলো প্রয়োগ করা যায় না; বোর্ড পরীক্ষায়ও এখান থেকে নিয়মিত প্রশ্ন আসে বলে এটি ভিত্তি হিসেবে কাজ করে।`,
-        keywords: [topic, "ভিত্তি", "প্রয়োগ"],
+        prompt: `Explain the importance of ${topic}.`,
+        modelAnswer: `Without ${topic}, the subsequent concepts of the ${chapter} chapter cannot be applied; since board exam questions also come from here regularly, it serves as a foundation.`,
+        keywords: [topic, "foundation", "application"],
         minWords: 22,
       },
       {
-        prompt: `উদ্দীপকে উল্লিখিত ধারণাটি ব্যবহার করে একটি সমস্যা সমাধানের ধাপগুলো দেখাও।`,
+        prompt: `Using the concept mentioned in the stimulus, show the steps to solve a problem.`,
         modelAnswer:
-          "প্রথমে প্রদত্ত তথ্য চিহ্নিত করতে হবে, এরপর প্রযোজ্য সূত্র/নিয়ম নির্বাচন করে ধাপে ধাপে মান বসিয়ে হিসাব করতে হবে এবং শেষে একক ও যৌক্তিকতা যাচাই করতে হবে।",
-        keywords: ["তথ্য", "সূত্র", "ধাপে ধাপে", "একক"],
+          "First, identify the given data, then select the applicable formula/rule and calculate step by step by substituting values, and finally check the unit and reasonableness.",
+        keywords: ["data", "formula", "step by step", "unit"],
         minWords: 30,
       },
       {
-        prompt: `${topic} অধ্যায়ের অন্যান্য ধারণার সাথে কীভাবে সম্পর্কিত — বিশ্লেষণ করে মতামত দাও।`,
-        modelAnswer: `${topic} একদিকে পূর্ববর্তী ধারণার উপর দাঁড়িয়ে আছে, অন্যদিকে পরবর্তী প্রয়োগভিত্তিক সমস্যার ভিত্তি তৈরি করে। তাই এটি বিচ্ছিন্নভাবে নয়, ${chapter} অধ্যায়ের ধারাবাহিক অংশ হিসেবে পড়াই যৌক্তিক।`,
-        keywords: [chapter, "সম্পর্ক", "ধারাবাহিক"],
+        prompt: `How is ${topic} related to other concepts of the chapter — analyse and give your opinion.`,
+        modelAnswer: `${topic} on one hand builds on earlier concepts, and on the other hand forms the basis for subsequent application-based problems. So it should be studied not in isolation, but as a continuous part of the ${chapter} chapter.`,
+        keywords: [chapter, "relation", "continuous"],
         minWords: 40,
       },
     ],
@@ -364,7 +364,7 @@ const genericFactories: Factory[] = [
 ];
 
 function topicless() {
-  return "বেগ বনাম সময়";
+  return "velocity vs. time";
 }
 
 const bySubject: Record<string, Factory[]> = {

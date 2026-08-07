@@ -25,9 +25,9 @@ export const practiceModes: {
   nameBn: string;
   desc: string;
 }[] = [
-  { id: "mcq", name: "MCQ Practice", nameBn: "এমসিকিউ", desc: "Practice topic-wise MCQs and strengthen your concepts." },
-  { id: "cq", name: "CQ Practice", nameBn: "সৃজনশীল", desc: "Improve your writing skills with creative questions." },
-  { id: "board", name: "Board Questions", nameBn: "বোর্ড প্রশ্ন", desc: "Practice past board questions to understand exam patterns." },
+  { id: "mcq", name: "MCQ Practice", nameBn: "MCQ", desc: "Practice topic-wise MCQs and strengthen your concepts." },
+  { id: "cq", name: "CQ Practice", nameBn: "Creative", desc: "Improve your writing skills with creative questions." },
+  { id: "board", name: "Board Questions", nameBn: "Board Questions", desc: "Practice past board questions to understand exam patterns." },
 ];
 
 // --- Chapter / topic taxonomy -------------------------------------------------
@@ -67,8 +67,8 @@ const chapterNames: Record<string, string[]> = {
     "Paragraph Writing", "Letter & Email",
   ],
   bangla: [
-    "ব্যাকরণ পরিচিতি", "ধ্বনি ও বর্ণ", "সন্ধি", "সমাস", "প্রকৃতি ও প্রত্যয়", "কারক ও বিভক্তি",
-    "বাগধারা", "সমার্থক শব্দ", "বিপরীত শব্দ", "গদ্য", "পদ্য", "রচনা",
+    "Introduction to Grammar", "Sounds & Letters", "Sandhi (Euphonic Combination)", "Samas (Compounding)", "Roots & Suffixes", "Case & Inflection",
+    "Idioms", "Synonyms", "Antonyms", "Prose", "Poetry", "Composition",
   ],
   ict: [
     "ICT in Daily Life", "Communication Systems", "Number Systems", "Digital Devices",
