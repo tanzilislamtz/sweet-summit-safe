@@ -9,12 +9,15 @@ import {
   Camera,
   ChevronRight,
   Flame,
+  Globe,
   GraduationCap,
+  Lock,
   MapPin,
   MessageCircle,
   Pencil,
   PenLine,
   Settings,
+  ShieldCheck,
   Sparkles,
   Star,
   Target,
@@ -54,14 +57,13 @@ export const Route = createFileRoute("/profile")({
   component: ProfilePage,
 });
 
-type TabId = "post" | "about" | "qa" | "points" | "favorites" | "settings";
+type TabId = "post" | "about" | "qa" | "points" | "settings";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "post", label: "Post" },
   { id: "about", label: "About" },
   { id: "qa", label: "Q&A" },
   { id: "points", label: "Points & Level" },
-  { id: "favorites", label: "Favorites" },
   { id: "settings", label: "Settings" },
 ];
 
@@ -285,7 +287,7 @@ function ProfilePage() {
                   attempts={attempts}
                 />
               )}
-              {tab === "favorites" && <FavoritesTab favorites={favorites} />}
+              
               {tab === "settings" && <SettingsTab />}
             </motion.div>
           </AnimatePresence>
@@ -729,41 +731,104 @@ function EmptyState({
 }
 
 function SettingsTab() {
+  const [aiLang, setAiLang] = useState("bn");
+
   return (
     <Card>
       <CardHead title="Settings" hint="Manage your account preferences and app appearance." />
-      <div className="mt-6 space-y-6">
+      <div className="mt-6 space-y-8">
+        {/* Appearance Section */}
         <div>
           <h3 className="flex items-center gap-2 text-sm font-bold">
             <Sparkles className="h-4 w-4 text-primary" />
             Appearance
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            Switch between day and night mode to suit your environment.
+            Switch between day and night mode. Default is Day mode.
           </p>
           <div className="mt-4 max-w-sm">
             <ThemeToggle variant="menu" />
           </div>
         </div>
 
+        {/* AI Reply Preferences */}
+        <div className="border-t border-border pt-6">
+          <h3 className="flex items-center gap-2 text-sm font-bold">
+            <Globe className="h-4 w-4 text-primary" />
+            AI Reply Language
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Choose the default language for AI explanations and replies.
+          </p>
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {[
+              { id: "bn", label: "Bengali" },
+              { id: "en", label: "English" },
+              { id: "hi", label: "Hindi" },
+            ].map((l) => (
+              <button
+                key={l.id}
+                onClick={() => setAiLang(l.id)}
+                className={cn(
+                  "rounded-xl border py-2.5 text-xs font-bold transition-all",
+                  aiLang === l.id
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border bg-background text-muted-foreground hover:border-primary/30"
+                )}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Security Section */}
+        <div className="border-t border-border pt-6">
+          <h3 className="flex items-center gap-2 text-sm font-bold">
+            <ShieldCheck className="h-4 w-4 text-primary" />
+            Security & Privacy
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Enhance your account security with these additional features.
+          </p>
+          <div className="mt-4 space-y-3">
+            <div className="flex items-center justify-between rounded-2xl border border-border bg-background p-4">
+              <div className="flex items-center gap-3">
+                <Lock className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-bold">Two-Factor Auth</p>
+                  <p className="text-[10px] text-muted-foreground">Adds an extra layer of security</p>
+                </div>
+              </div>
+              <div className="h-5 w-9 rounded-full bg-muted p-1">
+                <div className="h-3 w-3 rounded-full bg-background shadow-sm" />
+              </div>
+            </div>
+            <div className="flex items-center justify-between rounded-2xl border border-border bg-background p-4">
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-bold">Device Management</p>
+                  <p className="text-[10px] text-muted-foreground">See active logged in devices</p>
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </div>
+          </div>
+        </div>
+
+        {/* Other Preferences */}
         <div className="border-t border-border pt-6">
           <h3 className="flex items-center gap-2 text-sm font-bold">
             <Settings className="h-4 w-4 text-primary" />
-            Account Preferences
+            System Preferences
           </h3>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Manage your language and notification settings.
-          </p>
-          <div className="mt-4 grid gap-3">
+          <div className="mt-4 space-y-3">
              <div className="flex items-center justify-between rounded-2xl border border-border bg-background p-4">
-               <span className="text-sm font-medium">Email Notifications</span>
+               <span className="text-sm font-bold">Email Notifications</span>
                <div className="h-6 w-10 rounded-full bg-primary/20 p-1">
                  <div className="h-4 w-4 rounded-full bg-primary" />
                </div>
-             </div>
-             <div className="flex items-center justify-between rounded-2xl border border-border bg-background p-4 opacity-50">
-               <span className="text-sm font-medium">Language (English)</span>
-               <ChevronRight className="h-4 w-4" />
              </div>
           </div>
         </div>
