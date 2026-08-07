@@ -3,13 +3,16 @@ import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Award,
+  BadgeCheck,
   BookOpen,
+  Calendar,
   Camera,
-  CheckCircle2,
-  Clock,
   Flame,
+  GraduationCap,
+  MapPin,
+  MessageCircle,
+  Pencil,
   PenLine,
-  Settings,
   Sparkles,
   Star,
   Target,
@@ -32,12 +35,13 @@ export const Route = createFileRoute("/profile")({
       { title: "Profile — Learns Academy" },
       {
         name: "description",
-        content: "Your Learns Academy profile — practice accuracy, saved items, groups and achievements.",
+        content:
+          "Your Learns Academy profile — posts, Q&A, points and level, practice accuracy and saved items.",
       },
       { property: "og:title", content: "Profile — Learns Academy" },
       {
         property: "og:description",
-        content: "See your practice accuracy, subject-wise performance and achievements in one place.",
+        content: "Followers, level progress, practice accuracy and favorites in one profile.",
       },
       { property: "og:type", content: "profile" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -46,24 +50,29 @@ export const Route = createFileRoute("/profile")({
   component: ProfilePage,
 });
 
-type TabId = "overview" | "activity" | "achievements";
+type TabId = "post" | "about" | "qa" | "points" | "favorites";
 
-const tabs: { id: TabId; label: string }[] = [
-  { id: "overview", label: "Overview" },
-  { id: "activity", label: "Activity" },
-  { id: "achievements", label: "Achievements" },
+const TABS: { id: TabId; label: string }[] = [
+  { id: "post", label: "Post" },
+  { id: "about", label: "About" },
+  { id: "qa", label: "Q&A" },
+  { id: "points", label: "Points & Level" },
+  { id: "favorites", label: "Favorites" },
 ];
+
+/** 250 points per level — keeps the ladder readable for learners. */
+const POINTS_PER_LEVEL = 250;
 
 function ProfilePage() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [tab, setTab] = useState<TabId>("overview");
+  const [tab, setTab] = useState<TabId>("post");
 
   const [session, setSession] = useState<Session | null>(null);
   const [attempts, setAttempts] = useState<PracticeAttempt[]>([]);
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [groupCount, setGroupCount] = useState(0);
 
-  // Everything below lives in localStorage — read only after hydration.
+  // Everything below is localStorage-backed — read only after hydration.
   useEffect(() => {
     const readPractice = () => setAttempts(listAttempts());
     const readFav = () => setFavorites(listFavorites());
@@ -91,7 +100,7 @@ function ProfilePage() {
   const name = session?.name || session?.email?.split("@")[0] || "Guest learner";
   const initial = name.charAt(0).toUpperCase();
 
-  /** Consecutive days (ending today or yesterday) with at least one paper. */
+  /** Consecutive practice days ending today (or yesterday). */
   const streak = useMemo(() => {
     if (attempts.length === 0) return 0;
     const days = new Set(attempts.map((a) => new Date(a.at).toDateString()));
@@ -105,7 +114,15 @@ function ProfilePage() {
     return count;
   }, [attempts]);
 
-  const savedQuestions = favorites.filter((f) => f.type === "question").length;
+  // Points are earned from real activity so the level never feels fake.
+  const points =
+    s.correct * 10 + s.attempts * 25 + favorites.length * 5 + groupCount * 15 + streak * 20;
+  const level = Math.floor(points / POINTS_PER_LEVEL) + 1;
+  const intoLevel = points % POINTS_PER_LEVEL;
+  const levelPct = Math.round((intoLevel / POINTS_PER_LEVEL) * 100);
+
+  const followers = 3;
+  const following = 1;
 
   return (
     <div className="min-h-screen bg-background text-foreground lg:h-[100dvh] lg:overflow-hidden">
@@ -114,94 +131,123 @@ function ProfilePage() {
       <main className="mx-auto grid max-w-[1400px] grid-cols-1 gap-6 px-4 py-6 pb-28 lg:h-[calc(100dvh-65px)] lg:grid-cols-[240px_minmax(0,1fr)] lg:overflow-hidden lg:px-8 lg:pb-6">
         <LeftNav stickyClass="lg:h-full" />
 
-        <div className="min-w-0 space-y-6 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
-          {/* ---------- Header card ---------- */}
+        <div className="min-w-0 space-y-5 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
+          {/* ---------------- Header ---------------- */}
           <motion.section
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
             className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
           >
-            <div className="relative h-28 bg-gradient-to-r from-primary via-primary/80 to-secondary sm:h-36">
-              <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(circle_at_20%_20%,white,transparent_45%),radial-gradient(circle_at_80%_10%,white,transparent_35%)]" />
+            {/* Cover */}
+            <div className="relative h-32 bg-gradient-to-br from-primary via-primary/85 to-secondary sm:h-44">
+              <div className="absolute inset-0 opacity-25 [background-image:radial-gradient(circle_at_18%_25%,white,transparent_42%),radial-gradient(circle_at_82%_12%,white,transparent_38%)]" />
+              <div className="absolute inset-0 grid place-items-center">
+                <p className="select-none text-2xl font-black tracking-[0.35em] text-primary-foreground/90 sm:text-3xl">
+                  LEARNS
+                </p>
+              </div>
+              <button
+                type="button"
+                aria-label="Change cover photo"
+                className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-surface/90 text-foreground shadow-sm backdrop-blur transition hover:bg-surface"
+              >
+                <Pencil className="h-4 w-4" />
+              </button>
             </div>
 
-            <div className="px-4 pb-5 sm:px-6">
+            <div className="px-4 pb-4 sm:px-6 sm:pb-5">
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 sm:flex sm:flex-wrap sm:justify-between">
                 <div className="-mt-10 flex min-w-0 items-end gap-3 sm:-mt-12 sm:gap-4">
                   <div className="relative shrink-0">
-                    <div className="grid h-20 w-20 place-items-center rounded-3xl border-4 border-surface bg-primary text-2xl font-black text-primary-foreground shadow-md sm:h-24 sm:w-24 sm:text-3xl">
+                    <div className="grid h-[76px] w-[76px] place-items-center rounded-full border-4 border-surface bg-primary text-2xl font-black text-primary-foreground shadow-md sm:h-24 sm:w-24 sm:text-3xl">
                       {initial}
                     </div>
-                    <span className="absolute -bottom-1 -right-1 grid h-7 w-7 place-items-center rounded-full border-2 border-surface bg-muted text-muted-foreground">
+                    <button
+                      type="button"
+                      aria-label="Change profile picture"
+                      className="absolute -bottom-0.5 -right-0.5 grid h-8 w-8 place-items-center rounded-full border-2 border-surface bg-foreground text-background transition hover:opacity-90"
+                    >
                       <Camera className="h-3.5 w-3.5" />
-                    </span>
+                    </button>
                   </div>
+
                   <div className="min-w-0 pb-1">
-                    <h1 className="truncate text-xl font-black tracking-tight sm:text-2xl">{name}</h1>
-                    <p className="truncate text-xs text-muted-foreground sm:text-sm">
-                      {session?.email ?? "Sign in to sync your progress"}
+                    <h1 className="flex min-w-0 items-center gap-1.5 text-lg font-black tracking-tight sm:text-2xl">
+                      <span className="truncate">{name}</span>
+                      <BadgeCheck className="h-4 w-4 shrink-0 text-primary sm:h-5 sm:w-5" />
+                    </h1>
+                    <p className="mt-0.5 text-xs text-muted-foreground sm:text-[13px]">
+                      <b className="font-bold text-foreground tabular-nums">{followers}</b> Followers
+                      <span className="mx-1.5">·</span>
+                      <b className="font-bold text-foreground tabular-nums">{following}</b> Following
+                    </p>
+                    <p className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
+                      <GraduationCap className="h-3.5 w-3.5" />
+                      Student
                     </p>
                   </div>
                 </div>
 
-                <div className="flex shrink-0 items-center gap-2 pb-1">
-                  <Link
-                    to="/favorites"
-                    className="hidden rounded-xl border border-border px-3 py-2 text-xs font-semibold transition hover:border-primary/40 hover:text-primary sm:inline-flex"
-                  >
-                    Saved items
-                  </Link>
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition hover:opacity-90"
-                  >
-                    <Settings className="h-3.5 w-3.5" />
-                    Edit profile
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-border bg-background px-3.5 py-2 text-xs font-semibold shadow-sm transition hover:border-primary/40 hover:text-primary"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                  Edit Profile
+                </button>
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Chip icon={<CheckCircle2 className="h-3.5 w-3.5" />} text="Student" tone="primary" />
-                <Chip icon={<Flame className="h-3.5 w-3.5" />} text={`${streak} day streak`} />
-                <Chip icon={<Target className="h-3.5 w-3.5" />} text={`${s.accuracy}% accuracy`} />
-                <Chip icon={<Users className="h-3.5 w-3.5" />} text={`${groupCount} groups`} />
+              {/* Level strip */}
+              <div className="mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-muted/50 px-3.5 py-2.5">
+                <span className="text-xs font-black">Level {level}</span>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-accent-foreground">
+                  <span className="h-2 w-2 rounded-full bg-secondary" />
+                  <span className="tabular-nums">{points}</span> pts
+                </span>
+                <div className="ml-auto flex min-w-[140px] flex-1 items-center gap-2 sm:max-w-[280px]">
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${levelPct}%` }}
+                      transition={{ duration: 0.7 }}
+                      className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
+                    />
+                  </div>
+                  <span className="shrink-0 text-[10px] font-semibold tabular-nums text-muted-foreground">
+                    {intoLevel}/{POINTS_PER_LEVEL}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="border-t border-border">
+              <div className="flex gap-1 overflow-x-auto px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {TABS.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setTab(t.id)}
+                    className={`relative shrink-0 px-3.5 py-3 text-[13px] font-semibold transition ${
+                      tab === t.id ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {t.label}
+                    {tab === t.id && (
+                      <motion.span
+                        layoutId="profile-tab-underline"
+                        transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                        className="absolute inset-x-2 bottom-0 h-[3px] rounded-full bg-primary"
+                      />
+                    )}
+                  </button>
+                ))}
               </div>
             </div>
           </motion.section>
 
-          {/* ---------- Stat strip ---------- */}
-          <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <StatCard icon={<Target className="h-4 w-4" />} label="Accuracy" value={`${s.accuracy}%`} />
-            <StatCard icon={<BookOpen className="h-4 w-4" />} label="Questions" value={String(s.questions)} />
-            <StatCard icon={<Timer className="h-4 w-4" />} label="Papers" value={String(s.attempts)} />
-            <StatCard icon={<Star className="h-4 w-4" />} label="Saved" value={String(favorites.length)} />
-          </section>
-
-          {/* ---------- Tabs ---------- */}
-          <div className="flex gap-1 rounded-2xl border border-border bg-surface p-1">
-            {tabs.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setTab(t.id)}
-                className={`relative flex-1 rounded-xl px-3 py-2 text-xs font-semibold transition sm:text-sm ${
-                  tab === t.id ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {tab === t.id && (
-                  <motion.span
-                    layoutId="profile-tab"
-                    transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                    className="absolute inset-0 rounded-xl bg-primary"
-                  />
-                )}
-                <span className="relative">{t.label}</span>
-              </button>
-            ))}
-          </div>
-
+          {/* ---------------- Tab content ---------------- */}
           <AnimatePresence mode="wait">
             <motion.div
               key={tab}
@@ -209,15 +255,26 @@ function ProfilePage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.22 }}
-              className="space-y-6"
+              className="space-y-5"
             >
-              {tab === "overview" && (
-                <OverviewTab s={s} savedQuestions={savedQuestions} groupCount={groupCount} />
+              {tab === "post" && <PostTab s={s} favorites={favorites} groupCount={groupCount} />}
+              {tab === "about" && (
+                <AboutTab email={session?.email} joinedAt={session?.at} groupCount={groupCount} />
               )}
-              {tab === "activity" && <ActivityTab attempts={attempts} favorites={favorites} />}
-              {tab === "achievements" && (
-                <AchievementsTab s={s} streak={streak} favorites={favorites.length} groups={groupCount} />
+              {tab === "qa" && <QaTab favorites={favorites} />}
+              {tab === "points" && (
+                <PointsTab
+                  s={s}
+                  points={points}
+                  level={level}
+                  levelPct={levelPct}
+                  streak={streak}
+                  favorites={favorites.length}
+                  groups={groupCount}
+                  attempts={attempts}
+                />
               )}
+              {tab === "favorites" && <FavoritesTab favorites={favorites} />}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -226,64 +283,189 @@ function ProfilePage() {
   );
 }
 
-/* ------------------------------ Tabs ------------------------------ */
+/* ------------------------------- Tabs ------------------------------- */
 
 type Summary = ReturnType<typeof summarise>;
 
-function OverviewTab({
+function PostTab({
   s,
-  savedQuestions,
+  favorites,
   groupCount,
 }: {
   s: Summary;
-  savedQuestions: number;
+  favorites: FavoriteItem[];
   groupCount: number;
 }) {
   return (
     <>
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatCard icon={<Target className="h-4 w-4" />} label="Accuracy" value={`${s.accuracy}%`} />
+        <StatCard icon={<BookOpen className="h-4 w-4" />} label="Questions" value={String(s.questions)} />
+        <StatCard icon={<Timer className="h-4 w-4" />} label="Papers" value={String(s.attempts)} />
+        <StatCard icon={<Users className="h-4 w-4" />} label="Groups" value={String(groupCount)} />
+      </section>
+
+      <Card>
+        <CardHead title="Your posts" hint="তোমার শেয়ার করা পোস্ট এখানে দেখা যাবে।" />
+        <EmptyState
+          icon={<PenLine className="h-6 w-6 text-muted-foreground" />}
+          text="এখনো কোনো পোস্ট করা হয়নি। প্রথম পোস্টটা শেয়ার করে ফেলো।"
+          cta={{ to: "/create-post", label: "Create post" }}
+        />
+      </Card>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <QuickCard
+          to="/favorites"
+          icon={<Star className="h-5 w-5" />}
+          title="Saved items"
+          value={String(favorites.length)}
+          sub="Questions, posts and tutors you starred."
+        />
+        <QuickCard
+          to="/group-study"
+          icon={<Users className="h-5 w-5" />}
+          title="Study groups"
+          value={String(groupCount)}
+          sub="Groups you created or joined with your batch."
+        />
+      </div>
+    </>
+  );
+}
+
+function AboutTab({
+  email,
+  joinedAt,
+  groupCount,
+}: {
+  email?: string;
+  joinedAt?: number;
+  groupCount: number;
+}) {
+  return (
+    <Card>
+      <CardHead title="About" hint="Basic details shown on your public profile." />
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <InfoRow icon={<GraduationCap className="h-4 w-4" />} label="Role" value="Student" />
+        <InfoRow icon={<MessageCircle className="h-4 w-4" />} label="Email" value={email ?? "Not signed in"} />
+        <InfoRow icon={<MapPin className="h-4 w-4" />} label="Location" value="Bangladesh" />
+        <InfoRow
+          icon={<Calendar className="h-4 w-4" />}
+          label="Joined"
+          value={joinedAt ? new Date(joinedAt).toLocaleDateString() : "—"}
+        />
+        <InfoRow icon={<Users className="h-4 w-4" />} label="Study groups" value={String(groupCount)} />
+        <InfoRow icon={<BookOpen className="h-4 w-4" />} label="Interests" value="Physics · Math · English" />
+      </div>
+    </Card>
+  );
+}
+
+function QaTab({ favorites }: { favorites: FavoriteItem[] }) {
+  const questions = favorites.filter((f) => f.type === "question");
+  return (
+    <Card>
+      <CardHead
+        title="Q&A"
+        hint="তোমার প্র্যাকটিস থেকে সেভ করা প্রশ্নগুলো।"
+        action={{ to: "/favorites", label: "Open favorites" }}
+      />
+      {questions.length === 0 ? (
+        <EmptyState
+          icon={<MessageCircle className="h-6 w-6 text-muted-foreground" />}
+          text="এখনো কোনো প্রশ্ন সেভ করা হয়নি।"
+          cta={{ to: "/quiz", label: "Start practising" }}
+        />
+      ) : (
+        <div className="mt-4 space-y-2">
+          {questions.slice(0, 8).map((q) => (
+            <div
+              key={q.key}
+              className="rounded-2xl border border-border bg-background p-3.5 transition hover:border-primary/30"
+            >
+              <p className="line-clamp-2 text-sm font-medium">{q.title}</p>
+              <p className="mt-1 truncate text-[11px] text-muted-foreground">
+                {q.questionData?.subjectName ?? q.subtitle ?? "Practice question"}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function PointsTab({
+  s,
+  points,
+  level,
+  levelPct,
+  streak,
+  favorites,
+  groups,
+  attempts,
+}: {
+  s: Summary;
+  points: number;
+  level: number;
+  levelPct: number;
+  streak: number;
+  favorites: number;
+  groups: number;
+  attempts: PracticeAttempt[];
+}) {
+  const badges = [
+    { icon: <Sparkles className="h-5 w-5" />, title: "First paper", sub: "Submit your first paper", done: s.attempts >= 1 },
+    { icon: <TrendingUp className="h-5 w-5" />, title: "Sharp shooter", sub: "Reach 80% accuracy", done: s.accuracy >= 80 },
+    { icon: <Target className="h-5 w-5" />, title: "Century", sub: "Answer 100 questions", done: s.questions >= 100 },
+    { icon: <Flame className="h-5 w-5" />, title: "On a streak", sub: "Practise 3 days in a row", done: streak >= 3 },
+    { icon: <Star className="h-5 w-5" />, title: "Collector", sub: "Save 10 items", done: favorites >= 10 },
+    { icon: <Users className="h-5 w-5" />, title: "Team player", sub: "Join a study group", done: groups >= 1 },
+  ];
+  const unlocked = badges.filter((b) => b.done).length;
+
+  return (
+    <>
       <Card>
         <CardHead
-          title="Practice performance"
-          hint="MCQ ও CQ পেপার সাবমিট করলেই এখানে পার্সেন্টেজ আপডেট হয়।"
-          action={{ to: "/quiz/progress", label: "Full progress" }}
+          title="Points & Level"
+          hint="Practice, saved items আর group activity থেকে পয়েন্ট জমা হয়।"
         />
-
-        {s.attempts === 0 ? (
-          <EmptyState
-            text="এখনো কোনো প্র্যাকটিস পেপার সাবমিট করা হয়নি।"
-            cta={{ to: "/quiz", label: "Start practising" }}
-          />
-        ) : (
-          <div className="mt-5 flex flex-col gap-6 sm:flex-row sm:items-center">
-            <div className="flex items-center gap-4">
-              <ProgressRing value={s.accuracy} label="Accuracy" />
-              <div className="space-y-1.5 text-xs">
-                <Legend tone="bg-primary" label="Correct" value={s.correct} />
-                <Legend tone="bg-muted-foreground/40" label="Wrong" value={s.wrong} />
-                <Legend tone="bg-secondary" label="Minutes" value={s.minutes} />
-              </div>
-            </div>
-
-            <div className="min-w-0 flex-1 space-y-3">
-              {s.bySubject.slice(0, 5).map((row, i) => (
-                <div key={row.subjectId}>
-                  <div className="mb-1.5 flex items-center justify-between gap-3 text-xs">
-                    <span className="truncate">{row.subjectName}</span>
-                    <span className="shrink-0 tabular-nums text-muted-foreground">{row.accuracy}%</span>
-                  </div>
-                  <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${row.accuracy}%` }}
-                      transition={{ delay: 0.04 * i, duration: 0.6 }}
-                      className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
-                    />
-                  </div>
-                </div>
-              ))}
+        <div className="mt-5 flex flex-col gap-6 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-4">
+            <ProgressRing value={levelPct} label={`Level ${level}`} />
+            <div className="space-y-1.5 text-xs">
+              <Legend tone="bg-primary" label="Total points" value={points} />
+              <Legend tone="bg-secondary" label="Correct answers" value={s.correct} />
+              <Legend tone="bg-muted-foreground/40" label="Day streak" value={streak} />
             </div>
           </div>
-        )}
+
+          <div className="min-w-0 flex-1 space-y-3">
+            {s.bySubject.slice(0, 5).map((row, i) => (
+              <div key={row.subjectId}>
+                <div className="mb-1.5 flex items-center justify-between gap-3 text-xs">
+                  <span className="truncate">{row.subjectName}</span>
+                  <span className="shrink-0 tabular-nums text-muted-foreground">{row.accuracy}%</span>
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${row.accuracy}%` }}
+                    transition={{ delay: 0.04 * i, duration: 0.6 }}
+                    className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
+                  />
+                </div>
+              </div>
+            ))}
+            {s.bySubject.length === 0 && (
+              <p className="rounded-2xl border border-dashed border-border p-6 text-center text-xs text-muted-foreground">
+                সাবজেক্ট-ওয়াইজ পারফরম্যান্স দেখতে একটা প্র্যাকটিস পেপার সাবমিট করো।
+              </p>
+            )}
+          </div>
+        </div>
 
         {s.attempts > 0 && (
           <div className="mt-5 flex flex-wrap gap-2">
@@ -304,63 +486,40 @@ function OverviewTab({
         )}
       </Card>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <QuickCard
-          to="/favorites"
-          icon={<Star className="h-5 w-5" />}
-          title="Saved questions"
-          value={String(savedQuestions)}
-          sub="Revisit the questions you starred while practising."
-        />
-        <QuickCard
-          to="/group-study"
-          icon={<Users className="h-5 w-5" />}
-          title="Study groups"
-          value={String(groupCount)}
-          sub="Groups you created or joined with your batch."
-        />
-        <QuickCard
-          to="/quiz"
-          icon={<BookOpen className="h-5 w-5" />}
-          title="Practice hub"
-          value="MCQ · CQ"
-          sub="Chapter-wise practice with instant AI explanations."
-        />
-        <QuickCard
-          to="/quiz/mock-test"
-          icon={<Timer className="h-5 w-5" />}
-          title="Mock tests"
-          value="Full length"
-          sub="Exam-style papers with a live timer and result sheet."
-        />
-      </div>
-    </>
-  );
-}
-
-function ActivityTab({
-  attempts,
-  favorites,
-}: {
-  attempts: PracticeAttempt[];
-  favorites: FavoriteItem[];
-}) {
-  if (attempts.length === 0 && favorites.length === 0) {
-    return (
       <Card>
-        <CardHead title="Recent activity" hint="Practice ও saved items এখানে দেখা যাবে।" />
-        <EmptyState text="এখনো কোনো অ্যাক্টিভিটি নেই।" cta={{ to: "/quiz", label: "Start practising" }} />
+        <CardHead title="Achievements" hint={`${unlocked} of ${badges.length} unlocked`} />
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {badges.map((b, i) => (
+            <motion.div
+              key={b.title}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.04 }}
+              className={`flex items-start gap-3 rounded-2xl border p-4 ${
+                b.done ? "border-primary/30 bg-primary/5" : "border-border bg-background opacity-70"
+              }`}
+            >
+              <span
+                className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${
+                  b.done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {b.done ? b.icon : <Award className="h-5 w-5" />}
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold">{b.title}</p>
+                <p className="text-[11px] text-muted-foreground">{b.sub}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </Card>
-    );
-  }
 
-  return (
-    <>
       {attempts.length > 0 && (
         <Card>
-          <CardHead title="Recent papers" action={{ to: "/quiz/progress", label: "See all" }} />
+          <CardHead title="Recent papers" action={{ to: "/quiz/progress", label: "Full progress" }} />
           <div className="mt-4 space-y-2">
-            {attempts.slice(0, 8).map((a, i) => (
+            {attempts.slice(0, 6).map((a, i) => (
               <motion.div
                 key={a.id}
                 initial={{ opacity: 0, x: -8 }}
@@ -369,11 +528,7 @@ function ActivityTab({
                 className="flex items-center gap-3 rounded-2xl border border-border bg-background p-3"
               >
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                  {a.mode === "mcq" ? (
-                    <Sparkles className="h-4 w-4" />
-                  ) : (
-                    <PenLine className="h-4 w-4" />
-                  )}
+                  {a.mode === "mcq" ? <Sparkles className="h-4 w-4" /> : <PenLine className="h-4 w-4" />}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">
@@ -390,123 +545,51 @@ function ActivityTab({
           </div>
         </Card>
       )}
-
-      {favorites.length > 0 && (
-        <Card>
-          <CardHead title="Recently saved" action={{ to: "/favorites", label: "Open favorites" }} />
-          <div className="mt-4 space-y-2">
-            {favorites.slice(0, 6).map((f) => (
-              <div
-                key={f.key}
-                className="flex items-center gap-3 rounded-2xl border border-border bg-background p-3"
-              >
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-secondary/15 text-secondary">
-                  <Star className="h-4 w-4" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{f.title}</p>
-                  <p className="truncate text-[11px] capitalize text-muted-foreground">
-                    {f.type} {f.subtitle ? `· ${f.subtitle}` : ""}
-                  </p>
-                </div>
-                <Clock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
     </>
   );
 }
 
-function AchievementsTab({
-  s,
-  streak,
-  favorites,
-  groups,
-}: {
-  s: Summary;
-  streak: number;
-  favorites: number;
-  groups: number;
-}) {
-  const badges = [
-    {
-      icon: <Sparkles className="h-5 w-5" />,
-      title: "First paper",
-      sub: "Submit your first practice paper",
-      done: s.attempts >= 1,
-    },
-    {
-      icon: <TrendingUp className="h-5 w-5" />,
-      title: "Sharp shooter",
-      sub: "Reach 80% overall accuracy",
-      done: s.accuracy >= 80,
-    },
-    {
-      icon: <Target className="h-5 w-5" />,
-      title: "Century",
-      sub: "Answer 100 questions",
-      done: s.questions >= 100,
-    },
-    {
-      icon: <Flame className="h-5 w-5" />,
-      title: "On a streak",
-      sub: "Practise 3 days in a row",
-      done: streak >= 3,
-    },
-    {
-      icon: <Star className="h-5 w-5" />,
-      title: "Collector",
-      sub: "Save 10 questions or posts",
-      done: favorites >= 10,
-    },
-    {
-      icon: <Users className="h-5 w-5" />,
-      title: "Team player",
-      sub: "Join a study group",
-      done: groups >= 1,
-    },
-  ];
-
-  const unlocked = badges.filter((b) => b.done).length;
-
+function FavoritesTab({ favorites }: { favorites: FavoriteItem[] }) {
   return (
     <Card>
-      <CardHead title="Achievements" hint={`${unlocked} of ${badges.length} unlocked`} />
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {badges.map((b, i) => (
-          <motion.div
-            key={b.title}
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.04 }}
-            className={`flex items-start gap-3 rounded-2xl border p-4 transition ${
-              b.done ? "border-primary/30 bg-primary/5" : "border-border bg-background opacity-70"
-            }`}
-          >
-            <span
-              className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${
-                b.done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-              }`}
+      <CardHead title="Favorites" action={{ to: "/favorites", label: "See all" }} />
+      {favorites.length === 0 ? (
+        <EmptyState
+          icon={<Star className="h-6 w-6 text-muted-foreground" />}
+          text="এখনো কিছু সেভ করা হয়নি।"
+          cta={{ to: "/quiz", label: "Explore practice" }}
+        />
+      ) : (
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {favorites.slice(0, 8).map((f) => (
+            <div
+              key={f.key}
+              className="flex items-center gap-3 rounded-2xl border border-border bg-background p-3 transition hover:border-primary/30"
             >
-              {b.done ? b.icon : <Award className="h-5 w-5" />}
-            </span>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold">{b.title}</p>
-              <p className="text-[11px] text-muted-foreground">{b.sub}</p>
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-secondary/15 text-secondary">
+                <Star className="h-4 w-4" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">{f.title}</p>
+                <p className="truncate text-[11px] capitalize text-muted-foreground">
+                  {f.type}
+                  {f.subtitle ? ` · ${f.subtitle}` : ""}
+                </p>
+              </div>
             </div>
-          </motion.div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </Card>
   );
 }
 
-/* ------------------------------ Bits ------------------------------ */
+/* ------------------------------- Bits ------------------------------- */
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <section className="rounded-3xl border border-border bg-surface p-5 shadow-sm">{children}</section>;
+  return (
+    <section className="rounded-3xl border border-border bg-surface p-5 shadow-sm">{children}</section>
+  );
 }
 
 function CardHead({
@@ -536,28 +619,7 @@ function CardHead({
   );
 }
 
-function Chip({
-  icon,
-  text,
-  tone = "muted",
-}: {
-  icon: React.ReactNode;
-  text: string;
-  tone?: "muted" | "primary";
-}) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold ${
-        tone === "primary" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
-      }`}
-    >
-      {icon}
-      {text}
-    </span>
-  );
-}
-
-function StatCard({
+function InfoRow({
   icon,
   label,
   value,
@@ -566,6 +628,20 @@ function StatCard({
   label: string;
   value: string;
 }) {
+  return (
+    <div className="flex items-center gap-3 rounded-2xl border border-border bg-background p-3">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+        {icon}
+      </span>
+      <div className="min-w-0">
+        <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
+        <p className="truncate text-sm font-semibold">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
       <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary/10 text-primary">{icon}</span>
@@ -617,10 +693,18 @@ function QuickCard({
   );
 }
 
-function EmptyState({ text, cta }: { text: string; cta: { to: string; label: string } }) {
+function EmptyState({
+  icon,
+  text,
+  cta,
+}: {
+  icon: React.ReactNode;
+  text: string;
+  cta: { to: string; label: string };
+}) {
   return (
     <div className="mt-4 rounded-2xl border border-dashed border-border p-8 text-center">
-      <Target className="mx-auto h-6 w-6 text-muted-foreground" />
+      <div className="mx-auto w-fit">{icon}</div>
       <p className="mt-3 text-xs text-muted-foreground">{text}</p>
       <Link
         to={cta.to}
