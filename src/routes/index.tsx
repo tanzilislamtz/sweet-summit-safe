@@ -401,36 +401,36 @@ const kindConfig: Record<
   question: {
     label: "Question",
     Icon: HelpCircle,
-    accent: "text-amber-800",
-    chip: "bg-amber-500/20 text-amber-900",
+    accent: "text-amber-800 dark:text-amber-300",
+    chip: "bg-amber-500/20 text-amber-900 dark:text-amber-200",
     ring: "ring-amber-500/60",
     frame:
-      "border border-violet-300/70 bg-[linear-gradient(135deg,#fbf8ff_0%,#f3ecff_55%,#ece5ff_100%)]",
+      "border border-violet-300/70 bg-[linear-gradient(135deg,#fbf8ff_0%,#f3ecff_55%,#ece5ff_100%)] dark:border-violet-400/25 dark:bg-[linear-gradient(135deg,#221f33_0%,#241f3d_55%,#1d1a2e_100%)]",
   },
   "seeking-tutor": {
     label: "Seeking Tutor",
     Icon: UserSearch,
-    accent: "text-cyan-700",
-    chip: "bg-cyan-500/15 text-cyan-800 border border-cyan-500/30",
+    accent: "text-cyan-700 dark:text-cyan-300",
+    chip: "bg-cyan-500/15 text-cyan-800 border border-cyan-500/30 dark:text-cyan-200",
     ring: "ring-cyan-500/60",
     frame:
-      "border border-cyan-300/50 bg-gradient-to-br from-sky-50 via-cyan-50/70 to-white",
+      "border border-cyan-300/50 bg-gradient-to-br from-sky-50 via-cyan-50/70 to-white dark:border-cyan-400/20 dark:from-[#16222e] dark:via-[#152430] dark:to-[#141b26]",
   },
   "offering-tutor": {
     label: "Available Tutor",
     Icon: UserCheck,
-    accent: "text-emerald-800",
-    chip: "bg-emerald-500/20 text-emerald-900",
+    accent: "text-emerald-800 dark:text-emerald-300",
+    chip: "bg-emerald-500/20 text-emerald-900 dark:text-emerald-200",
     ring: "ring-emerald-500/60",
-    frame: "border border-emerald-500/30 bg-gradient-to-r from-emerald-50 via-teal-50/70 to-white",
+    frame: "border border-emerald-500/30 bg-gradient-to-r from-emerald-50 via-teal-50/70 to-white dark:from-[#15271f] dark:via-[#14241f] dark:to-[#141b1a]",
   },
   "seeking-student": {
     label: "Admission Open",
     Icon: BookOpenCheck,
-    accent: "text-fuchsia-800",
-    chip: "bg-fuchsia-500/20 text-fuchsia-900",
+    accent: "text-fuchsia-800 dark:text-fuchsia-300",
+    chip: "bg-fuchsia-500/20 text-fuchsia-900 dark:text-fuchsia-200",
     ring: "ring-fuchsia-500/60",
-    frame: "border border-fuchsia-400/40 bg-gradient-to-br from-fuchsia-50 via-purple-50/60 to-white",
+    frame: "border border-fuchsia-400/40 bg-gradient-to-br from-fuchsia-50 via-purple-50/60 to-white dark:border-fuchsia-400/25 dark:from-[#251a2b] dark:via-[#221a2b] dark:to-[#181521]",
   },
 };
 
@@ -583,7 +583,7 @@ function Post({
         </>
       )}
       {kind === "seeking-student" && (
-        <div className="pointer-events-none absolute right-3 top-3 rotate-[-8deg] rounded-md border-2 border-fuchsia-600 bg-white px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-fuchsia-700 shadow-md">
+        <div className="pointer-events-none absolute right-3 top-3 rotate-[-8deg] rounded-md border-2 border-fuchsia-600 bg-white px-2.5 py-1 dark:bg-[#1b1626] text-[10px] font-black uppercase tracking-[0.18em] text-fuchsia-700 shadow-md">
           Admission Open
         </div>
       )}
@@ -689,12 +689,12 @@ function Post({
         {kind === "question" ? (
           <div className="flex gap-3">
             {/* Vote rail */}
-            <div className="flex h-fit shrink-0 flex-col items-center justify-between gap-1 rounded-full border border-amber-500/40 bg-white/70 px-2 py-2 text-amber-900">
+            <div className="flex h-fit shrink-0 flex-col items-center justify-between gap-1 rounded-full border border-amber-500/40 bg-white/70 px-2 py-2 text-amber-900 dark:bg-white/5 dark:text-amber-200">
               <button aria-label="Upvote" className="grid place-items-center rounded-full p-1 transition-colors hover:bg-amber-500/20">
                 <ChevronUp className="h-4 w-4" strokeWidth={2.5} />
               </button>
               <span className="text-base font-black leading-none tabular-nums">{Math.max(1, Math.round(stats.likes / 3))}</span>
-              <button aria-label="Downvote" className="grid place-items-center rounded-full p-1 text-amber-900/50 transition-colors hover:bg-amber-500/20 hover:text-amber-900">
+              <button aria-label="Downvote" className="grid place-items-center rounded-full p-1 text-amber-900/50 transition-colors hover:bg-amber-500/20 hover:text-amber-900 dark:text-amber-200/60 dark:hover:text-amber-200">
                 <ChevronDown className="h-4 w-4" strokeWidth={2.5} />
               </button>
             </div>
@@ -742,9 +742,9 @@ function Post({
                 kc.dark
                   ? "rounded-xl border border-cyan-400/20 bg-white/5 px-3 py-2 backdrop-blur-sm"
                   : kind === "offering-tutor"
-                  ? "rounded-xl border border-emerald-500/25 bg-white/70 px-3 py-2 shadow-sm"
+                  ? "rounded-xl border border-emerald-500/25 bg-white/70 px-3 py-2 shadow-sm dark:bg-white/5"
                   : kind === "seeking-student"
-                  ? "rounded-xl border border-fuchsia-400/30 bg-white/70 px-3 py-2 shadow-sm"
+                  ? "rounded-xl border border-fuchsia-400/30 bg-white/70 px-3 py-2 shadow-sm dark:bg-white/5"
                   : "rounded-xl border border-current/15 bg-background/60 px-3 py-2"
               }
             >
