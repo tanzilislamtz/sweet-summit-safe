@@ -7,7 +7,9 @@ import { getUnread, subscribeUnread, incrementUnread } from "@/lib/notifications
  * until real realtime wiring is added.
  */
 export function useUnreadMessages() {
-  const [count, setCount] = useState<number>(() => (typeof window === "undefined" ? 0 : getUnread()));
+  // Always start at 0 so SSR markup matches the first client render; the
+  // effect below syncs the real count right after hydration.
+  const [count, setCount] = useState<number>(0);
 
   useEffect(() => {
     setCount(getUnread());
