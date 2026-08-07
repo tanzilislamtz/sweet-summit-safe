@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import logoAsset from "@/assets/learns-academy-logo.png.asset.json";
 import { toggleMessengerPopup } from "@/lib/messenger";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 
 
@@ -67,6 +68,7 @@ export function Topbar({
             </div>
 
             <div className="ml-auto flex items-center gap-1 md:ml-0">
+              <ThemeToggle />
               <IconBtn label="Notifications">
                 <Bell className="h-5 w-5" />
                 <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive ring-2 ring-background" />
@@ -105,6 +107,7 @@ export function Topbar({
           </>
         ) : (
           <div className="ml-auto flex items-center gap-2">
+            <ThemeToggle />
             <Link
               to="/login"
               className="hidden items-center rounded-full border border-border px-3.5 py-2 text-sm font-medium text-foreground/80 transition hover:bg-muted sm:inline-flex"
