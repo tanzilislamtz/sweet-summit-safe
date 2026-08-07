@@ -606,13 +606,19 @@ function Post({
       <header className="relative grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:flex sm:items-center">
         <div className="flex min-w-0 items-center gap-3">
           {kind === "offering-tutor" ? (
-            <div className={`grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 font-display text-2xl font-black text-white shadow-[0_8px_20px_-6px_rgba(16,185,129,0.5)] ring-2 ring-white`}>
+            <Link
+              to="/profile"
+              className={`grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 font-display text-2xl font-black text-white shadow-[0_8px_20px_-6px_rgba(16,185,129,0.5)] ring-2 ring-white transition hover:scale-105 active:scale-95`}
+            >
               {author.charAt(0)}
-            </div>
+            </Link>
           ) : (
-            <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-full bg-muted font-semibold text-foreground ring-2 ${isLearning ? rs.ring : kc.ring}`}>
+            <Link
+              to="/profile"
+              className={`grid h-11 w-11 shrink-0 place-items-center rounded-full bg-muted font-semibold text-foreground ring-2 ${isLearning ? rs.ring : kc.ring} transition hover:opacity-80 active:scale-95`}
+            >
               {author.charAt(0)}
-            </div>
+            </Link>
           )}
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
