@@ -211,9 +211,12 @@ function Composer() {
   return (
     <div className="rounded-2xl border border-border bg-surface p-3 shadow-[0_8px_30px_rgb(41,44,117,0.08)]">
       <div className="flex items-center gap-3">
-        <div className="font-display grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground shadow-sm">
+        <Link
+          to="/profile"
+          className="font-display grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground shadow-sm transition hover:opacity-80 active:scale-95"
+        >
           A
-        </div>
+        </Link>
 
         <button
           onClick={() => go()}
