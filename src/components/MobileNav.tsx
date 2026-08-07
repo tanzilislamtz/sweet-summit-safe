@@ -142,7 +142,7 @@ export function MobileNav({ open, onClose }: { open: boolean; onClose: () => voi
 
             {/* Menu footer — appearance + profile */}
             <div className="mt-3 shrink-0 space-y-2.5 border-t border-border pt-3">
-              <ThemeToggle variant="menu" />
+              {/* ThemeToggle removed from mobile nav as per request */}
               <Link
                 to="/profile"
                 onClick={onClose}

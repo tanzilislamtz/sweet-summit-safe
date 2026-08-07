@@ -7,12 +7,14 @@ import {
   BookOpen,
   Calendar,
   Camera,
+  ChevronRight,
   Flame,
   GraduationCap,
   MapPin,
   MessageCircle,
   Pencil,
   PenLine,
+  Settings,
   Sparkles,
   Star,
   Target,
@@ -23,6 +25,8 @@ import {
 import { Topbar } from "@/components/Topbar";
 import { MobileNav } from "@/components/MobileNav";
 import { LeftNav } from "@/components/LeftNav";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { cn } from "@/lib/utils";
 import { ProgressRing } from "@/components/ProgressRing";
 import { listAttempts, summarise, type PracticeAttempt } from "@/lib/practice-results";
 import { FAVORITES_EVENT, listFavorites, type FavoriteItem } from "@/lib/favorites";
@@ -50,7 +54,7 @@ export const Route = createFileRoute("/profile")({
   component: ProfilePage,
 });
 
-type TabId = "post" | "about" | "qa" | "points" | "favorites";
+type TabId = "post" | "about" | "qa" | "points" | "favorites" | "settings";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "post", label: "Post" },
@@ -58,6 +62,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "qa", label: "Q&A" },
   { id: "points", label: "Points & Level" },
   { id: "favorites", label: "Favorites" },
+  { id: "settings", label: "Settings" },
 ];
 
 /** 250 points per level — keeps the ladder readable for learners. */
@@ -281,6 +286,7 @@ function ProfilePage() {
                 />
               )}
               {tab === "favorites" && <FavoritesTab favorites={favorites} />}
+              {tab === "settings" && <SettingsTab />}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -719,5 +725,49 @@ function EmptyState({
         {cta.label}
       </Link>
     </div>
+  );
+}
+
+function SettingsTab() {
+  return (
+    <Card>
+      <CardHead title="Settings" hint="Manage your account preferences and app appearance." />
+      <div className="mt-6 space-y-6">
+        <div>
+          <h3 className="flex items-center gap-2 text-sm font-bold">
+            <Sparkles className="h-4 w-4 text-primary" />
+            Appearance
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Switch between day and night mode to suit your environment.
+          </p>
+          <div className="mt-4 max-w-sm">
+            <ThemeToggle variant="menu" />
+          </div>
+        </div>
+
+        <div className="border-t border-border pt-6">
+          <h3 className="flex items-center gap-2 text-sm font-bold">
+            <Settings className="h-4 w-4 text-primary" />
+            Account Preferences
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Manage your language and notification settings.
+          </p>
+          <div className="mt-4 grid gap-3">
+             <div className="flex items-center justify-between rounded-2xl border border-border bg-background p-4">
+               <span className="text-sm font-medium">Email Notifications</span>
+               <div className="h-6 w-10 rounded-full bg-primary/20 p-1">
+                 <div className="h-4 w-4 rounded-full bg-primary" />
+               </div>
+             </div>
+             <div className="flex items-center justify-between rounded-2xl border border-border bg-background p-4 opacity-50">
+               <span className="text-sm font-medium">Language (English)</span>
+               <ChevronRight className="h-4 w-4" />
+             </div>
+          </div>
+        </div>
+      </div>
+    </Card>
   );
 }
