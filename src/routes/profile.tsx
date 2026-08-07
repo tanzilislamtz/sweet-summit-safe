@@ -157,46 +157,52 @@ function ProfilePage() {
             </div>
 
             <div className="px-4 pb-4 sm:px-6 sm:pb-5">
-              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 sm:flex sm:flex-wrap sm:justify-between">
-                <div className="-mt-10 flex min-w-0 items-end gap-3 sm:-mt-12 sm:gap-4">
-                  <div className="relative shrink-0">
-                    <div className="grid h-[76px] w-[76px] place-items-center rounded-full border-4 border-surface bg-primary text-2xl font-black text-primary-foreground shadow-md sm:h-24 sm:w-24 sm:text-3xl">
-                      {initial}
-                    </div>
-                    <button
-                      type="button"
-                      aria-label="Change profile picture"
-                      className="absolute -bottom-0.5 -right-0.5 grid h-8 w-8 place-items-center rounded-full border-2 border-surface bg-foreground text-background transition hover:opacity-90"
-                    >
-                      <Camera className="h-3.5 w-3.5" />
-                    </button>
+              {/* Avatar row — only the avatar overlaps the cover, so the name
+                  below always sits on a clean surface and stays readable. */}
+              <div className="flex items-end justify-between gap-3">
+                <div className="relative -mt-12 shrink-0 sm:-mt-14">
+                  <div className="grid h-[84px] w-[84px] place-items-center rounded-full border-4 border-surface bg-gradient-to-br from-primary to-secondary text-3xl font-black text-primary-foreground shadow-lg sm:h-28 sm:w-28 sm:text-4xl">
+                    {initial}
                   </div>
-
-                  <div className="min-w-0 pb-1">
-                    <h1 className="flex min-w-0 items-center gap-1.5 text-lg font-black tracking-tight sm:text-2xl">
-                      <span className="truncate">{name}</span>
-                      <BadgeCheck className="h-4 w-4 shrink-0 text-primary sm:h-5 sm:w-5" />
-                    </h1>
-                    <p className="mt-0.5 text-xs text-muted-foreground sm:text-[13px]">
-                      <b className="font-bold text-foreground tabular-nums">{followers}</b> Followers
-                      <span className="mx-1.5">·</span>
-                      <b className="font-bold text-foreground tabular-nums">{following}</b> Following
-                    </p>
-                    <p className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
-                      <GraduationCap className="h-3.5 w-3.5" />
-                      Student
-                    </p>
-                  </div>
+                  <button
+                    type="button"
+                    aria-label="Change profile picture"
+                    className="absolute bottom-0.5 right-0.5 grid h-8 w-8 place-items-center rounded-full border-2 border-surface bg-foreground text-background transition hover:opacity-90"
+                  >
+                    <Camera className="h-3.5 w-3.5" />
+                  </button>
                 </div>
 
                 <button
                   type="button"
-                  className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-border bg-background px-3.5 py-2 text-xs font-semibold shadow-sm transition hover:border-primary/40 hover:text-primary"
+                  className="mb-1 inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-border bg-background px-3.5 py-2 text-xs font-semibold shadow-sm transition hover:border-primary/40 hover:text-primary"
                 >
                   <Pencil className="h-3.5 w-3.5" />
                   Edit Profile
                 </button>
               </div>
+
+              {/* Identity block — below the cover, full width */}
+              <div className="mt-3">
+                <h1 className="flex min-w-0 items-center gap-1.5 text-xl font-black tracking-tight text-foreground sm:text-[26px]">
+                  <span className="truncate">{name}</span>
+                  <BadgeCheck className="h-5 w-5 shrink-0 text-primary" />
+                </h1>
+
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13px] text-muted-foreground">
+                  <span>
+                    <b className="font-bold text-foreground tabular-nums">{followers}</b> Followers
+                  </span>
+                  <span>
+                    <b className="font-bold text-foreground tabular-nums">{following}</b> Following
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-primary">
+                    <GraduationCap className="h-3.5 w-3.5" />
+                    Student
+                  </span>
+                </div>
+              </div>
+
 
               {/* Level strip */}
               <div className="mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-muted/50 px-3.5 py-2.5">
