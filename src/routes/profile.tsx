@@ -668,6 +668,7 @@ function PointsTab({
   points,
   level,
   levelPct,
+  intoLevel,
   streak,
   favorites,
   groups,
@@ -677,6 +678,7 @@ function PointsTab({
   points: number;
   level: number;
   levelPct: number;
+  intoLevel: number;
   streak: number;
   favorites: number;
   groups: number;
