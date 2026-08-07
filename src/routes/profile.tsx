@@ -700,36 +700,35 @@ function PointsTab({
       <section className="rounded-3xl border border-border bg-surface p-5 shadow-sm">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
           <div className="flex items-center gap-4 shrink-0">
-            <div className="relative">
-              <div className="grid h-24 w-24 place-items-center rounded-full bg-background sm:h-28 sm:w-28">
+            <div className="relative flex h-28 w-28 items-center justify-center sm:h-32 sm:w-32">
+              <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Status</p>
                   <p className="text-sm font-black text-foreground sm:text-base">Level {level}</p>
                 </div>
               </div>
-              <svg className="absolute inset-0 h-full w-full -rotate-90">
+              <svg className="h-full w-full -rotate-90 transform" viewBox="0 0 100 100">
                 <circle
-                  cx="50%"
-                  cy="50%"
-                  r="44%"
+                  cx="50"
+                  cy="50"
+                  r="42"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="10"
-                  className="text-muted/30"
+                  strokeWidth="8"
+                  className="text-muted/15"
                 />
                 <motion.circle
-                  cx="50%"
-                  cy="50%"
-                  r="44%"
-                  pathLength="100"
+                  cx="50"
+                  cy="50"
+                  r="42"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="10"
+                  strokeWidth="8"
                   strokeLinecap="round"
-                  strokeDasharray="100 100"
-                  initial={{ strokeDashoffset: 100 }}
-                  animate={{ strokeDashoffset: 100 - levelPct }}
-                  transition={{ duration: 1, ease: "easeOut" }}
+                  strokeDasharray="264"
+                  initial={{ strokeDashoffset: 264 }}
+                  animate={{ strokeDashoffset: 264 - (264 * levelPct) / 100 }}
+                  transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
                   className="text-primary"
                 />
               </svg>
