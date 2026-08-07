@@ -34,7 +34,7 @@ export function ThemeToggle({ variant = "icon", className }: ThemeToggleProps) {
 
   if (variant === "menu") {
     return (
-      <div className={cn("flex items-center gap-1 rounded-full bg-muted/30 p-1 border border-border/50", className)}>
+      <div className={cn("flex items-center gap-1 rounded-2xl bg-muted/40 p-1.5 border border-border/60 shadow-inner", className)}>
         {MODES.map((m) => {
           const active = ready && mode === m.id;
           return (
@@ -44,20 +44,20 @@ export function ThemeToggle({ variant = "icon", className }: ThemeToggleProps) {
               onClick={() => setMode(m.id)}
               aria-pressed={active}
               className={cn(
-                "relative inline-flex flex-1 items-center justify-center gap-1.5 rounded-full px-2.5 py-1.5 text-[11px] font-bold transition-all duration-200",
+                "relative inline-flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-[11px] font-bold transition-all duration-300",
                 active 
-                  ? "text-primary-foreground shadow-sm" 
+                  ? "text-primary-foreground" 
                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
               )}
             >
               {active && (
                 <motion.span
                   layoutId="theme-pill"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  className="absolute inset-0 -z-10 rounded-full bg-primary"
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  className="absolute inset-0 z-0 rounded-xl bg-primary shadow-sm"
                 />
               )}
-              <m.icon className={cn("h-3.5 w-3.5 transition-transform duration-200", active && "scale-110")} />
+              <m.icon className={cn("relative z-10 h-4 w-4 transition-transform duration-300", active && "scale-110")} />
               <span className="relative z-10">
                 {m.id === "light" ? "Day" : m.id === "dark" ? "Night" : "Auto"}
               </span>
