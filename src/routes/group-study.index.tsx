@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useMemo, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Users,
   Search,
@@ -14,6 +14,8 @@ import {
   X,
   Check,
   Loader2,
+  ChevronDown,
+  LogOut,
 } from "lucide-react";
 import { studyGroups, type StudyGroup } from "@/data/groups";
 import {
