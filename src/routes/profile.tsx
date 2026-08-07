@@ -711,7 +711,7 @@ function PointsTab({
                 <circle
                   cx="50%"
                   cy="50%"
-                  r="46%"
+                  r="45%"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="8"
