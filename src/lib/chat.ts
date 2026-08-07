@@ -99,7 +99,7 @@ const seed: Record<string, ChatMessage[]> = {
   ],
   mahin: [
     { id: "1", threadId: "mahin", from: "them", text: "vaia notes ta share korben?", at: Date.now() - 1000 * 60 * 6 },
-    { id: "2", threadId: "mahin", from: "me", text: "Sure, 5 min-এ pathacchi.", at: Date.now() - 1000 * 60 * 5, status: "read" },
+    { id: "2", threadId: "mahin", from: "me", text: "Sure, sending it in 5 minutes.", at: Date.now() - 1000 * 60 * 5, status: "read" },
   ],
 };
 
