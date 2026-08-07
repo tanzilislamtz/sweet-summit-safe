@@ -358,23 +358,133 @@ function AboutTab({
   groupCount: number;
 }) {
   return (
-    <Card>
-      <CardHead title="About" hint="Basic details shown on your public profile." />
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <InfoRow icon={<GraduationCap className="h-4 w-4" />} label="Role" value="Student" />
-        <InfoRow icon={<MessageCircle className="h-4 w-4" />} label="Email" value={email ?? "Not signed in"} />
-        <InfoRow icon={<MapPin className="h-4 w-4" />} label="Location" value="Bangladesh" />
-        <InfoRow
-          icon={<Calendar className="h-4 w-4" />}
-          label="Joined"
-          value={joinedAt ? new Date(joinedAt).toLocaleDateString() : "—"}
-        />
-        <InfoRow icon={<Users className="h-4 w-4" />} label="Study groups" value={String(groupCount)} />
-        <InfoRow icon={<BookOpen className="h-4 w-4" />} label="Interests" value="Physics · Math · English" />
+    <div className="space-y-5">
+      {/* Bio Section */}
+      <Card>
+        <CardHead title="Bio" hint="Tell the community about yourself." />
+        <p className="mt-4 text-sm text-muted-foreground italic">
+          "No bio yet. Click Edit Profile to add one."
+        </p>
+      </Card>
+
+      {/* Subjects of Interest (Tags) */}
+      <Card>
+        <CardHead title="Subjects of Interest" />
+        <div className="mt-4 flex flex-wrap gap-2">
+          {["Digital media", "Gadgets", "Programming", "Social Science", "Sports"].map((s) => (
+            <span
+              key={s}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs font-bold text-primary"
+            >
+              <BadgeCheck className="h-3 w-3" />
+              {s}
+            </span>
+          ))}
+        </div>
+      </Card>
+
+      {/* Basic Information (Accordion Style) */}
+      <div className="rounded-3xl border border-border bg-surface shadow-sm overflow-hidden">
+        <button className="flex w-full items-center justify-between p-5 text-left transition hover:bg-muted/30">
+          <h2 className="text-base font-bold">Basic Information</h2>
+          <ChevronRight className="h-5 w-5 -rotate-90 text-muted-foreground" />
+        </button>
+        <div className="px-5 pb-5 space-y-4">
+          <InputGroup label="Full Name*" value="Tanzil Islam" icon="user" />
+          <InputGroup label="Phone Number*" value="01XXXXXXXXX" icon="phone" />
+          <InputGroup label="Email" value={email ?? "drevstudiobd@gmail.com"} icon="mail" />
+          <InputGroup label="Gender (Optional)" value="Male" icon="gender" />
+          <InputGroup label="Date of Birth (Optional)" value="mm/dd/yyyy" icon="calendar" isPlaceholder />
+        </div>
       </div>
-    </Card>
+
+      {/* Academic Information (Expanded by default per screenshots) */}
+      <div className="rounded-3xl border border-border bg-surface shadow-sm overflow-hidden">
+        <button className="flex w-full items-center justify-between p-5 text-left transition hover:bg-muted/30">
+          <h2 className="text-base font-bold">Academic Information</h2>
+          <ChevronRight className="h-5 w-5 -rotate-90 text-muted-foreground" />
+        </button>
+        <div className="px-5 pb-5 space-y-4">
+          <InputGroup label="Education Level *" value="Select" icon="grad" isPlaceholder />
+          <InputGroup label="Version" value="No versions available — type a custom version" icon="version" isPlaceholder />
+          <InputGroup label="Institute" value="Search & select institute" icon="building" isPlaceholder />
+          <div>
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Subjects of Interest</p>
+            <div className="flex flex-wrap gap-2">
+              {["Digital media", "Gadgets", "Programming", "Social Science", "Sports"].map((s) => (
+                <span
+                  key={s}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs font-bold text-primary"
+                >
+                  <BadgeCheck className="h-3 w-3" />
+                  {s}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Learning Preference */}
+      <div className="rounded-3xl border border-border bg-surface shadow-sm overflow-hidden">
+        <button className="flex w-full items-center justify-between p-5 text-left transition hover:bg-muted/30">
+          <h2 className="text-base font-bold">Learning Preference</h2>
+          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+        </button>
+        <div className="hidden px-5 pb-5 space-y-4">
+           {/* Detailed learning preference UI would go here if expanded */}
+        </div>
+      </div>
+
+      {/* Language Preference */}
+      <div className="rounded-3xl border border-border bg-surface shadow-sm overflow-hidden">
+        <button className="flex w-full items-center justify-between p-5 text-left transition hover:bg-muted/30">
+          <h2 className="text-base font-bold">Language Preference</h2>
+          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+        </button>
+      </div>
+
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+        <InfoRow icon={<Calendar className="h-4 w-4" />} label="Joined" value={joinedAt ? new Date(joinedAt).toLocaleDateString() : "August 2026"} />
+        <InfoRow icon={<Users className="h-4 w-4" />} label="Study groups" value={String(groupCount)} />
+      </div>
+    </div>
   );
 }
+
+function InputGroup({ 
+  label, 
+  value, 
+  icon, 
+  isPlaceholder 
+}: { 
+  label: string; 
+  value: string; 
+  icon: string;
+  isPlaceholder?: boolean;
+}) {
+  return (
+    <div>
+      <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{label}</p>
+      <div className="flex items-center gap-3 rounded-2xl border border-border bg-background p-3.5 transition-colors focus-within:border-primary/50">
+        <span className="text-muted-foreground/60">
+          {icon === 'user' && <Users className="h-4 w-4" />}
+          {icon === 'phone' && <MessageCircle className="h-4 w-4" />}
+          {icon === 'mail' && <Globe className="h-4 w-4" />}
+          {icon === 'gender' && <Users className="h-4 w-4" />}
+          {icon === 'calendar' && <Calendar className="h-4 w-4" />}
+          {icon === 'grad' && <GraduationCap className="h-4 w-4" />}
+          {icon === 'version' && <Settings className="h-4 w-4" />}
+          {icon === 'building' && <Target className="h-4 w-4" />}
+        </span>
+        <span className={cn("text-sm font-semibold truncate", isPlaceholder && "text-muted-foreground font-normal")}>
+          {value}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 
 function QaTab({ favorites }: { favorites: FavoriteItem[] }) {
   const questions = favorites.filter((f) => f.type === "question");
