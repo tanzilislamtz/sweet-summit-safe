@@ -281,6 +281,7 @@ function ProfilePage() {
                   points={points}
                   level={level}
                   levelPct={levelPct}
+                  intoLevel={intoLevel}
                   streak={streak}
                   favorites={favorites.length}
                   groups={groupCount}
@@ -668,6 +669,7 @@ function PointsTab({
   points,
   level,
   levelPct,
+  intoLevel,
   streak,
   favorites,
   groups,
@@ -677,6 +679,7 @@ function PointsTab({
   points: number;
   level: number;
   levelPct: number;
+  intoLevel: number;
   streak: number;
   favorites: number;
   groups: number;
@@ -694,124 +697,147 @@ function PointsTab({
 
   return (
     <>
-      <Card>
-        <CardHead
-          title="Points & Level"
-          hint="Points come from practice, saved items and group activity."
-        />
-        <div className="mt-5 flex flex-col gap-6 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-4">
-            <ProgressRing value={levelPct} label={`Level ${level}`} />
-            <div className="space-y-1.5 text-xs">
-              <Legend tone="bg-primary" label="Total points" value={points} />
-              <Legend tone="bg-secondary" label="Correct answers" value={s.correct} />
-              <Legend tone="bg-muted-foreground/40" label="Day streak" value={streak} />
-            </div>
-          </div>
-
-          <div className="min-w-0 flex-1 space-y-3">
-            {s.bySubject.slice(0, 5).map((row, i) => (
-              <div key={row.subjectId}>
-                <div className="mb-1.5 flex items-center justify-between gap-3 text-xs">
-                  <span className="truncate">{row.subjectName}</span>
-                  <span className="shrink-0 tabular-nums text-muted-foreground">{row.accuracy}%</span>
-                </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${row.accuracy}%` }}
-                    transition={{ delay: 0.04 * i, duration: 0.6 }}
-                    className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
-                  />
+      <section className="rounded-3xl border border-border bg-surface p-5 shadow-sm">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-4 shrink-0">
+            <div className="relative">
+              <div className="grid h-24 w-24 place-items-center rounded-full border-4 border-muted/30 bg-background sm:h-28 sm:w-28">
+                <div className="text-center">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status</p>
+                  <p className="text-sm font-black text-foreground sm:text-base">Level {level}</p>
                 </div>
               </div>
-            ))}
-            {s.bySubject.length === 0 && (
-              <p className="rounded-2xl border border-dashed border-border p-6 text-center text-xs text-muted-foreground">
-                Submit a practice paper to see your subject-wise performance.
-              </p>
-            )}
+              <svg className="absolute inset-0 h-full w-full -rotate-90">
+                <circle
+                  cx="50%"
+                  cy="50%"
+                  r="46%"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  className="text-muted/20"
+                />
+                <motion.circle
+                  cx="50%"
+                  cy="50%"
+                  r="46%"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  strokeDasharray="100 100"
+                  initial={{ strokeDashoffset: 100 }}
+                  animate={{ strokeDashoffset: 100 - levelPct }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="text-primary"
+                />
+              </svg>
+            </div>
+            <div className="space-y-1.5 text-xs">
+              <div className="flex items-center gap-2 font-bold text-foreground">
+                <span className="h-2 w-2 rounded-full bg-primary" />
+                <span className="tabular-nums">{points.toLocaleString()}</span> Available Points
+              </div>
+              <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase tracking-widest font-black">
+                <span>{intoLevel} / {POINTS_PER_LEVEL} points</span>
+              </div>
+              <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-muted">
+                <div className="h-full bg-primary" style={{ width: `${levelPct}%` }} />
+              </div>
+              <div className="flex gap-4 pt-1">
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-black text-muted-foreground uppercase">Level 1</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-black text-muted-foreground uppercase opacity-40">Level 2</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-black text-muted-foreground uppercase opacity-40">Level 3</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-black text-muted-foreground uppercase opacity-40">Premium</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {s.attempts > 0 && (
-          <div className="mt-5 flex flex-wrap gap-2">
-            {s.byMode.map((m) => (
-              <span
-                key={m.mode}
-                className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-[11px] font-semibold"
-              >
-                {m.mode === "mcq" ? (
-                  <Sparkles className="h-3.5 w-3.5 text-primary" />
-                ) : (
-                  <PenLine className="h-3.5 w-3.5 text-primary" />
-                )}
-                {m.mode.toUpperCase()} · {m.accuracy}% ({m.attempts})
-              </span>
-            ))}
+        <div className="mt-6 flex items-center justify-between rounded-2xl bg-primary px-5 py-4 text-primary-foreground">
+          <div className="flex items-center gap-3">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/20">
+              <Award className="h-5 w-5" />
+            </span>
+            <p className="text-sm font-bold truncate">Use {POINTS_PER_LEVEL * 20} Points to update level-2</p>
           </div>
-        )}
-      </Card>
+          <button className="rounded-xl bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-wider backdrop-blur-sm transition hover:bg-white/20 disabled:opacity-50" disabled>
+            Insufficient Points
+          </button>
+        </div>
+      </section>
 
+      {/* How to earn points */}
       <Card>
-        <CardHead title="Achievements" hint={`${unlocked} of ${badges.length} unlocked`} />
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {badges.map((b, i) => (
-            <motion.div
-              key={b.title}
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.04 }}
-              className={`flex items-start gap-3 rounded-2xl border p-4 ${
-                b.done ? "border-primary/30 bg-primary/5" : "border-border bg-background opacity-70"
-              }`}
-            >
-              <span
-                className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${
-                  b.done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                }`}
-              >
-                {b.done ? b.icon : <Award className="h-5 w-5" />}
-              </span>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">{b.title}</p>
-                <p className="text-[11px] text-muted-foreground">{b.sub}</p>
+        <CardHead title="How to earn points" />
+        <div className="mt-4 space-y-2">
+          {[
+            { label: "Comment on a post", hint: "(max 5 points/day)", val: "+1 pts" },
+            { label: "Share a post", hint: "(max 5 points/day)", val: "+1 pts" },
+            { label: "Attend a quiz", val: "+5 pts" },
+            { label: "Perfect quiz score", hint: "(once per day)", val: "+10 pts" },
+          ].map((item) => (
+            <div key={item.label} className="flex items-center justify-between rounded-2xl border border-border bg-background p-4">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-sm font-bold text-foreground">{item.label}</span>
+                {item.hint && <span className="text-[10px] text-muted-foreground">{item.hint}</span>}
               </div>
-            </motion.div>
+              <span className="text-sm font-black text-emerald-500">{item.val}</span>
+            </div>
           ))}
         </div>
       </Card>
 
-      {attempts.length > 0 && (
-        <Card>
-          <CardHead title="Recent papers" action={{ to: "/quiz/progress", label: "Full progress" }} />
-          <div className="mt-4 space-y-2">
-            {attempts.slice(0, 6).map((a, i) => (
-              <motion.div
-                key={a.id}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.03 }}
-                className="flex items-center gap-3 rounded-2xl border border-border bg-background p-3"
-              >
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                  {a.mode === "mcq" ? <Sparkles className="h-4 w-4" /> : <PenLine className="h-4 w-4" />}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">
-                    {a.topicName ?? a.chapterName ?? a.subjectName}
-                  </p>
-                  <p className="truncate text-[11px] text-muted-foreground">
-                    {a.mode.toUpperCase()} · {a.correct}/{a.total} correct ·{" "}
-                    {new Date(a.at).toLocaleDateString()}
-                  </p>
+      {/* Use Points */}
+      <Card>
+        <CardHead title="Use Points" />
+        <div className="mt-4 space-y-2">
+          {[
+            { label: "10,000 Points — Promote Profile", sub: "Boost your profile visibility for a fixed duration." },
+            { label: "15,000 Points — Gift Voucher", sub: "Redeem a gift voucher worth 15%, 30% or 50%." },
+            { label: "20,000 Points — Physical Gift", sub: "Request a physical gift — reviewed by admin." },
+            { label: "20,000 Points — Scholarship", sub: "Request a scholarship grant — reviewed by admin." },
+            { label: "20,000 Points — Cash Reward (10K)", sub: "Request a cash payout — reviewed by admin." },
+          ].map((item) => (
+            <div key={item.label} className="flex items-center justify-between rounded-2xl border border-border bg-background p-4">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-bold text-foreground">{item.label}</p>
+                <p className="truncate text-[10px] text-muted-foreground">{item.sub}</p>
+              </div>
+              <button className="shrink-0 rounded-xl bg-muted px-4 py-2 text-[10px] font-black uppercase tracking-wider text-muted-foreground transition hover:bg-muted/80">
+                Insufficient
+              </button>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Recent Activity */}
+      <Card>
+        <CardHead title="Recent activity" />
+        <div className="mt-4 space-y-2">
+          {attempts.length === 0 ? (
+            <EmptyState icon={<Timer className="h-6 w-6 text-muted-foreground" />} text="No activity yet. Start a quiz to earn points." cta={{ to: "/quiz", label: "Start Quiz" }} />
+          ) : (
+            attempts.slice(0, 10).map((a) => (
+              <div key={a.id} className="flex items-center justify-between rounded-2xl border border-border bg-background p-4">
+                <div>
+                  <p className="text-sm font-bold text-foreground">{a.mode === 'mcq' ? 'Quiz Attended' : 'Assignment Submitted'}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase font-black">{a.mode.toUpperCase()} • {new Date(a.at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
                 </div>
-                <span className="shrink-0 text-sm font-bold tabular-nums text-primary">{a.percent}%</span>
-              </motion.div>
-            ))}
-          </div>
-        </Card>
-      )}
+                <span className="text-sm font-black text-emerald-500">+{a.correct} pts</span>
+              </div>
+            ))
+          )}
+        </div>
+      </Card>
     </>
   );
 }
