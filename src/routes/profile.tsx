@@ -235,23 +235,23 @@ function ProfilePage() {
             </div>
 
             {/* Tabs */}
-            <div className="border-t border-border">
+            <div className="border-t border-border bg-surface/50 backdrop-blur-sm">
               <div className="flex gap-1 overflow-x-auto px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {TABS.map((t) => (
                   <button
                     key={t.id}
                     type="button"
                     onClick={() => setTab(t.id)}
-                    className={`relative shrink-0 px-3.5 py-3 text-[13px] font-semibold transition ${
+                    className={`relative shrink-0 px-4 py-3.5 text-[13px] font-bold transition-all ${
                       tab === t.id ? "text-primary" : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    {t.label}
+                    <span className="relative z-10">{t.label}</span>
                     {tab === t.id && (
                       <motion.span
                         layoutId="profile-tab-underline"
                         transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                        className="absolute inset-x-2 bottom-0 h-[3px] rounded-full bg-primary"
+                        className="absolute inset-x-1.5 bottom-0 h-1 rounded-t-full bg-primary"
                       />
                     )}
                   </button>
