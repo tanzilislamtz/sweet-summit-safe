@@ -110,50 +110,51 @@
    Applied by toggling the `.dark` class on <html> (see src/lib/theme.ts).
 --------------------------------------------------------------------------- */
 .dark {
-  --background: oklch(0.19 0.017 274);      /* deep navy-black canvas */
-  --surface: oklch(0.235 0.019 274);        /* raised surface */
-  --foreground: oklch(0.965 0.004 275);
-  --ink: oklch(0.965 0.004 275);
+  /* Rich Midnight Palette: Deeper, less saturated navy-black for a more professional "Night Mode" */
+  --background: oklch(0.12 0.015 274);     /* true midnight background */
+  --surface: oklch(0.18 0.02 274);        /* soft elevation */
+  --foreground: oklch(0.92 0.01 275);      /* reduced brightness for less eye strain */
+  --ink: oklch(0.92 0.01 275);
 
-  --card: oklch(0.235 0.019 274);
-  --card-foreground: oklch(0.965 0.004 275);
-  --popover: oklch(0.245 0.02 274);
-  --popover-foreground: oklch(0.965 0.004 275);
+  --card: oklch(0.18 0.02 274);
+  --card-foreground: oklch(0.92 0.01 275);
+  --popover: oklch(0.20 0.02 274);
+  --popover-foreground: oklch(0.92 0.01 275);
 
-  /* Primary — lifted navy so it stays readable on dark */
-  --primary: oklch(0.66 0.145 279);
-  --primary-foreground: oklch(0.16 0.015 274);
+  /* Primary — softened neon-blue/indigo for contrast without glare */
+  --primary: oklch(0.72 0.13 279);
+  --primary-foreground: oklch(0.12 0.015 274);
 
-  /* Secondary / tutor — brighter green */
-  --secondary: oklch(0.62 0.115 160);
-  --secondary-foreground: oklch(0.16 0.015 274);
-  --tutor: oklch(0.66 0.12 160);
-  --tutor-foreground: oklch(0.16 0.015 274);
+  /* Secondary / tutor — refined sage green */
+  --secondary: oklch(0.74 0.1 160);
+  --secondary-foreground: oklch(0.12 0.015 274);
+  --tutor: oklch(0.74 0.1 160);
+  --tutor-foreground: oklch(0.12 0.015 274);
 
-  /* Accent / guest — warm yellow */
-  --accent: oklch(0.84 0.155 87);
-  --accent-foreground: oklch(0.18 0.015 274);
-  --guest: oklch(0.84 0.155 87);
-  --guest-foreground: oklch(0.18 0.015 274);
+  /* Accent / guest — muted gold/sand */
+  --accent: oklch(0.86 0.12 87);
+  --accent-foreground: oklch(0.14 0.015 274);
+  --guest: oklch(0.86 0.12 87);
+  --guest-foreground: oklch(0.14 0.015 274);
 
-  --muted: oklch(0.275 0.018 274);
-  --muted-foreground: oklch(0.71 0.028 275);
-  --disabled: oklch(0.36 0.02 275);
-  --disabled-foreground: oklch(0.62 0.02 275);
+  --muted: oklch(0.22 0.02 274);
+  --muted-foreground: oklch(0.65 0.02 275);
+  --disabled: oklch(0.28 0.015 275);
+  --disabled-foreground: oklch(0.55 0.015 275);
 
-  --destructive: oklch(0.65 0.2 27);
-  --destructive-foreground: oklch(0.16 0.015 274);
-  --warning: oklch(0.8 0.15 65);
+  --destructive: oklch(0.68 0.18 27);
+  --destructive-foreground: oklch(0.12 0.015 274);
+  --warning: oklch(0.82 0.12 65);
 
-  --border: oklch(0.32 0.02 275);
-  --input: oklch(0.32 0.02 275);
-  --ring: oklch(0.66 0.145 279);
+  --border: oklch(0.26 0.02 275);
+  --input: oklch(0.26 0.02 275);
+  --ring: oklch(0.72 0.13 279);
 
-  --chart-1: oklch(0.66 0.145 279);
-  --chart-2: oklch(0.66 0.12 160);
-  --chart-3: oklch(0.84 0.155 87);
-  --chart-4: oklch(0.65 0.2 27);
-  --chart-5: oklch(0.8 0.15 65);
+  --chart-1: oklch(0.72 0.13 279);
+  --chart-2: oklch(0.74 0.1 160);
+  --chart-3: oklch(0.86 0.12 87);
+  --chart-4: oklch(0.68 0.18 27);
+  --chart-5: oklch(0.82 0.12 65);
 
   color-scheme: dark;
 }
