@@ -13,6 +13,7 @@ import {
   FileText,
   X,
   Check,
+  Loader2,
 } from "lucide-react";
 import { studyGroups, type StudyGroup } from "@/data/groups";
 import {
@@ -151,6 +152,19 @@ function Section({
 }
 
 function GroupCard({ group, joined }: { group: StudyGroup; joined: boolean }) {
+  const [isJoining, setIsJoining] = useState(false);
+
+  const handleJoin = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isJoining) return;
+    setIsJoining(true);
+    setTimeout(() => {
+      setJoined(group.id, !joined);
+      setIsJoining(false);
+    }, 800);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -215,18 +229,22 @@ function GroupCard({ group, joined }: { group: StudyGroup; joined: boolean }) {
       </div>
 
       <button
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setJoined(group.id, !joined);
-        }}
-        className={`mt-2.5 w-full shrink-0 rounded-lg px-3 py-2 text-[11px] font-semibold transition ${
+        onClick={handleJoin}
+        disabled={isJoining}
+        className={`mt-2.5 inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-semibold transition ${
           joined
             ? "border border-border text-foreground hover:bg-muted"
             : "bg-primary text-primary-foreground hover:brightness-110"
-        }`}
+        } disabled:cursor-not-allowed disabled:opacity-70`}
       >
-        {joined ? "Joined" : "Join"}
+        {isJoining ? (
+          <>
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            {joined ? "Leaving..." : "Joining..."}
+          </>
+        ) : (
+          <>{joined ? "Joined" : "Join"}</>
+        )}
       </button>
     </motion.div>
   );
