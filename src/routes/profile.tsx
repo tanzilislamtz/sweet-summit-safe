@@ -358,7 +358,7 @@ function AboutTab({
   groupCount: number;
 }) {
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pb-6">
       {/* Bio Section */}
       <Card>
         <CardHead title="Bio" hint="Tell the community about yourself." />
@@ -425,30 +425,65 @@ function AboutTab({
         </div>
       </div>
 
-      {/* Learning Preference */}
+      {/* Learning Preference (Creative Grid Boxes) */}
       <div className="rounded-3xl border border-border bg-surface shadow-sm overflow-hidden">
-        <button className="flex w-full items-center justify-between p-5 text-left transition hover:bg-muted/30">
+        <div className="flex items-center justify-between p-5">
           <h2 className="text-base font-bold">Learning Preference</h2>
-          <ChevronRight className="h-5 w-5 text-muted-foreground" />
-        </button>
-        <div className="hidden px-5 pb-5 space-y-4">
-           {/* Detailed learning preference UI would go here if expanded */}
+          <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+        </div>
+        <div className="px-5 pb-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <PreferenceBox 
+            icon={<Target className="h-4 w-4" />} 
+            label="Learning Mode" 
+            value="Not Selected" 
+          />
+          <PreferenceBox 
+            icon={<Calendar className="h-4 w-4" />} 
+            label="Available Days" 
+            value="7 Days" 
+          />
+          <PreferenceBox 
+            icon={<Timer className="h-4 w-4" />} 
+            label="Preferred Slots" 
+            value="Evening" 
+          />
+          <PreferenceBox 
+            icon={<MapPin className="h-4 w-4" />} 
+            label="Location" 
+            value="Bangladesh" 
+          />
         </div>
       </div>
 
-      {/* Language Preference */}
-      <div className="rounded-3xl border border-border bg-surface shadow-sm overflow-hidden">
-        <button className="flex w-full items-center justify-between p-5 text-left transition hover:bg-muted/30">
-          <h2 className="text-base font-bold">Language Preference</h2>
-          <ChevronRight className="h-5 w-5 text-muted-foreground" />
-        </button>
-      </div>
-
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-        <InfoRow icon={<Calendar className="h-4 w-4" />} label="Joined" value={joinedAt ? new Date(joinedAt).toLocaleDateString() : "August 2026"} />
-        <InfoRow icon={<Users className="h-4 w-4" />} label="Study groups" value={String(groupCount)} />
+      {/* Quick Summary Cards (Creative) */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="rounded-2xl border border-border bg-surface p-4 text-center transition hover:border-primary/40 hover:shadow-sm">
+           <Calendar className="h-5 w-5 mx-auto text-primary mb-2" />
+           <p className="text-[10px] uppercase font-bold text-muted-foreground">Joined</p>
+           <p className="text-xs font-black">{joinedAt ? new Date(joinedAt).toLocaleDateString() : "August 2026"}</p>
+        </div>
+        <div className="rounded-2xl border border-border bg-surface p-4 text-center transition hover:border-primary/40 hover:shadow-sm">
+           <Users className="h-5 w-5 mx-auto text-secondary mb-2" />
+           <p className="text-[10px] uppercase font-bold text-muted-foreground">Groups</p>
+           <p className="text-xs font-black">{groupCount} Active</p>
+        </div>
       </div>
     </div>
+  );
+}
+
+function PreferenceBox({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
+  return (
+    <div className="flex items-center gap-3 rounded-2xl border border-border bg-background p-3.5 transition hover:border-primary/30">
+      <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary/10 text-primary shrink-0">
+        {icon}
+      </span>
+      <div className="min-w-0">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground truncate">{label}</p>
+        <p className="text-sm font-semibold truncate">{value}</p>
+      </div>
+    </div>
+
   );
 }
 
