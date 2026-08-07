@@ -7,23 +7,26 @@ import {
   BookOpen,
   Calendar,
   Camera,
+  ChevronRight,
   Flame,
   GraduationCap,
   MapPin,
   MessageCircle,
   Pencil,
   PenLine,
+  Settings,
   Sparkles,
   Star,
   Target,
   Timer,
   TrendingUp,
   Users,
-  Settings,
 } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
 import { MobileNav } from "@/components/MobileNav";
 import { LeftNav } from "@/components/LeftNav";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { cn } from "@/lib/utils";
 import { ProgressRing } from "@/components/ProgressRing";
 import { listAttempts, summarise, type PracticeAttempt } from "@/lib/practice-results";
 import { FAVORITES_EVENT, listFavorites, type FavoriteItem } from "@/lib/favorites";
@@ -766,13 +769,5 @@ function SettingsTab() {
         </div>
       </div>
     </Card>
-  );
-}
-
-function Card({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={cn("rounded-3xl border border-border bg-surface p-4 shadow-sm sm:p-6", className)}>
-      {children}
-    </div>
   );
 }
