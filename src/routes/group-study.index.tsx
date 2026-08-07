@@ -155,53 +155,45 @@ function GroupCard({ group, joined }: { group: StudyGroup; joined: boolean }) {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col rounded-2xl border border-border bg-surface p-3.5 shadow-sm transition hover:border-primary/40 hover:shadow-md"
+      className="group flex flex-col rounded-2xl border border-border bg-surface p-3.5 shadow-sm transition hover:border-primary/40 hover:shadow-md"
     >
-      <div className="flex min-w-0 items-center gap-2.5">
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary text-sm font-bold text-primary-foreground">
-          {group.name.charAt(0)}
-        </span>
-        <div className="min-w-0 flex-1">
-          <Link
-            to="/group-study/$groupId"
-            params={{ groupId: group.id }}
-            className="block truncate text-[13px] font-bold hover:text-primary"
-          >
-            {group.name}
-          </Link>
-          <p className="flex min-w-0 items-center gap-1.5 truncate text-[11px] text-muted-foreground">
-            {group.privacy === "Public Group" ? (
-              <Globe className="h-3 w-3 shrink-0" />
-            ) : (
-              <Lock className="h-3 w-3 shrink-0" />
-            )}
-            {group.batch}
-          </p>
-        </div>
-        <button
-          onClick={() => setJoined(group.id, !joined)}
-          className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition ${
-            joined
-              ? "border border-border text-foreground hover:bg-muted"
-              : "bg-primary text-primary-foreground hover:brightness-110"
-          }`}
-        >
-          {joined ? "Joined" : "Join"}
-        </button>
-      </div>
-
-      <p className="mt-2.5 line-clamp-2 text-xs text-muted-foreground">{group.tagline}</p>
-
-      <div className="mt-2.5 flex flex-wrap gap-1">
-        {group.tags.slice(0, 3).map((t) => (
-          <span
-            key={t}
-            className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-foreground/70"
-          >
-            {t}
+      <Link
+        to="/group-study/$groupId"
+        params={{ groupId: group.id }}
+        className="block"
+      >
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary text-sm font-bold text-primary-foreground">
+            {group.name.charAt(0)}
           </span>
-        ))}
-      </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate text-[13px] font-bold group-hover:text-primary">
+              {group.name}
+            </h3>
+            <p className="flex min-w-0 items-center gap-1.5 truncate text-[11px] text-muted-foreground">
+              {group.privacy === "Public Group" ? (
+                <Globe className="h-3 w-3 shrink-0" />
+              ) : (
+                <Lock className="h-3 w-3 shrink-0" />
+              )}
+              {group.batch}
+            </p>
+          </div>
+        </div>
+
+        <p className="mt-2.5 line-clamp-2 text-xs text-muted-foreground">{group.tagline}</p>
+
+        <div className="mt-2.5 flex flex-wrap gap-1">
+          {group.tags.slice(0, 3).map((t) => (
+            <span
+              key={t}
+              className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-foreground/70"
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      </Link>
 
       <div className="mt-3 flex items-center gap-4 border-t border-border pt-2.5 text-[11px] text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
@@ -218,9 +210,24 @@ function GroupCard({ group, joined }: { group: StudyGroup; joined: boolean }) {
           params={{ groupId: group.id }}
           className="ml-auto font-semibold text-primary hover:underline"
         >
-          Open
+          Visit
         </Link>
       </div>
+
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setJoined(group.id, !joined);
+        }}
+        className={`mt-2.5 w-full shrink-0 rounded-lg px-3 py-2 text-[11px] font-semibold transition ${
+          joined
+            ? "border border-border text-foreground hover:bg-muted"
+            : "bg-primary text-primary-foreground hover:brightness-110"
+        }`}
+      >
+        {joined ? "Joined" : "Join"}
+      </button>
     </motion.div>
   );
 }
