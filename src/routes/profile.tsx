@@ -728,7 +728,7 @@ function PointsTab({
                   strokeDasharray="264"
                   initial={{ strokeDashoffset: 264 }}
                   animate={{ strokeDashoffset: 264 - (264 * levelPct) / 100 }}
-                  transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
+                  transition={{ duration: 1.5, ease: [0.34, 1.56, 0.64, 1] }}
                   className="text-primary"
                 />
               </svg>
