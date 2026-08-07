@@ -74,7 +74,7 @@ export function LeftNav({ stickyClass = "sticky top-24" }: { stickyClass?: strin
 
         {/* Menu footer — appearance + profile */}
         <div className="mt-3 shrink-0 space-y-2.5 border-t border-border pt-3">
-          <ThemeToggle variant="menu" />
+          {/* ThemeToggle removed from sidebar as per request */}
           <Link
             to="/profile"
             className="group flex items-center gap-3 rounded-xl border border-border bg-surface p-2.5 transition hover:border-primary/40 hover:bg-muted"

@@ -19,6 +19,7 @@ import {
   Timer,
   TrendingUp,
   Users,
+  Settings,
 } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
 import { MobileNav } from "@/components/MobileNav";
@@ -50,7 +51,7 @@ export const Route = createFileRoute("/profile")({
   component: ProfilePage,
 });
 
-type TabId = "post" | "about" | "qa" | "points" | "favorites";
+type TabId = "post" | "about" | "qa" | "points" | "favorites" | "settings";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "post", label: "Post" },
@@ -58,6 +59,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "qa", label: "Q&A" },
   { id: "points", label: "Points & Level" },
   { id: "favorites", label: "Favorites" },
+  { id: "settings", label: "Settings" },
 ];
 
 /** 250 points per level — keeps the ladder readable for learners. */
@@ -281,6 +283,7 @@ function ProfilePage() {
                 />
               )}
               {tab === "favorites" && <FavoritesTab favorites={favorites} />}
+              {tab === "settings" && <SettingsTab />}
             </motion.div>
           </AnimatePresence>
         </div>
