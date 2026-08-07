@@ -724,3 +724,55 @@ function EmptyState({
     </div>
   );
 }
+
+function SettingsTab() {
+  return (
+    <Card>
+      <CardHead title="Settings" hint="Manage your account preferences and app appearance." />
+      <div className="mt-6 space-y-6">
+        <div>
+          <h3 className="flex items-center gap-2 text-sm font-bold">
+            <Sparkles className="h-4 w-4 text-primary" />
+            Appearance
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Switch between day and night mode to suit your environment.
+          </p>
+          <div className="mt-4 max-w-sm">
+            <ThemeToggle variant="menu" />
+          </div>
+        </div>
+
+        <div className="border-t border-border pt-6">
+          <h3 className="flex items-center gap-2 text-sm font-bold">
+            <Settings className="h-4 w-4 text-primary" />
+            Account Preferences
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Manage your language and notification settings.
+          </p>
+          <div className="mt-4 grid gap-3">
+             <div className="flex items-center justify-between rounded-2xl border border-border bg-background p-4">
+               <span className="text-sm font-medium">Email Notifications</span>
+               <div className="h-6 w-10 rounded-full bg-primary/20 p-1">
+                 <div className="h-4 w-4 rounded-full bg-primary" />
+               </div>
+             </div>
+             <div className="flex items-center justify-between rounded-2xl border border-border bg-background p-4 opacity-50">
+               <span className="text-sm font-medium">Language (English)</span>
+               <ChevronRight className="h-4 w-4" />
+             </div>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function Card({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={cn("rounded-3xl border border-border bg-surface p-4 shadow-sm sm:p-6", className)}>
+      {children}
+    </div>
+  );
+}
