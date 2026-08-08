@@ -71,6 +71,14 @@ type Chat = {
 function AiAssistant() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [aiSettings, setAiSettings] = useState<any>({});
+  
+  useEffect(() => {
+    const saved = localStorage.getItem('ai-settings');
+    if (saved) {
+      setAiSettings(JSON.parse(saved));
+    }
+  }, []);
   const [isTyping, setIsTyping] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [chats, setChats] = useState<Chat[]>([

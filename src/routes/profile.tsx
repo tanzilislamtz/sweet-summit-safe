@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Award,
@@ -1021,8 +1022,16 @@ function EmptyState({
   );
 }
 
-function SettingsTab() {
-  const [aiLang, setAiLang] = useState("bn");
+function SettingsTab({ settings }: { settings: any }) {
+  const [aiLang, setAiLang] = useState(settings?.language === 'Bengali' ? 'bn' : 'en');
+
+  const updateAiLang = (id: string) => {
+    setAiLang(id);
+    const newLang = id === 'bn' ? 'Bengali' : id === 'en' ? 'English' : 'Hindi';
+    const current = JSON.parse(localStorage.getItem('ai-settings') || '{}');
+    localStorage.setItem('ai-settings', JSON.stringify({ ...current, language: newLang }));
+    toast.success(`AI language set to ${newLang}`);
+  };
 
   return (
     <Card>
@@ -1044,13 +1053,23 @@ function SettingsTab() {
 
         {/* AI Reply Preferences */}
         <div className="border-t border-border pt-6">
-          <h3 className="flex items-center gap-2 text-sm font-bold">
-            <Globe className="h-4 w-4 text-primary" />
-            AI Reply Language
-          </h3>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Choose the default language for AI explanations and replies.
-          </p>
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h3 className="flex items-center gap-2 text-sm font-bold">
+                <Globe className="h-4 w-4 text-primary" />
+                AI Reply Language
+              </h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Choose the default language for AI explanations and replies.
+              </p>
+            </div>
+            <Link 
+              to="/ai-settings"
+              className="text-[10px] font-black uppercase tracking-wider text-primary hover:underline"
+            >
+              Advanced AI Settings
+            </Link>
+          </div>
           <div className="mt-4 grid grid-cols-3 gap-2">
             {[
               { id: "bn", label: "Bengali" },
@@ -1059,7 +1078,7 @@ function SettingsTab() {
             ].map((l) => (
               <button
                 key={l.id}
-                onClick={() => setAiLang(l.id)}
+                onClick={() => updateAiLang(l.id)}
                 className={cn(
                   "rounded-xl border py-2.5 text-xs font-bold transition-all",
                   aiLang === l.id
