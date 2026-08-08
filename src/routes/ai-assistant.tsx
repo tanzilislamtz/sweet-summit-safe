@@ -91,13 +91,19 @@ function AiAssistant() {
   }, [messages]);
 
   const findRelatedPosts = (text: string) => {
-    const keywords = text.toLowerCase().split(/\s+/);
-    return posts.filter(post => 
-      keywords.some(k => k.length > 3 && (
+    const isPostMention = text.includes('$');
+    const query = text.replace('$', '').toLowerCase().trim();
+    if (!query) return [];
+    
+    const keywords = query.split(/\s+/);
+    const matches = posts.filter(post => 
+      keywords.some(k => k.length > 2 && (
         post.title.toLowerCase().includes(k) || 
         post.body.toLowerCase().includes(k)
       ))
-    ).slice(0, 2);
+    );
+
+    return isPostMention ? matches.slice(0, 5) : matches.slice(0, 2);
   };
 
   const handleSend = (attachment?: Message["attachments"]) => {
@@ -121,10 +127,21 @@ function AiAssistant() {
       const relatedPosts = findRelatedPosts(currentInput);
       let aiContent = "";
       
-      if (relatedPosts.length > 0) {
-        aiContent = `I found some relevant posts in the community that might help you with "${currentInput}":\n\n- ${relatedPosts[0].title}: This covers similar topics. You should visit it for a better explanation.\n\nHow else can I assist you?`;
+      const settings = JSON.parse(localStorage.getItem("ai-settings") || "{}");
+      const lang = settings.language || "English";
+      
+      if (lang === "Bengali") {
+        if (relatedPosts.length > 0) {
+          aiContent = `আমি কমিউনিটিতে কিছু প্রাসঙ্গিক পোস্ট খুঁজে পেয়েছি যা আপনাকে "${currentInput}" এর বিষয়ে সাহায্য করতে পারে:\n\n- ${relatedPosts[0].title}: এটি একই ধরণের বিষয় নিয়ে লেখা। আরও ভালো ব্যাখ্যার জন্য আপনি এটি ভিজিট করতে পারেন।\n\nআমি আপনাকে আর কীভাবে সাহায্য করতে পারি?`;
+        } else {
+          aiContent = `আমি আপনার "${currentInput}" সম্পর্কিত অনুরোধটি বিশ্লেষণ করেছি। একাডেমীর কারিকুলাম অনুযায়ী, আমি আপনাকে প্রথমে মৌলিক নীতিগুলোতে ফোকাস করার পরামর্শ দিচ্ছি। আপনি কি ধাপে ধাপে বিস্তারিত জানতে চান?`;
+        }
       } else {
-        aiContent = `I've analyzed your request about "${currentInput}". Based on the Academy's curriculum, I recommend focusing on the fundamental principles first. Would you like a step-by-step breakdown?`;
+        if (relatedPosts.length > 0) {
+          aiContent = `I found some relevant posts in the community that might help you with "${currentInput}":\n\n- ${relatedPosts[0].title}: This covers similar topics. You should visit it for a better explanation.\n\nHow else can I assist you?`;
+        } else {
+          aiContent = `I've analyzed your request about "${currentInput}". Based on the Academy's curriculum, I recommend focusing on the fundamental principles first. Would you like a step-by-step breakdown?`;
+        }
       }
 
       const aiMsg: Message = {
@@ -276,13 +293,16 @@ function AiAssistant() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-64 rounded-2xl p-2 shadow-xl border-border/50 backdrop-blur-xl">
                     <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground px-3 py-2">Assistant Configuration</DropdownMenuLabel>
-                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
+                    <DropdownMenuItem 
+                      onClick={() => window.location.href = '/ai-settings'}
+                      className="rounded-xl px-3 py-2.5 cursor-pointer"
+                    >
                       <Languages className="mr-3 h-4 w-4" /> AI Response Language
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
-                      <Zap className="mr-3 h-4 w-4" /> Performance Mode
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
+                    <DropdownMenuItem 
+                      onClick={() => window.location.href = '/ai-settings'}
+                      className="rounded-xl px-3 py-2.5 cursor-pointer"
+                    >
                       <Eye className="mr-3 h-4 w-4" /> Context Awareness
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-border/50" />
