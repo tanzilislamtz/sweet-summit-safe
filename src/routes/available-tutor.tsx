@@ -13,7 +13,11 @@ import {
   Video,
   Users,
   Home,
+  Sparkles,
+  ChevronRight,
 } from "lucide-react";
+import { motion } from "framer-motion";
+
 import { Topbar } from "@/components/Topbar";
 import { MobileNav } from "@/components/MobileNav";
 import { LeftNav } from "@/components/LeftNav";
@@ -219,6 +223,9 @@ function AvailableTutorPage() {
         <LeftNav stickyClass="lg:h-full" />
 
         <div className="min-w-0 space-y-5 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
+          {/* AI Recommended Section */}
+          <AiRecommendedSection />
+
           {/* Simple heading */}
           <header className="flex flex-wrap items-end justify-between gap-2 border-b border-border pb-4">
             <div>
@@ -228,6 +235,7 @@ function AvailableTutorPage() {
               </p>
             </div>
           </header>
+
 
           {/* Search + filter row */}
           <section className="space-y-3">
