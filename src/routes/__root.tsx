@@ -133,7 +133,7 @@ function RootComponent() {
   const isChatThread = /^\/message\/[^/]+/.test(pathname);
   const inAiAssistant = pathname.startsWith("/ai-assistant");
   const hideBottomNav =
-    /^\/(welcome|login|register|create-post)(\/|$)/.test(pathname) || inExamMode || inChatThread || inAiAssistant;
+    /^\/(welcome|login|register|create-post)(\/|$)/.test(pathname) || inExamMode || isChatThread || inAiAssistant;
 
   // Block the browser context menu app-wide. Elements that provide their own
   // custom menu (chat bubbles) opt out with [data-allow-contextmenu].
