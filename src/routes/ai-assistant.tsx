@@ -304,39 +304,13 @@ function AiAssistant() {
               </div>
 
               <div className="border-t border-border p-4 bg-surface/50">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-surface transition-colors">
-                      <Settings className="h-4 w-4 text-primary" />
-                      AI Settings
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-64 rounded-2xl p-2 shadow-xl border-border/50 backdrop-blur-xl">
-                    <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground px-3 py-2">Assistant Configuration</DropdownMenuLabel>
-                    <DropdownMenuItem 
-                      onClick={() => window.location.href = '/ai-settings'}
-                      className="rounded-xl px-3 py-2.5 cursor-pointer"
-                    >
-                      <Languages className="mr-3 h-4 w-4" /> AI Response Language
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => window.location.href = '/ai-settings'}
-                      className="rounded-xl px-3 py-2.5 cursor-pointer"
-                    >
-                      <Eye className="mr-3 h-4 w-4" /> Context Awareness
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator className="bg-border/50" />
-                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
-                      <HistoryIcon className="mr-3 h-4 w-4" /> Auto-save Conversations
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
-                      <ShieldCheck className="mr-3 h-4 w-4" /> Safe Search Filter
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
-                      <SearchCode className="mr-3 h-4 w-4" /> Search Community Posts
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Link 
+                  to="/ai-settings"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-surface transition-colors"
+                >
+                  <Settings className="h-4 w-4 text-primary" />
+                  AI Settings
+                </Link>
               </div>
             </motion.aside>
           )}
