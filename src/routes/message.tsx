@@ -24,6 +24,8 @@ import { clearUnread } from "@/lib/notifications";
 import { Topbar } from "@/components/Topbar";
 import { MobileNav } from "@/components/MobileNav";
 import { LeftNav } from "@/components/LeftNav";
+import { useNavigationStore } from "@/lib/navigation-store";
+import { cn } from "@/lib/utils";
 import { messageRequests } from "@/lib/requests";
 import {
   threads,
@@ -60,6 +62,7 @@ function useLatest() {
 
 function MessageLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const isCollapsed = useNavigationStore((s) => s.isSidebarCollapsed);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const inThread = pathname !== "/message" && pathname.startsWith("/message/");
 
@@ -94,9 +97,13 @@ function MessageLayout() {
 
       <MobileNav open={menuOpen} onClose={() => setMenuOpen(false)} />
       <main
-        className={`mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-6 lg:h-[calc(100dvh-65px)] lg:grid-cols-[240px_minmax(0,1fr)] lg:overflow-hidden lg:px-8 lg:py-6 ${
-          inThread ? "px-0 py-0" : "px-4 py-4"
-        }`}
+        className={cn(
+          "mx-auto grid w-full max-w-[1400px] transition-all duration-300 lg:h-[calc(100dvh-65px)] lg:overflow-hidden lg:px-8 lg:py-6",
+          inThread ? "px-0 py-0" : "px-4 py-4",
+          isCollapsed 
+            ? "grid-cols-1 lg:grid-cols-[72px_minmax(0,1fr)]" 
+            : "grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)]"
+        )}
       >
 
         <LeftNav stickyClass="lg:h-full" />
