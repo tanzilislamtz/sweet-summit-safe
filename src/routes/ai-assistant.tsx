@@ -23,9 +23,30 @@ import {
   Zap,
   BookOpen,
   Trophy,
-  Target
+  Target,
+  Mic,
+  Image as ImageIcon,
+  FileText,
+  Volume2,
+  Paperclip,
+  Languages,
+  Eye,
+  History as HistoryIcon,
+  ShieldCheck, 
+  SearchCode
 } from "lucide-react";
 import { toast } from "sonner";
+import { getSession } from "@/lib/session";
+import { posts } from "@/lib/posts";
+import { cn } from "@/lib/utils";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel
+} from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute("/ai-assistant")({
   component: AiAssistant,
@@ -36,6 +57,8 @@ type Message = {
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+  attachments?: { type: "image" | "document" | "voice"; url: string; name?: string }[];
+  suggestedPosts?: typeof posts;
 };
 
 type Chat = {
@@ -50,12 +73,13 @@ function AiAssistant() {
     {
       id: "1",
       role: "assistant",
-      content: "Hello! I'm your Learns Academy AI Assistant. How can I help you with your studies today?",
+      content: "Hello! I'm your Learns Academy AI Assistant. I can help you with your studies, analyze documents, and even find relevant posts for you. How can I help today?",
       timestamp: new Date(),
     },
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [chats, setChats] = useState<Chat[]>([
     { id: "1", title: "Math Problem Solving", lastMessage: "Let's solve the integration...", date: "Just now" },
     { id: "2", title: "English Grammar Rules", lastMessage: "Passive voice rules...", date: "2 hours ago" },
@@ -63,6 +87,9 @@ function AiAssistant() {
   ]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
+  
+  const session = getSession();
+  const initial = session?.name?.charAt(0).toUpperCase() || "A";
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -70,31 +97,76 @@ function AiAssistant() {
     }
   }, [messages]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const findRelatedPosts = (text: string) => {
+    const keywords = text.toLowerCase().split(/\s+/);
+    return posts.filter(post => 
+      keywords.some(k => k.length > 3 && (
+        post.title.toLowerCase().includes(k) || 
+        post.body.toLowerCase().includes(k)
+      ))
+    ).slice(0, 2);
+  };
+
+  const handleSend = (attachment?: Message["attachments"]) => {
+    if (!input.trim() && !attachment) return;
 
     const userMsg: Message = {
       id: Date.now().toString(),
       role: "user",
       content: input,
       timestamp: new Date(),
+      attachments: attachment,
     };
 
     setMessages((prev) => [...prev, userMsg]);
+    const currentInput = input;
     setInput("");
     setIsTyping(true);
 
-    // Simulate AI response
+    // AI Logic for custom replies and post matching
     setTimeout(() => {
+      const relatedPosts = findRelatedPosts(currentInput);
+      let aiContent = "";
+      
+      if (relatedPosts.length > 0) {
+        aiContent = `I found some relevant posts in the community that might help you with "${currentInput}":\n\n- ${relatedPosts[0].title}: This covers similar topics. You should visit it for a better explanation.\n\nHow else can I assist you?`;
+      } else {
+        aiContent = `I've analyzed your request about "${currentInput}". Based on the Academy's curriculum, I recommend focusing on the fundamental principles first. Would you like a step-by-step breakdown?`;
+      }
+
       const aiMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: `That's an interesting question about "${input}". As your Academy Assistant, I'd suggest breaking this down into three key parts...`,
+        content: aiContent,
         timestamp: new Date(),
+        suggestedPosts: relatedPosts.length > 0 ? relatedPosts : undefined,
       };
       setMessages((prev) => [...prev, aiMsg]);
       setIsTyping(false);
     }, 1500);
+  };
+
+  const handleFileUpload = (type: "image" | "document") => {
+    toast.success(`${type === "image" ? "Image" : "Document"} attached!`);
+    handleSend([{ 
+      type, 
+      url: "#", 
+      name: type === "image" ? "study_diagram.png" : "assignment_draft.pdf" 
+    }]);
+  };
+
+  const toggleVoice = () => {
+    if (!isRecording) {
+      setIsRecording(true);
+      toast.info("Listening... (Speech to Text)");
+      setTimeout(() => {
+        setIsRecording(false);
+        setInput("Explain the process of cellular respiration in detail.");
+        toast.success("Voice transcribed!");
+      }, 3000);
+    } else {
+      setIsRecording(false);
+    }
   };
 
   return (
@@ -136,11 +208,15 @@ function AiAssistant() {
           
           <div className="hidden h-8 w-px bg-border mx-2 sm:block" />
           
-          <div className="flex -space-x-2">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-8 w-8 rounded-full border-2 border-surface bg-muted ring-offset-2" />
-            ))}
-          </div>
+          <Link 
+            to="/profile"
+            className="flex items-center gap-2 rounded-full border border-border bg-surface p-1 pr-3 text-sm font-semibold transition hover:bg-muted"
+          >
+            <div className="h-7 w-7 rounded-full bg-primary grid place-items-center text-primary-foreground text-xs font-bold">
+              {initial}
+            </div>
+            <span className="hidden sm:inline">Profile</span>
+          </Link>
         </div>
       </header>
 
@@ -195,10 +271,36 @@ function AiAssistant() {
               </div>
 
               <div className="border-t border-border p-4 bg-surface/50">
-                <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium hover:bg-surface">
-                  <Settings className="h-4 w-4" />
-                  AI Settings
-                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-surface transition-colors">
+                      <Settings className="h-4 w-4 text-primary" />
+                      AI Settings
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-64 rounded-2xl p-2 shadow-xl border-border/50 backdrop-blur-xl">
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground px-3 py-2">Assistant Configuration</DropdownMenuLabel>
+                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
+                      <Languages className="mr-3 h-4 w-4" /> AI Response Language
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
+                      <Zap className="mr-3 h-4 w-4" /> Performance Mode
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
+                      <Eye className="mr-3 h-4 w-4" /> Context Awareness
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-border/50" />
+                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
+                      <HistoryIcon className="mr-3 h-4 w-4" /> Auto-save Conversations
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
+                      <ShieldCheck className="mr-3 h-4 w-4" /> Safe Search Filter
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
+                      <SearchCode className="mr-3 h-4 w-4" /> Search Community Posts
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </motion.aside>
           )}
@@ -241,14 +343,47 @@ function AiAssistant() {
                   }`}>
                     {msg.role === "assistant" ? <Bot className="h-5 w-5" /> : <User className="h-5 w-5" />}
                   </div>
-                  <div className={`flex max-w-[85%] flex-col gap-1.5 ${msg.role === "user" ? "items-end" : ""}`}>
+                  <div className={`flex max-w-[85%] flex-col gap-2 ${msg.role === "user" ? "items-end" : ""}`}>
                     <div className={`rounded-2xl px-5 py-3.5 text-sm leading-relaxed shadow-sm ${
                       msg.role === "assistant"
                         ? "bg-surface border border-border text-foreground"
                         : "bg-primary text-primary-foreground"
                     }`}>
                       {msg.content}
+                      
+                      {msg.attachments && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {msg.attachments.map((att, i) => (
+                            <div key={i} className="flex items-center gap-2 rounded-lg bg-background/20 p-2 text-[11px] font-bold backdrop-blur-sm border border-white/10">
+                              {att.type === "image" ? <ImageIcon className="h-3.5 w-3.5" /> : att.type === "voice" ? <Mic className="h-3.5 w-3.5" /> : <FileText className="h-3.5 w-3.5" />}
+                              {att.name || "Attachment"}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
+
+                    {msg.suggestedPosts && (
+                      <div className="w-full space-y-2 mt-1">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Suggested from Academy</p>
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          {msg.suggestedPosts.map(post => (
+                            <Link 
+                              key={post.id}
+                              to="/"
+                              className="group flex flex-col gap-1.5 rounded-xl border border-border bg-muted/30 p-3 transition hover:bg-surface hover:border-primary/30"
+                            >
+                              <span className="text-[11px] font-bold text-primary flex items-center gap-1">
+                                <Search className="h-3 w-3" /> Relevant Post
+                              </span>
+                              <span className="text-xs font-bold line-clamp-1 group-hover:text-primary transition-colors">{post.title}</span>
+                              <span className="text-[10px] text-muted-foreground line-clamp-1">Visit to learn more</span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <span className="text-[10px] font-medium text-muted-foreground/60 px-2">
                       {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
@@ -288,22 +423,54 @@ function AiAssistant() {
 
               <div className="relative flex items-center gap-3">
                 <div className="flex-1 relative group">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="p-2 text-muted-foreground hover:text-primary transition-colors hover:bg-muted/50 rounded-xl">
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-48 rounded-2xl p-2 shadow-xl border-border/50 backdrop-blur-xl">
+                        <DropdownMenuItem onClick={() => handleFileUpload("image")} className="rounded-xl px-3 py-2.5 cursor-pointer">
+                          <ImageIcon className="mr-3 h-4 w-4" /> Upload Image
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleFileUpload("document")} className="rounded-xl px-3 py-2.5 cursor-pointer">
+                          <FileText className="mr-3 h-4 w-4" /> Upload Document
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => toggleVoice()} className="rounded-xl px-3 py-2.5 cursor-pointer">
+                          <Mic className="mr-3 h-4 w-4" /> Use Voice
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                   <input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSend()}
                     placeholder="Ask me anything..."
-                    className="w-full rounded-2xl border border-border bg-background px-5 py-4 text-sm font-medium outline-none transition-all focus:border-primary/50 focus:ring-4 focus:ring-primary/10 group-hover:border-primary/30"
+                    className="w-full rounded-2xl border border-border bg-background pl-14 pr-12 py-4 text-sm font-medium outline-none transition-all focus:border-primary/50 focus:ring-4 focus:ring-primary/10 group-hover:border-primary/30"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                    <button className="p-2 text-muted-foreground/60 hover:text-primary transition-colors">
-                      <Zap className="h-4 w-4" />
+                    <button 
+                      onClick={() => handleSend()}
+                      className="p-2 text-primary hover:bg-primary/10 rounded-xl transition-colors"
+                    >
+                      <Send className="h-4 w-4" />
+                    </button>
+                    <button 
+                      onClick={toggleVoice}
+                      className={cn(
+                        "p-2 rounded-xl transition-all",
+                        isRecording ? "bg-destructive text-destructive-foreground animate-pulse" : "text-muted-foreground hover:text-primary hover:bg-muted/50"
+                      )}
+                    >
+                      <Mic className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
                 <button
-                  onClick={handleSend}
+                  onClick={() => handleSend()}
                   disabled={!input.trim()}
                   className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:shadow-none"
                 >
