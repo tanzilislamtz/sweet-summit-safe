@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Search, Loader2, ShieldCheck, Shield, UserCog, Ban, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { useAdminAccess } from "./admin";
+import { useAdminAccess } from "@/lib/use-admin-access";
 import { adminListUsers, adminSetRole, adminSave } from "@/lib/admin.functions";
 import { cn } from "@/lib/utils";
 

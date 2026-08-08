@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { adminStats } from "@/lib/admin.functions";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { useAdminAccess } from "./admin";
+import { useAdminAccess } from "@/lib/use-admin-access";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   component: DashboardPage,
