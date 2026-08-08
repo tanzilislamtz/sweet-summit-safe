@@ -1,21 +1,25 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface NavigationStore {
+interface NavigationState {
   isSidebarCollapsed: boolean;
+}
+
+interface NavigationActions {
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
 }
 
-export const useNavigationStore = create<NavigationStore>()(
+export const useNavigationStore = create<NavigationState & NavigationActions>()(
   persist(
     (set) => ({
       isSidebarCollapsed: false,
       toggleSidebar: () => set((state) => ({ isSidebarCollapsed: !state.isSidebarCollapsed })),
-      setSidebarCollapsed: (collapsed) => set({ isSidebarCollapsed: collapsed }),
+      setSidebarCollapsed: (collapsed: boolean) => set({ isSidebarCollapsed: collapsed }),
     }),
     {
       name: "navigation-storage",
     }
   )
 );
+
