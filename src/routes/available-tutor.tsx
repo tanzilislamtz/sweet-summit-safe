@@ -13,7 +13,11 @@ import {
   Video,
   Users,
   Home,
+  Sparkles,
+  ChevronRight,
 } from "lucide-react";
+import { motion } from "framer-motion";
+
 import { Topbar } from "@/components/Topbar";
 import { MobileNav } from "@/components/MobileNav";
 import { LeftNav } from "@/components/LeftNav";
@@ -219,6 +223,9 @@ function AvailableTutorPage() {
         <LeftNav stickyClass="lg:h-full" />
 
         <div className="min-w-0 space-y-5 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
+          {/* AI Recommended Section */}
+          <AiRecommendedSection />
+
           {/* Simple heading */}
           <header className="flex flex-wrap items-end justify-between gap-2 border-b border-border pb-4">
             <div>
@@ -228,6 +235,7 @@ function AvailableTutorPage() {
               </p>
             </div>
           </header>
+
 
           {/* Search + filter row */}
           <section className="space-y-3">
@@ -392,7 +400,126 @@ function AvailableTutorPage() {
   );
 }
 
+function AiRecommendedSection() {
+  const recommendations = [
+    {
+      id: "protiq",
+      name: "Protiq Halder",
+      photo: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&crop=faces",
+      match: "98% Match",
+      reason: "Expert in Physics & Math",
+      subject: "Physics",
+      rating: 4.8,
+    },
+    {
+      id: "farhana",
+      name: "Farhana Islam",
+      photo: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=faces",
+      match: "95% Match",
+      reason: "Top rated for English",
+      subject: "English & ICT",
+      rating: 4.9,
+    },
+    {
+      id: "anika",
+      name: "Anika Rahman",
+      photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=faces",
+      match: "92% Match",
+      reason: "Focuses on Class 10 basics",
+      subject: "Mathematics",
+      rating: 4.8,
+    },
+    {
+      id: "sadman",
+      name: "Sadman Chowdhury",
+      photo: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=200&h=200&fit=crop&crop=faces",
+      match: "89% Match",
+      reason: "Pre-med specialist",
+      subject: "Biology",
+      rating: 4.6,
+    },
+    {
+      id: "raihan",
+      name: "Raihan Kabir",
+      photo: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=200&h=200&fit=crop&crop=faces",
+      match: "87% Match",
+      reason: "IUT Undergrad · Physics",
+      subject: "Physics",
+      rating: 4.7,
+    },
+  ];
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="rounded-2xl border border-primary/20 bg-primary/5 p-4 shadow-sm overflow-hidden"
+    >
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+            <Sparkles className="h-4 w-4" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-foreground">AI Recommended Tutors</h3>
+            <p className="text-[10px] text-primary font-bold uppercase tracking-wider">Top matches for your profile</p>
+          </div>
+        </div>
+        <div className="text-[10px] font-bold text-muted-foreground bg-surface/50 px-2 py-0.5 rounded-full border border-border">
+          AD
+        </div>
+      </div>
+
+      <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {recommendations.map((t) => (
+          <motion.div
+            key={t.id}
+            whileHover={{ y: -4 }}
+            className="group relative w-[130px] shrink-0 rounded-xl border border-border bg-surface p-3 transition-all hover:border-primary/50 hover:shadow-md"
+          >
+            <div className="absolute top-1.5 right-1.5 z-10">
+               <div className="flex items-center gap-0.5 rounded-full bg-primary px-1.5 py-0.5 text-[8px] font-black text-white shadow-sm ring-1 ring-white/20">
+                {t.match}
+              </div>
+            </div>
+            
+            <div className="relative mx-auto mb-2 h-12 w-12 overflow-hidden rounded-full ring-2 ring-primary/10 group-hover:ring-primary/30">
+              <img
+                src={t.photo}
+                alt={t.name}
+                className="h-full w-full object-cover"
+              />
+            </div>
+
+            <div className="text-center">
+              <h4 className="truncate text-[11px] font-bold text-foreground">{t.name}</h4>
+              <p className="mt-0.5 text-[9px] font-bold text-primary/80">{t.subject}</p>
+              
+              <div className="mt-1.5 flex items-center justify-center gap-1 text-[9px] text-muted-foreground">
+                <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
+                <span className="font-bold text-foreground">{t.rating}</span>
+              </div>
+
+              <div className="mt-2 rounded-lg bg-muted/50 py-1 px-1.5 text-[8px] leading-tight text-muted-foreground italic line-clamp-2">
+                "{t.reason}"
+              </div>
+              
+              <button
+                type="button"
+                className="mt-3 block w-full rounded-lg bg-primary py-1.5 text-[9px] font-black text-primary-foreground transition-all hover:opacity-90 active:scale-95"
+              >
+                View Profile
+              </button>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 function FilterSelect({ label, value, onChange, options }: { label?: string; value: string; onChange: (v: string) => void; options: string[] }) {
+
   void label;
   return (
     <div className="relative">
