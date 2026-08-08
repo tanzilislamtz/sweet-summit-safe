@@ -48,6 +48,7 @@ import {
   getThread,
   sendMessage,
   sendVoiceMessage,
+  sendAttachment,
   subscribe,
   formatTime,
   setReaction,
@@ -56,6 +57,8 @@ import {
   type ChatMessage,
 } from "@/lib/chat";
 import VoiceMessage from "@/components/VoiceMessage";
+import ChatAttachment from "@/components/ChatAttachment";
+import { fileToAttachment, MAX_ATTACHMENT_BYTES } from "@/lib/attachments";
 import VoiceRecorder from "@/components/VoiceRecorder";
 import CallOverlay from "@/components/CallOverlay";
 
@@ -878,6 +881,8 @@ function ChatWindow({ threadId, minimized }: { threadId: string; minimized: bool
                               ) : undefined
                             }
                           />
+                        ) : m.attachment ? (
+                          <ChatAttachment attachment={m.attachment} mine={mine} />
                         ) : (
                           m.text
                         )}
@@ -888,7 +893,7 @@ function ChatWindow({ threadId, minimized }: { threadId: string; minimized: bool
                         {m.reaction}
                       </span>
                     )}
-                    {!tomb && mine && !m.voice && (
+                    {!tomb && mine && !m.voice && !m.attachment && (
                       <span className="ml-1.5 inline-flex translate-y-0.5 items-center text-[10px] opacity-80">
                         {m.status === "read" ? (
                           <CheckCheck className="h-3 w-3 text-accent" />
@@ -928,14 +933,22 @@ function ChatWindow({ threadId, minimized }: { threadId: string; minimized: bool
               ref={fileRef}
               type="file"
               className="hidden"
-              onChange={(e) => {
+              onChange={async (e) => {
                 const f = e.target.files?.[0];
-                if (f) {
-                  sendMessage(threadId, `📎 ${f.name}`, replyTo ?? undefined);
+                e.target.value = "";
+                if (!f) return;
+                if (f.size > MAX_ATTACHMENT_BYTES) {
+                  notify("File is too large (max 4 MB)");
+                  return;
+                }
+                try {
+                  const att = await fileToAttachment(f);
+                  sendAttachment(threadId, att, replyTo ?? undefined);
                   setReplyTo(null);
                   notify("Attachment sent");
+                } catch {
+                  notify("Could not read that file");
                 }
-                e.target.value = "";
               }}
             />
             <button
