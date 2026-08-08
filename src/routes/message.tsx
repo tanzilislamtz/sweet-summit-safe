@@ -24,6 +24,8 @@ import { clearUnread } from "@/lib/notifications";
 import { Topbar } from "@/components/Topbar";
 import { MobileNav } from "@/components/MobileNav";
 import { LeftNav } from "@/components/LeftNav";
+import { useNavigationStore } from "@/lib/navigation-store";
+import { cn } from "@/lib/utils";
 import { messageRequests } from "@/lib/requests";
 import {
   threads,
@@ -60,6 +62,7 @@ function useLatest() {
 
 function MessageLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const isCollapsed = useNavigationStore((s) => s.isSidebarCollapsed);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const inThread = pathname !== "/message" && pathname.startsWith("/message/");
 
