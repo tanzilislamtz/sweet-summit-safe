@@ -47,6 +47,7 @@ import { Route as QuizBoardBoardIdRouteImport } from './routes/quiz.board.$board
 import { Route as MessageRequestRequestIdRouteImport } from './routes/message.request.$requestId'
 import { Route as GroupStudyManageGroupIdRouteImport } from './routes/group-study.manage.$groupId'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as AuthenticatedAdminResourceRouteImport } from './routes/_authenticated/admin.$resource'
 import { Route as QuizSubjectSubjectIdCategoryRouteImport } from './routes/quiz.subject.$subjectId_.$category'
 import { Route as QuizMockTestCategoryCategoryIdRouteImport } from './routes/quiz.mock-test_.category.$categoryId'
@@ -242,6 +243,12 @@ const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminResourceRoute =
   AuthenticatedAdminResourceRouteImport.update({
     id: '/$resource',
@@ -301,6 +308,7 @@ export interface FileRoutesByFullPath {
   '/group-study/': typeof GroupStudyIndexRoute
   '/quiz/': typeof QuizIndexRoute
   '/admin/$resource': typeof AuthenticatedAdminResourceRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
@@ -342,6 +350,7 @@ export interface FileRoutesByTo {
   '/group-study': typeof GroupStudyIndexRoute
   '/quiz': typeof QuizIndexRoute
   '/admin/$resource': typeof AuthenticatedAdminResourceRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
@@ -388,6 +397,7 @@ export interface FileRoutesById {
   '/group-study/': typeof GroupStudyIndexRoute
   '/quiz/': typeof QuizIndexRoute
   '/_authenticated/admin/$resource': typeof AuthenticatedAdminResourceRoute
+  '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
@@ -434,6 +444,7 @@ export interface FileRouteTypes {
     | '/group-study/'
     | '/quiz/'
     | '/admin/$resource'
+    | '/admin/settings'
     | '/admin/users'
     | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
@@ -475,6 +486,7 @@ export interface FileRouteTypes {
     | '/group-study'
     | '/quiz'
     | '/admin/$resource'
+    | '/admin/settings'
     | '/admin/users'
     | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
@@ -520,6 +532,7 @@ export interface FileRouteTypes {
     | '/group-study/'
     | '/quiz/'
     | '/_authenticated/admin/$resource'
+    | '/_authenticated/admin/settings'
     | '/_authenticated/admin/users'
     | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
@@ -823,6 +836,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/$resource': {
       id: '/_authenticated/admin/$resource'
       path: '/$resource'
@@ -863,12 +883,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminResourceRoute: typeof AuthenticatedAdminResourceRoute
+  AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminResourceRoute: AuthenticatedAdminResourceRoute,
+  AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
