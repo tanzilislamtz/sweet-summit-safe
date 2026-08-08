@@ -34,6 +34,7 @@ import {
   getThread,
   sendMessage,
   sendVoiceMessage,
+  sendAttachment,
   subscribe,
   formatTime,
   markRead,
@@ -60,6 +61,8 @@ const REPORT_REASONS = [
 import { AnimatePresence, motion } from "framer-motion";
 import CallOverlay, { type CallKind } from "@/components/CallOverlay";
 import VoiceMessage from "@/components/VoiceMessage";
+import ChatAttachment from "@/components/ChatAttachment";
+import { fileToAttachment, MAX_ATTACHMENT_BYTES } from "@/lib/attachments";
 import VoiceRecorder from "@/components/VoiceRecorder";
 
 const COMPOSER_EMOJIS = [
@@ -536,10 +539,12 @@ function ThreadView() {
                           ) : undefined
                         }
                       />
+                    ) : m.attachment ? (
+                      <ChatAttachment attachment={m.attachment} mine={mine} />
                     ) : (
                       m.text
                     )}
-                    {mine && !m.voice && (
+                    {mine && !m.voice && !m.attachment && (
                       <span className="ml-1.5 inline-flex translate-y-0.5 items-center text-[10px] opacity-80">
                         {m.status === "read" ? (
                           <CheckCheck className="h-3 w-3 text-accent" />
@@ -1199,13 +1204,21 @@ function ThreadView() {
           ref={fileRef}
           type="file"
           className="hidden"
-          onChange={(e) => {
+          onChange={async (e) => {
             const f = e.target.files?.[0];
-            if (f) {
-              sendMessage(threadId, `📎 ${f.name}`, replyTo ?? undefined);
-              setReplyTo(null);
-            }
             e.target.value = "";
+            if (!f) return;
+            if (f.size > MAX_ATTACHMENT_BYTES) {
+              notify("File is too large (max 4 MB)");
+              return;
+            }
+            try {
+              const att = await fileToAttachment(f);
+              sendAttachment(threadId, att, replyTo ?? undefined);
+              setReplyTo(null);
+            } catch {
+              notify("Could not read that file");
+            }
           }}
         />
         <button

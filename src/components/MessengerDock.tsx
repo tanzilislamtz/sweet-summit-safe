@@ -48,6 +48,7 @@ import {
   getThread,
   sendMessage,
   sendVoiceMessage,
+  sendAttachment,
   subscribe,
   formatTime,
   setReaction,
@@ -56,6 +57,8 @@ import {
   type ChatMessage,
 } from "@/lib/chat";
 import VoiceMessage from "@/components/VoiceMessage";
+import ChatAttachment from "@/components/ChatAttachment";
+import { fileToAttachment, MAX_ATTACHMENT_BYTES } from "@/lib/attachments";
 import VoiceRecorder from "@/components/VoiceRecorder";
 import CallOverlay from "@/components/CallOverlay";
 
