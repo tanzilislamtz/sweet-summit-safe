@@ -97,9 +97,13 @@ function MessageLayout() {
 
       <MobileNav open={menuOpen} onClose={() => setMenuOpen(false)} />
       <main
-        className={`mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-6 lg:h-[calc(100dvh-65px)] lg:grid-cols-[240px_minmax(0,1fr)] lg:overflow-hidden lg:px-8 lg:py-6 ${
-          inThread ? "px-0 py-0" : "px-4 py-4"
-        }`}
+        className={cn(
+          "mx-auto grid w-full max-w-[1400px] transition-all duration-300 lg:h-[calc(100dvh-65px)] lg:overflow-hidden lg:px-8 lg:py-6",
+          inThread ? "px-0 py-0" : "px-4 py-4",
+          isCollapsed 
+            ? "grid-cols-1 lg:grid-cols-[72px_minmax(0,1fr)]" 
+            : "grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)]"
+        )}
       >
 
         <LeftNav stickyClass="lg:h-full" />
