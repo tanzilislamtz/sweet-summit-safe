@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Star } from "lucide-react";
+import { Bookmark } from "lucide-react";
 import {
   FAVORITES_EVENT,
   isFavorite,
