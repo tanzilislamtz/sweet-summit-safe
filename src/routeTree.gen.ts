@@ -21,6 +21,8 @@ import { Route as CreatePostRouteImport } from './routes/create-post'
 import { Route as AvailableTutorRouteImport } from './routes/available-tutor'
 import { Route as AiSettingsRouteImport } from './routes/ai-settings'
 import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
+import { Route as AdminLoginRouteImport } from './routes/admin-login'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QuizIndexRouteImport } from './routes/quiz.index'
 import { Route as GroupStudyIndexRouteImport } from './routes/group-study.index'
@@ -34,6 +36,7 @@ import { Route as PostPostIdRouteImport } from './routes/post.$postId'
 import { Route as MessageRequestsRouteImport } from './routes/message.requests'
 import { Route as MessageThreadIdRouteImport } from './routes/message.$threadId'
 import { Route as GroupStudyGroupIdRouteImport } from './routes/group-study.$groupId'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as QuizWrittenSubjectIdRouteImport } from './routes/quiz.written.$subjectId'
 import { Route as QuizSubjectSubjectIdRouteImport } from './routes/quiz.subject.$subjectId'
 import { Route as QuizMockTestTestIdRouteImport } from './routes/quiz.mock-test_.$testId'
@@ -107,6 +110,15 @@ const AiAssistantRoute = AiAssistantRouteImport.update({
   path: '/ai-assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin-login',
+  path: '/admin-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -171,6 +183,11 @@ const GroupStudyGroupIdRoute = GroupStudyGroupIdRouteImport.update({
   id: '/$groupId',
   path: '/$groupId',
   getParentRoute: () => GroupStudyRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const QuizWrittenSubjectIdRoute = QuizWrittenSubjectIdRouteImport.update({
   id: '/written/$subjectId',
@@ -238,6 +255,7 @@ const QuizSubjectSubjectIdCategoryChapterIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin-login': typeof AdminLoginRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/ai-settings': typeof AiSettingsRoute
   '/available-tutor': typeof AvailableTutorRoute
@@ -250,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/quiz': typeof QuizRouteWithChildren
   '/register': typeof RegisterRoute
   '/welcome': typeof WelcomeRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/group-study/$groupId': typeof GroupStudyGroupIdRoute
   '/message/$threadId': typeof MessageThreadIdRoute
   '/message/requests': typeof MessageRequestsRoute
@@ -277,6 +296,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin-login': typeof AdminLoginRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/ai-settings': typeof AiSettingsRoute
   '/available-tutor': typeof AvailableTutorRoute
@@ -287,6 +307,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/welcome': typeof WelcomeRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/group-study/$groupId': typeof GroupStudyGroupIdRoute
   '/message/$threadId': typeof MessageThreadIdRoute
   '/message/requests': typeof MessageRequestsRoute
@@ -315,6 +336,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/admin-login': typeof AdminLoginRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/ai-settings': typeof AiSettingsRoute
   '/available-tutor': typeof AvailableTutorRoute
@@ -327,6 +350,7 @@ export interface FileRoutesById {
   '/quiz': typeof QuizRouteWithChildren
   '/register': typeof RegisterRoute
   '/welcome': typeof WelcomeRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/group-study/$groupId': typeof GroupStudyGroupIdRoute
   '/message/$threadId': typeof MessageThreadIdRoute
   '/message/requests': typeof MessageRequestsRoute
@@ -356,6 +380,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin-login'
     | '/ai-assistant'
     | '/ai-settings'
     | '/available-tutor'
@@ -368,6 +393,7 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/register'
     | '/welcome'
+    | '/admin'
     | '/group-study/$groupId'
     | '/message/$threadId'
     | '/message/requests'
@@ -395,6 +421,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin-login'
     | '/ai-assistant'
     | '/ai-settings'
     | '/available-tutor'
@@ -405,6 +432,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/welcome'
+    | '/admin'
     | '/group-study/$groupId'
     | '/message/$threadId'
     | '/message/requests'
@@ -432,6 +460,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/admin-login'
     | '/ai-assistant'
     | '/ai-settings'
     | '/available-tutor'
@@ -444,6 +474,7 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/register'
     | '/welcome'
+    | '/_authenticated/admin'
     | '/group-study/$groupId'
     | '/message/$threadId'
     | '/message/requests'
@@ -472,6 +503,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AdminLoginRoute: typeof AdminLoginRoute
   AiAssistantRoute: typeof AiAssistantRoute
   AiSettingsRoute: typeof AiSettingsRoute
   AvailableTutorRoute: typeof AvailableTutorRoute
@@ -573,6 +606,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin-login': {
+      id: '/admin-login'
+      path: '/admin-login'
+      fullPath: '/admin-login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -664,6 +711,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupStudyGroupIdRouteImport
       parentRoute: typeof GroupStudyRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/quiz/written/$subjectId': {
       id: '/quiz/written/$subjectId'
       path: '/written/$subjectId'
@@ -751,6 +805,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 interface GroupStudyRouteChildren {
   GroupStudyGroupIdRoute: typeof GroupStudyGroupIdRoute
   GroupStudyIndexRoute: typeof GroupStudyIndexRoute
@@ -827,6 +892,8 @@ const QuizRouteWithChildren = QuizRoute._addFileChildren(QuizRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AdminLoginRoute: AdminLoginRoute,
   AiAssistantRoute: AiAssistantRoute,
   AiSettingsRoute: AiSettingsRoute,
   AvailableTutorRoute: AvailableTutorRoute,
