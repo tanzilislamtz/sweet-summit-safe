@@ -16,7 +16,7 @@ export interface FavoriteButtonProps {
   className?: string;
 }
 
-/** Star toggle that saves an item (question, post, tutor) into the local Favorites list. */
+/** Bookmark toggle that saves an item (question, post, tutor) into the local Favorites list. */
 export function FavoriteButton({ item, compact = false, className }: FavoriteButtonProps) {
   const [active, setActive] = useState(false);
 
@@ -41,12 +41,12 @@ export function FavoriteButton({ item, compact = false, className }: FavoriteBut
       title={active ? "Saved to Favorites" : "Save to Favorites"}
       className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition ${
         active
-          ? "border-amber-500/40 bg-amber-500/15 text-amber-700 dark:text-amber-300"
-          : "border-border text-muted-foreground hover:border-amber-500/40 hover:text-amber-600"
+          ? "border-primary/40 bg-primary/15 text-primary"
+          : "border-border text-muted-foreground hover:border-primary/40 hover:text-primary"
       } ${className ?? ""}`}
     >
-      <Star className={`h-3.5 w-3.5 ${active ? "fill-current" : ""}`} />
-      {!compact && (active ? "Saved" : "Favorite")}
+      <Bookmark className={`h-3.5 w-3.5 ${active ? "fill-current" : ""}`} />
+      {!compact && (active ? "Saved" : "Save")}
     </motion.button>
   );
 }
