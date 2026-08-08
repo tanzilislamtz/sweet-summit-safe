@@ -267,23 +267,7 @@ function ComposerIconBtn({
 
 
 function TopicChips() {
-  const topics = ["For You", "Popular", "Q&A", "Trending Tutors"];
-  return (
-    <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {topics.map((t, i) => (
-        <button
-          key={t}
-          className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition ${
-            i === 0
-              ? "border-foreground bg-foreground text-background"
-              : "border-border bg-surface text-foreground/70 hover:border-foreground/30 hover:text-foreground"
-          }`}
-        >
-          {t}
-        </button>
-      ))}
-    </div>
-  );
+  return null;
 }
 
 function NearbyTutors() {
