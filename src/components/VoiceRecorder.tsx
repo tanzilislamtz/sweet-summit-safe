@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Mic, Trash2, Send, Square, Pause, Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatClock, type VoiceClip } from "@/lib/chat";
+import { cn } from "@/lib/utils";
 
 const MAX_SECONDS = 120;
 
