@@ -102,7 +102,7 @@ function AiAssistant() {
     return posts.filter(post => 
       keywords.some(k => k.length > 3 && (
         post.title.toLowerCase().includes(k) || 
-        post.description.toLowerCase().includes(k)
+        post.body.toLowerCase().includes(k)
       ))
     ).slice(0, 2);
   };
@@ -437,7 +437,7 @@ function AiAssistant() {
                         <DropdownMenuItem onClick={() => handleFileUpload("document")} className="rounded-xl px-3 py-2.5 cursor-pointer">
                           <FileText className="mr-3 h-4 w-4" /> Upload Document
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={toggleVoice} className="rounded-xl px-3 py-2.5 cursor-pointer">
+                        <DropdownMenuItem onClick={() => toggleVoice()} className="rounded-xl px-3 py-2.5 cursor-pointer">
                           <Mic className="mr-3 h-4 w-4" /> Use Voice
                         </DropdownMenuItem>
                       </DropdownMenuContent>
