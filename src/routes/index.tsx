@@ -171,34 +171,48 @@ function AdCard({
   sponsored?: boolean;
 }) {
   const [liked, setLiked] = useState(false);
-  const [likes, setLikes] = useState(12); // Random initial likes for demo
+  const [likes, setLikes] = useState(12);
   const [shares, setShares] = useState(5);
   const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState<{ id: number; author: string; text: string; time: string }[]>([]);
+  const [draft, setDraft] = useState("");
 
   const toggleLike = () => {
     setLiked(!liked);
     setLikes(prev => liked ? prev - 1 : prev + 1);
   };
 
+  const submitComment = (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = draft.trim();
+    if (!text) return;
+    setComments((c) => [...c, { id: Date.now(), author: "You", text, time: "now" }]);
+    setDraft("");
+  };
+
+  const commentCount = 3 + comments.length;
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 15 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm transition-shadow hover:shadow-md"
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -3, boxShadow: "0 18px 40px -20px rgba(41,44,117,0.25)" }}
+      className="group relative overflow-hidden rounded-2xl border border-border bg-surface p-5 shadow-sm transition-shadow"
     >
-      <div className="flex items-center justify-between border-b border-border/50 px-4 py-2.5 bg-muted/20">
+      <div className="relative mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex h-6 w-6 items-center justify-center rounded bg-primary/10 text-primary">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/20">
             <Sparkles className="h-3.5 w-3.5" />
           </div>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
             {sponsored ? "Sponsored" : "Promoted"}
           </span>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="text-muted-foreground hover:text-foreground p-1 rounded-full transition-colors hover:bg-muted">
+            <button className="text-muted-foreground hover:text-foreground p-2 rounded-full transition-colors hover:bg-muted">
               <MoreHorizontal className="h-4 w-4" />
             </button>
           </DropdownMenuTrigger>
@@ -220,27 +234,29 @@ function AdCard({
         </DropdownMenu>
       </div>
 
-      {imageUrl && (
-        <div className="relative aspect-video w-full overflow-hidden bg-muted">
-          <img
-            src={imageUrl}
-            alt={title}
-            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-          />
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold leading-tight text-foreground">
+            {title}
+          </h3>
+          <p className="text-sm leading-relaxed text-foreground/75 line-clamp-3">
+            {description}
+          </p>
         </div>
-      )}
 
-      <div className="p-4">
-        <h3 className="text-base font-bold text-foreground leading-tight">
-          {title}
-        </h3>
-        <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-          {description}
-        </p>
-        
-        <div className="mt-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-1.5 text-xs font-medium text-primary bg-primary/5 px-2 py-1 rounded-md">
-            <ChevronRight className="h-3.5 w-3.5" />
+        {imageUrl && (
+          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-border bg-muted">
+            <img
+              src={imageUrl}
+              alt={title}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+        )}
+
+        <div className="flex items-center justify-between gap-4 rounded-xl border border-primary/10 bg-primary/5 p-3">
+          <div className="flex items-center gap-2 text-xs font-semibold text-primary">
+            <ChevronRight className="h-4 w-4" />
             Click here to Enroll or Join
           </div>
           <button className="rounded-full bg-primary px-5 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md active:scale-95">
@@ -248,27 +264,84 @@ function AdCard({
           </button>
         </div>
 
-        <footer className="mt-4 flex items-center gap-1 border-t border-border pt-3">
+        <footer className="flex items-center gap-1 border-t border-border pt-3">
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={toggleLike}
-            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+            className={`relative inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
               liked ? "bg-destructive/10 text-destructive" : "text-foreground/70 hover:bg-muted hover:text-foreground"
             }`}
           >
-            <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
-            <span>{likes}</span>
+            <span className="relative inline-flex">
+              <motion.span
+                key={liked ? "on" : "off"}
+                initial={{ scale: 0.6, rotate: -20 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 14 }}
+                className="inline-flex"
+              >
+                <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
+              </motion.span>
+              <AnimatePresence>
+                {liked && (
+                  <motion.span
+                    key="ring"
+                    initial={{ scale: 0.3, opacity: 0.6 }}
+                    animate={{ scale: 2.4, opacity: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    className="pointer-events-none absolute inset-0 rounded-full border-2 border-destructive"
+                  />
+                )}
+              </AnimatePresence>
+              <AnimatePresence>
+                {liked && [0, 1, 2, 3, 4].map((i) => {
+                  const angle = (i / 5) * Math.PI - Math.PI / 2;
+                  const dist = 28 + (i % 2) * 10;
+                  const x = Math.cos(angle) * dist;
+                  const y = Math.sin(angle) * dist - 6;
+                  return (
+                    <motion.span
+                      key={`burst-${i}`}
+                      initial={{ x: 0, y: 0, scale: 0.4, opacity: 1 }}
+                      animate={{ x, y, scale: 1, opacity: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.7, ease: "easeOut", delay: i * 0.02 }}
+                      className="pointer-events-none absolute left-0 top-0 text-destructive"
+                    >
+                      <Heart className="h-3 w-3 fill-current" />
+                    </motion.span>
+                  );
+                })}
+              </AnimatePresence>
+            </span>
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.span
+                key={likes}
+                initial={{ y: 8, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -8, opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                className="tabular-nums"
+              >
+                {likes}
+              </motion.span>
+            </AnimatePresence>
           </motion.button>
 
-          <button 
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={() => setShowComments(!showComments)}
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-foreground/70 transition hover:bg-muted hover:text-foreground"
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+              showComments ? "bg-primary/10 text-primary" : "text-foreground/70 hover:bg-muted hover:text-foreground"
+            }`}
           >
             <MessageCircle className="h-4 w-4" />
-            <span>3</span>
-          </button>
+            <span>{commentCount}</span>
+          </motion.button>
 
-          <button 
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={() => {
               setShares(s => s + 1);
               toast.success("Shared successfully");
@@ -277,7 +350,7 @@ function AdCard({
           >
             <Share2 className="h-4 w-4" />
             <span>{shares}</span>
-          </button>
+          </motion.button>
 
           <FavoriteButton 
             item={{ id: "ad-" + title, type: "post", title: title }} 
@@ -285,10 +358,69 @@ function AdCard({
             className="ml-auto"
           />
         </footer>
+
+        <AnimatePresence initial={false}>
+          {showComments && (
+            <motion.div
+              key="comments"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="overflow-hidden"
+            >
+              <div className="mt-4 space-y-3 border-t border-border pt-4">
+                {comments.length === 0 && (
+                  <p className="text-xs text-muted-foreground">Be the first to comment.</p>
+                )}
+                {comments.map((c) => (
+                  <motion.div
+                    key={c.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex gap-2"
+                  >
+                    <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                      {c.author.charAt(0)}
+                    </div>
+                    <div className="min-w-0 flex-1 rounded-2xl bg-muted/60 px-3 py-2">
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className="font-semibold text-foreground">{c.author}</span>
+                        <span className="text-muted-foreground">· {c.time}</span>
+                      </div>
+                      <p className="mt-0.5 text-sm text-foreground/85">{c.text}</p>
+                    </div>
+                  </motion.div>
+                ))}
+
+                <form onSubmit={submitComment} className="flex gap-2 pt-1">
+                  <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                    A
+                  </div>
+                  <input
+                    type="text"
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    placeholder="Write a comment…"
+                    className="h-9 min-w-0 flex-1 rounded-full border border-transparent bg-muted/60 px-4 text-sm outline-none focus:border-primary/30 focus:bg-surface focus:ring-4 focus:ring-primary/10"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!draft.trim()}
+                    className="shrink-0 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground transition hover:opacity-95 disabled:opacity-40"
+                  >
+                    Post
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );
 }
+
 
 function Leaderboard() {
   const entries = [
