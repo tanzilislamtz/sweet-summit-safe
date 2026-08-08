@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import logoAsset from "@/assets/learns-academy-logo.png.asset.json";
 import { toggleMessengerPopup } from "@/lib/messenger";
+import { useNavigationStore } from "@/lib/navigation-store";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 
@@ -29,13 +30,22 @@ export function Topbar({
     <header className="sticky top-0 z-40 border-b border-border bg-background/75 backdrop-blur-xl">
       <div className="mx-auto flex max-w-[1400px] items-center gap-2 px-4 py-3 lg:gap-3 lg:px-8">
         {variant === "app" && (
-          <button
-            onClick={onMenu}
-            aria-label="Open menu"
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-foreground/70 hover:bg-muted lg:hidden"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-1 lg:gap-3">
+            <button
+              onClick={onMenu}
+              aria-label="Open menu"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-foreground/70 hover:bg-muted lg:hidden"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => useNavigationStore.getState().toggleSidebar()}
+              aria-label="Toggle sidebar"
+              className="hidden h-10 w-10 shrink-0 place-items-center rounded-full text-foreground/70 hover:bg-muted lg:grid"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+          </div>
         )}
 
         {variant === "auth" && showBack && (
