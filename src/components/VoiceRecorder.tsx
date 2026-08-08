@@ -88,7 +88,7 @@ export default function VoiceRecorder({ onSend }: { onSend: (clip: VoiceClip) =>
         type="button"
         aria-label="Record voice message"
         onClick={start}
-        className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-foreground/70 transition hover:bg-muted active:scale-95"
+        className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-muted/60 text-foreground/70 transition hover:bg-muted active:scale-95"
       >
         <Mic className="h-4 w-4" />
       </button>
