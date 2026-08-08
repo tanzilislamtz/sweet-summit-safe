@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Home, UserCheck, GraduationCap, BookOpen, MessagesSquare, Timer, Star, Users } from "lucide-react";
+import { X, Home, UserCheck, GraduationCap, BookOpen, MessagesSquare, Timer, Star, Users, Bot } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
@@ -10,13 +10,14 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 type NavItem = {
   icon: typeof Home;
   label: string;
-  to: "/" | "/quiz" | "/quiz/mock-test" | "/favorites" | "/available-tutor" | "/message" | "/group-study";
+  to: "/" | "/quiz" | "/quiz/mock-test" | "/favorites" | "/available-tutor" | "/message" | "/group-study" | "/ai-assistant";
 };
 
 const sections: { items: NavItem[] }[] = [
   {
     items: [
       { icon: Home, label: "Home", to: "/" },
+      { icon: Bot, label: "AI Assistant", to: "/ai-assistant" },
       { icon: BookOpen, label: "Practice", to: "/quiz" },
       { icon: MessagesSquare, label: "Messages", to: "/message" },
     ],
@@ -113,6 +114,8 @@ export function MobileNav({ open, onClose }: { open: boolean; onClose: () => voi
                             ? pathname.startsWith("/available-tutor")
                             : to === "/message"
                               ? pathname.startsWith("/message")
+                              : to === "/ai-assistant"
+                                ? pathname.startsWith("/ai-assistant")
                               : pathname === to && label === "Home";
                     return (
                       <motion.div

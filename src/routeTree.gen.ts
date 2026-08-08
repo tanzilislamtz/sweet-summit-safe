@@ -19,6 +19,7 @@ import { Route as GroupStudyRouteImport } from './routes/group-study'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as CreatePostRouteImport } from './routes/create-post'
 import { Route as AvailableTutorRouteImport } from './routes/available-tutor'
+import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QuizIndexRouteImport } from './routes/quiz.index'
 import { Route as GroupStudyIndexRouteImport } from './routes/group-study.index'
@@ -93,6 +94,11 @@ const CreatePostRoute = CreatePostRouteImport.update({
 const AvailableTutorRoute = AvailableTutorRouteImport.update({
   id: '/available-tutor',
   path: '/available-tutor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiAssistantRoute = AiAssistantRouteImport.update({
+  id: '/ai-assistant',
+  path: '/ai-assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -226,6 +232,7 @@ const QuizSubjectSubjectIdCategoryChapterIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-assistant': typeof AiAssistantRoute
   '/available-tutor': typeof AvailableTutorRoute
   '/create-post': typeof CreatePostRoute
   '/favorites': typeof FavoritesRoute
@@ -263,6 +270,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai-assistant': typeof AiAssistantRoute
   '/available-tutor': typeof AvailableTutorRoute
   '/create-post': typeof CreatePostRoute
   '/favorites': typeof FavoritesRoute
@@ -299,6 +307,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-assistant': typeof AiAssistantRoute
   '/available-tutor': typeof AvailableTutorRoute
   '/create-post': typeof CreatePostRoute
   '/favorites': typeof FavoritesRoute
@@ -338,6 +347,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ai-assistant'
     | '/available-tutor'
     | '/create-post'
     | '/favorites'
@@ -375,6 +385,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ai-assistant'
     | '/available-tutor'
     | '/create-post'
     | '/favorites'
@@ -410,6 +421,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/ai-assistant'
     | '/available-tutor'
     | '/create-post'
     | '/favorites'
@@ -448,6 +460,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiAssistantRoute: typeof AiAssistantRoute
   AvailableTutorRoute: typeof AvailableTutorRoute
   CreatePostRoute: typeof CreatePostRoute
   FavoritesRoute: typeof FavoritesRoute
@@ -531,6 +544,13 @@ declare module '@tanstack/react-router' {
       path: '/available-tutor'
       fullPath: '/available-tutor'
       preLoaderRoute: typeof AvailableTutorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-assistant': {
+      id: '/ai-assistant'
+      path: '/ai-assistant'
+      fullPath: '/ai-assistant'
+      preLoaderRoute: typeof AiAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -787,6 +807,7 @@ const QuizRouteWithChildren = QuizRoute._addFileChildren(QuizRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiAssistantRoute: AiAssistantRoute,
   AvailableTutorRoute: AvailableTutorRoute,
   CreatePostRoute: CreatePostRoute,
   FavoritesRoute: FavoritesRoute,

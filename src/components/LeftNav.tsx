@@ -1,11 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, BookOpen, UserCheck, MessagesSquare, Timer, Star, Users, ChevronRight } from "lucide-react";
+import { Home, BookOpen, UserCheck, MessagesSquare, Timer, Star, Users, ChevronRight, Bot } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getSession, type Session } from "@/lib/session";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const items = [
   { icon: Home, label: "Home", to: "/" as const, match: "home" as const },
+  { icon: Bot, label: "AI Assistant", to: "/ai-assistant" as const, match: "ai" as const },
   { icon: BookOpen, label: "Practice", to: "/quiz" as const, match: "practice" as const },
   { icon: Timer, label: "Mock Test", to: "/quiz/mock-test" as const, match: "mock" as const },
   { icon: Users, label: "Group Study", to: "/group-study" as const, match: "group" as const },
@@ -41,6 +42,8 @@ export function LeftNav({ stickyClass = "sticky top-24" }: { stickyClass?: strin
           const active =
             match === "home"
               ? pathname === "/"
+              : match === "ai"
+                ? pathname.startsWith("/ai-assistant")
               : match === "practice"
                 ? pathname.startsWith("/quiz") && !isMock && !isFav
                 : match === "favorite"
