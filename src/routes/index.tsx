@@ -124,7 +124,6 @@ function Feed() {
     <section className="min-w-0 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
       <div className="space-y-5">
         <Leaderboard />
-        <AiRecommendedTutors />
         <Composer />
         <FeedToolbar />
       </div>
