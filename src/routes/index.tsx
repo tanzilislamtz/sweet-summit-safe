@@ -279,12 +279,11 @@ function AdCard({
             <span>{shares}</span>
           </button>
 
-          <div className="ml-auto">
-             <FavoriteButton 
-              item={{ id: "ad-" + title, type: "post", title: title }} 
-              compact 
-            />
-          </div>
+          <FavoriteButton 
+            item={{ id: "ad-" + title, type: "post", title: title }} 
+            compact 
+            className="ml-auto"
+          />
         </footer>
       </div>
     </motion.div>
@@ -1031,18 +1030,22 @@ function Post({
           <Share2 className="h-4 w-4" />
           {shared}
         </motion.button>
-        <motion.button
-          whileTap={{ scale: 0.85 }}
-          onClick={() => setBookmarked((v) => !v)}
-          aria-pressed={bookmarked}
-          className={`ml-auto rounded-full p-2 transition ${
-            bookmarked
-              ? "bg-accent/25 text-foreground"
-              : "text-muted-foreground hover:bg-muted hover:text-foreground"
-          }`}
-        >
-          <Bookmark className={`h-4 w-4 ${bookmarked ? "fill-current" : ""}`} />
-        </motion.button>
+        <FavoriteButton
+          item={{
+            id,
+            type: "post",
+            title,
+            postData: {
+              author,
+              role,
+              time,
+              body,
+              tag,
+            }
+          }}
+          compact
+          className="ml-auto"
+        />
       </footer>
 
       <AnimatePresence initial={false}>
