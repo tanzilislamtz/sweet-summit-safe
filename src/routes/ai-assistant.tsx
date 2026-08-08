@@ -144,7 +144,15 @@ function AiAssistant() {
       const relatedPosts = findRelatedPosts(currentInput);
       let aiContent = "";
       
-      if (isForcingOther) {
+      const isGreeting = /^(hi|hello|hey|hola|ki khobor|ohe|asalamu alaikum|namaste)/i.test(currentInput.trim());
+      
+      if (isGreeting) {
+        if (lang === "Bengali") {
+          aiContent = `হ্যালো! কেমন আছেন? আমি আপনার লার্নস একাডেমি (Learns Academy) স্টাডি অ্যাসিস্ট্যান্ট। আমি আপনাকে আপনার পড়াশোনা বা কারিকুলাম নিয়ে সাহায্য করতে পারি। আপনি আজ কি বিষয়ে জানতে চাচ্ছেন? friendly ভাবে কথা বলতে পারেন আমার সাথে, কোনো সমস্যা নেই!`;
+        } else {
+          aiContent = `Hello! How are you? I'm your Learns Academy study assistant. I'm here to help you with your studies or any curriculum-related questions. What would you like to learn about today? Feel free to chat with me friendly!`;
+        }
+      } else if (isForcingOther) {
         if (lang === 'Bengali') {
           aiContent = "আমি দেখছি আপনি ইংরেজিতে উত্তর চাচ্ছেন। দয়া করে আপনার AI Settings এ গিয়ে ভাষা পরিবর্তন করে নিন যাতে আমি সঠিকভাবে উত্তর দিতে পারি।";
         } else {
@@ -154,13 +162,13 @@ function AiAssistant() {
         if (relatedPosts.length > 0) {
           aiContent = `আমি কমিউনিটিতে কিছু প্রাসঙ্গিক পোস্ট খুঁজে পেয়েছি যা আপনাকে "${currentInput}" এর বিষয়ে সাহায্য করতে পারে:\n\n- ${relatedPosts[0].title}: এটি একই ধরণের বিষয় নিয়ে লেখা। আরও ভালো ব্যাখ্যার জন্য আপনি এটি ভিজিট করতে পারেন।\n\nআমি আপনাকে আর কীভাবে সাহায্য করতে পারি?`;
         } else {
-          aiContent = `আমি আপনার "${currentInput}" সম্পর্কিত অনুরোধটি বিশ্লেষণ করেছি। একাডেমীর কারিকুলাম অনুযায়ী, আমি আপনাকে প্রথমে মৌলিক নীতিগুলোতে ফোকাস করার পরামর্শ দিচ্ছি। আপনি কি ধাপে ধাপে বিস্তারিত জানতে চান?`;
+          aiContent = `আপনার "${currentInput}" বিষয়টি আমি বুঝতে পেরেছি। আপনার প্রোফাইল এনালাইজ করে আমি দেখছি যে এই টপিকে আপনার কিছু বেসিক ঘাটতি থাকতে পারে। আমরা কি এই বিষয়টি নিয়ে বিস্তারিত আলোচনা করতে পারি? আমি আপনাকে শিখতে সাহায্য করতে চাই!`;
         }
       } else {
         if (relatedPosts.length > 0) {
           aiContent = `I found some relevant posts in the community that might help you with "${currentInput}":\n\n- ${relatedPosts[0].title}: This covers similar topics. You should visit it for a better explanation.\n\nHow else can I assist you?`;
         } else {
-          aiContent = `I've analyzed your request about "${currentInput}". Based on the Academy's curriculum, I recommend focusing on the fundamental principles first. Would you like a step-by-step breakdown?`;
+          aiContent = `I've analyzed your request about "${currentInput}". Based on your profile and progress, I think we could focus on strengthening your understanding of this topic. Shall we break it down together? I'm here to support your learning journey!`;
         }
       }
 
