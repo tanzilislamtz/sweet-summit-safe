@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { useAdminAccess } from "./admin";
+import { useAdminAccess } from "@/lib/use-admin-access";
 import { adminList, adminSave } from "@/lib/admin.functions";
 import { cn } from "@/lib/utils";
 

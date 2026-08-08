@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Search, Loader2, Pencil, Trash2, X, ChevronLeft, ChevronRight, Inbox } from "lucide-react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { useAdminAccess } from "./admin";
+import { useAdminAccess } from "@/lib/use-admin-access";
 import { RESOURCE_BY_SLUG, type FieldDef, type ResourceDef } from "@/lib/admin-resources";
 import { adminList, adminSave, adminDelete } from "@/lib/admin.functions";
 import { cn } from "@/lib/utils";

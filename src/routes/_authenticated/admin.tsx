@@ -1,24 +1,10 @@
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { useEffect, createContext, useContext } from "react";
+import { useEffect } from "react";
 import { Loader2, ShieldAlert } from "lucide-react";
-import { getAdminAccess } from "@/lib/admin.functions";
+import { useAdminAccessQuery } from "@/lib/use-admin-access";
 
-export type AdminAccess = {
-  isAdmin: boolean;
-  isStaff: boolean;
-  roles: string[];
-  name: string | null;
-  email: string | null;
-};
-
-const AccessContext = createContext<AdminAccess | null>(null);
-export const useAdminAccess = (): AdminAccess => {
-  const value = useContext(AccessContext);
-  if (!value) throw new Error("useAdminAccess must be used inside the admin layout");
-  return value;
-};
+export { useAdminAccess } from "@/lib/use-admin-access";
+export type { AdminAccess } from "@/lib/use-admin-access";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminLayout,
@@ -34,12 +20,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 
 function AdminLayout() {
   const navigate = useNavigate();
-  const fetchAccess = useServerFn(getAdminAccess);
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["admin", "access"],
-    queryFn: () => fetchAccess(),
-    staleTime: 60_000,
-  });
+  const { data, isLoading, error } = useAdminAccessQuery();
 
   useEffect(() => {
     if (error) navigate({ to: "/admin-login" });
@@ -70,9 +51,5 @@ function AdminLayout() {
     );
   }
 
-  return (
-    <AccessContext.Provider value={data}>
-      <Outlet />
-    </AccessContext.Provider>
-  );
+  return <Outlet />;
 }
