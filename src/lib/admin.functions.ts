@@ -55,9 +55,9 @@ async function audit(
   action: string,
   entity: string,
   entityId: string | null,
-  meta: Record<string, unknown> = {},
+  meta: Record<string, any> = {},
 ) {
-  await context.supabase
+  await (context.supabase as any)
     .from("admin_audit_log")
     .insert({ admin_id: context.userId, action, entity, entity_id: entityId, meta });
 }
@@ -107,7 +107,7 @@ export const adminList = createServerFn({ method: "POST" })
     const pageSize = Math.min(100, Math.max(5, data.pageSize ?? 25));
     const from = (page - 1) * pageSize;
 
-    let query = context.supabase
+    let query = (context.supabase as any)
       .from(data.table)
       .select("*", { count: "exact" })
       .range(from, from + pageSize - 1);
@@ -125,12 +125,12 @@ export const adminList = createServerFn({ method: "POST" })
 
     const { data: rows, error, count } = await query;
     if (error) throw new Error(error.message);
-    return { rows: (rows ?? []) as Record<string, unknown>[], count: count ?? 0, page, pageSize };
+    return { rows: (rows ?? []) as Record<string, any>[], count: count ?? 0, page, pageSize };
   });
 
 export const adminSave = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { table: string; id?: string | null; values: Record<string, unknown> }) => {
+  .inputValidator((input: { table: string; id?: string | null; values: Record<string, any> }) => {
     if (!isAdminTable(input.table)) throw new Error("Unknown table");
     return input;
   })
@@ -139,7 +139,7 @@ export const adminSave = createServerFn({ method: "POST" })
     const pk = data.table === "app_settings" ? "key" : "id";
 
     if (data.id) {
-      const { error } = await context.supabase
+      const { error } = await (context.supabase as any)
         .from(data.table)
         .update(data.values)
         .eq(pk, data.id);
@@ -148,13 +148,13 @@ export const adminSave = createServerFn({ method: "POST" })
       return { ok: true as const, id: data.id };
     }
 
-    const { data: inserted, error } = await context.supabase
+    const { data: inserted, error } = await (context.supabase as any)
       .from(data.table)
       .insert(data.values)
       .select()
       .single();
     if (error) throw new Error(error.message);
-    const newId = String((inserted as Record<string, unknown>)[pk] ?? "");
+    const newId = String((inserted as Record<string, any>)[pk] ?? "");
     await audit(context as SupabaseCtx, "create", data.table, newId, data.values);
     return { ok: true as const, id: newId };
   });
@@ -168,7 +168,7 @@ export const adminDelete = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertStaff(context as SupabaseCtx);
     const pk = data.table === "app_settings" ? "key" : "id";
-    const { error } = await context.supabase.from(data.table).delete().eq(pk, data.id);
+    const { error } = await (context.supabase as any).from(data.table).delete().eq(pk, data.id);
     if (error) throw new Error(error.message);
     await audit(context as SupabaseCtx, "delete", data.table, data.id);
     return { ok: true as const };
@@ -226,7 +226,7 @@ export const adminListUsers = createServerFn({ method: "POST" })
     for (const r of (roles ?? []) as { user_id: string; role: string }[]) {
       roleMap.set(r.user_id, [...(roleMap.get(r.user_id) ?? []), r.role]);
     }
-    return ((profiles ?? []) as Record<string, unknown>[]).map((p) => ({
+    return ((profiles ?? []) as Record<string, any>[]).map((p: Record<string, any>) => ({
       ...p,
       roles: roleMap.get(String(p['id'])) ?? [],
     }));
@@ -238,7 +238,7 @@ export const adminStats = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await assertStaff(context as SupabaseCtx);
     const countOf = async (table: string, filter?: { column: string; value: unknown }) => {
-      let q = context.supabase.from(table).select("*", { count: "exact", head: true });
+      let q = (context.supabase as any).from(table).select("*", { count: "exact", head: true });
       if (filter) q = q.eq(filter.column, filter.value);
       const { count } = await q;
       return count ?? 0;
@@ -321,8 +321,8 @@ export const adminStats = createServerFn({ method: "GET" })
         ads,
         announcements,
       },
-      recentUsers: (recentUsers ?? []) as Record<string, unknown>[],
-      recentActivity: (recentActivity ?? []) as Record<string, unknown>[],
+      recentUsers: (recentUsers ?? []) as Record<string, any>[],
+      recentActivity: (recentActivity ?? []) as Record<string, any>[],
       signupSeries: buckets,
     };
   });
