@@ -37,6 +37,7 @@ import { Route as MessageRequestsRouteImport } from './routes/message.requests'
 import { Route as MessageThreadIdRouteImport } from './routes/message.$threadId'
 import { Route as GroupStudyGroupIdRouteImport } from './routes/group-study.$groupId'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as QuizWrittenSubjectIdRouteImport } from './routes/quiz.written.$subjectId'
 import { Route as QuizSubjectSubjectIdRouteImport } from './routes/quiz.subject.$subjectId'
 import { Route as QuizMockTestTestIdRouteImport } from './routes/quiz.mock-test_.$testId'
@@ -189,6 +190,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const QuizWrittenSubjectIdRoute = QuizWrittenSubjectIdRouteImport.update({
   id: '/written/$subjectId',
   path: '/written/$subjectId',
@@ -268,7 +274,7 @@ export interface FileRoutesByFullPath {
   '/quiz': typeof QuizRouteWithChildren
   '/register': typeof RegisterRoute
   '/welcome': typeof WelcomeRoute
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/group-study/$groupId': typeof GroupStudyGroupIdRoute
   '/message/$threadId': typeof MessageThreadIdRoute
   '/message/requests': typeof MessageRequestsRoute
@@ -289,6 +295,7 @@ export interface FileRoutesByFullPath {
   '/quiz/mock-test/$testId': typeof QuizMockTestTestIdRoute
   '/quiz/subject/$subjectId': typeof QuizSubjectSubjectIdRoute
   '/quiz/written/$subjectId': typeof QuizWrittenSubjectIdRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/quiz/mock-test/$testId/run': typeof QuizMockTestTestIdRunRoute
   '/quiz/mock-test/category/$categoryId': typeof QuizMockTestCategoryCategoryIdRoute
   '/quiz/subject/$subjectId/$category': typeof QuizSubjectSubjectIdCategoryRoute
@@ -307,7 +314,6 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/welcome': typeof WelcomeRoute
-  '/admin': typeof AuthenticatedAdminRoute
   '/group-study/$groupId': typeof GroupStudyGroupIdRoute
   '/message/$threadId': typeof MessageThreadIdRoute
   '/message/requests': typeof MessageRequestsRoute
@@ -328,6 +334,7 @@ export interface FileRoutesByTo {
   '/quiz/mock-test/$testId': typeof QuizMockTestTestIdRoute
   '/quiz/subject/$subjectId': typeof QuizSubjectSubjectIdRoute
   '/quiz/written/$subjectId': typeof QuizWrittenSubjectIdRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/quiz/mock-test/$testId/run': typeof QuizMockTestTestIdRunRoute
   '/quiz/mock-test/category/$categoryId': typeof QuizMockTestCategoryCategoryIdRoute
   '/quiz/subject/$subjectId/$category': typeof QuizSubjectSubjectIdCategoryRoute
@@ -350,7 +357,7 @@ export interface FileRoutesById {
   '/quiz': typeof QuizRouteWithChildren
   '/register': typeof RegisterRoute
   '/welcome': typeof WelcomeRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/group-study/$groupId': typeof GroupStudyGroupIdRoute
   '/message/$threadId': typeof MessageThreadIdRoute
   '/message/requests': typeof MessageRequestsRoute
@@ -371,6 +378,7 @@ export interface FileRoutesById {
   '/quiz/mock-test_/$testId': typeof QuizMockTestTestIdRoute
   '/quiz/subject/$subjectId': typeof QuizSubjectSubjectIdRoute
   '/quiz/written/$subjectId': typeof QuizWrittenSubjectIdRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/quiz/mock-test_/$testId_/run': typeof QuizMockTestTestIdRunRoute
   '/quiz/mock-test_/category/$categoryId': typeof QuizMockTestCategoryCategoryIdRoute
   '/quiz/subject/$subjectId_/$category': typeof QuizSubjectSubjectIdCategoryRoute
@@ -414,6 +422,7 @@ export interface FileRouteTypes {
     | '/quiz/mock-test/$testId'
     | '/quiz/subject/$subjectId'
     | '/quiz/written/$subjectId'
+    | '/admin/'
     | '/quiz/mock-test/$testId/run'
     | '/quiz/mock-test/category/$categoryId'
     | '/quiz/subject/$subjectId/$category'
@@ -432,7 +441,6 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/welcome'
-    | '/admin'
     | '/group-study/$groupId'
     | '/message/$threadId'
     | '/message/requests'
@@ -453,6 +461,7 @@ export interface FileRouteTypes {
     | '/quiz/mock-test/$testId'
     | '/quiz/subject/$subjectId'
     | '/quiz/written/$subjectId'
+    | '/admin'
     | '/quiz/mock-test/$testId/run'
     | '/quiz/mock-test/category/$categoryId'
     | '/quiz/subject/$subjectId/$category'
@@ -495,6 +504,7 @@ export interface FileRouteTypes {
     | '/quiz/mock-test_/$testId'
     | '/quiz/subject/$subjectId'
     | '/quiz/written/$subjectId'
+    | '/_authenticated/admin/'
     | '/quiz/mock-test_/$testId_/run'
     | '/quiz/mock-test_/category/$categoryId'
     | '/quiz/subject/$subjectId_/$category'
@@ -718,6 +728,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/quiz/written/$subjectId': {
       id: '/quiz/written/$subjectId'
       path: '/written/$subjectId'
@@ -805,12 +822,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
