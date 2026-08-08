@@ -46,6 +46,7 @@ import { Route as QuizCqSubjectIdRouteImport } from './routes/quiz.cq.$subjectId
 import { Route as QuizBoardBoardIdRouteImport } from './routes/quiz.board.$boardId'
 import { Route as MessageRequestRequestIdRouteImport } from './routes/message.request.$requestId'
 import { Route as GroupStudyManageGroupIdRouteImport } from './routes/group-study.manage.$groupId'
+import { Route as AuthenticatedAdminResourceRouteImport } from './routes/_authenticated/admin.$resource'
 import { Route as QuizSubjectSubjectIdCategoryRouteImport } from './routes/quiz.subject.$subjectId_.$category'
 import { Route as QuizMockTestCategoryCategoryIdRouteImport } from './routes/quiz.mock-test_.category.$categoryId'
 import { Route as QuizMockTestTestIdRunRouteImport } from './routes/quiz.mock-test_.$testId_.run'
@@ -235,6 +236,12 @@ const GroupStudyManageGroupIdRoute = GroupStudyManageGroupIdRouteImport.update({
   path: '/manage/$groupId',
   getParentRoute: () => GroupStudyRoute,
 } as any)
+const AuthenticatedAdminResourceRoute =
+  AuthenticatedAdminResourceRouteImport.update({
+    id: '/$resource',
+    path: '/$resource',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const QuizSubjectSubjectIdCategoryRoute =
   QuizSubjectSubjectIdCategoryRouteImport.update({
     id: '/subject/$subjectId_/$category',
@@ -287,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/quiz/quick-practice': typeof QuizQuickPracticeRoute
   '/group-study/': typeof GroupStudyIndexRoute
   '/quiz/': typeof QuizIndexRoute
+  '/admin/$resource': typeof AuthenticatedAdminResourceRoute
   '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
@@ -326,6 +334,7 @@ export interface FileRoutesByTo {
   '/quiz/quick-practice': typeof QuizQuickPracticeRoute
   '/group-study': typeof GroupStudyIndexRoute
   '/quiz': typeof QuizIndexRoute
+  '/admin/$resource': typeof AuthenticatedAdminResourceRoute
   '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
@@ -370,6 +379,7 @@ export interface FileRoutesById {
   '/quiz/quick-practice': typeof QuizQuickPracticeRoute
   '/group-study/': typeof GroupStudyIndexRoute
   '/quiz/': typeof QuizIndexRoute
+  '/_authenticated/admin/$resource': typeof AuthenticatedAdminResourceRoute
   '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
@@ -414,6 +424,7 @@ export interface FileRouteTypes {
     | '/quiz/quick-practice'
     | '/group-study/'
     | '/quiz/'
+    | '/admin/$resource'
     | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
@@ -453,6 +464,7 @@ export interface FileRouteTypes {
     | '/quiz/quick-practice'
     | '/group-study'
     | '/quiz'
+    | '/admin/$resource'
     | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
@@ -496,6 +508,7 @@ export interface FileRouteTypes {
     | '/quiz/quick-practice'
     | '/group-study/'
     | '/quiz/'
+    | '/_authenticated/admin/$resource'
     | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
@@ -791,6 +804,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupStudyManageGroupIdRouteImport
       parentRoute: typeof GroupStudyRoute
     }
+    '/_authenticated/admin/$resource': {
+      id: '/_authenticated/admin/$resource'
+      path: '/$resource'
+      fullPath: '/admin/$resource'
+      preLoaderRoute: typeof AuthenticatedAdminResourceRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/quiz/subject/$subjectId_/$category': {
       id: '/quiz/subject/$subjectId_/$category'
       path: '/subject/$subjectId/$category'
@@ -823,10 +843,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminResourceRoute: typeof AuthenticatedAdminResourceRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminResourceRoute: AuthenticatedAdminResourceRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
