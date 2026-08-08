@@ -7,6 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 
+const AnyLink = Link as unknown as React.ComponentType<Record<string, unknown>>;
+
 type Props = {
   children: ReactNode;
   title: string;
@@ -177,7 +179,7 @@ function NavItem({
   onClick?: () => void;
 }) {
   return (
-    <Link
+    <AnyLink
       to={to}
       onClick={onClick}
       className={cn(
@@ -187,6 +189,6 @@ function NavItem({
     >
       <Icon className="h-4 w-4 shrink-0" />
       <span className="truncate">{label}</span>
-    </Link>
+    </AnyLink>
   );
 }
