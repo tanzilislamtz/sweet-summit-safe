@@ -21,6 +21,8 @@ import { Route as CreatePostRouteImport } from './routes/create-post'
 import { Route as AvailableTutorRouteImport } from './routes/available-tutor'
 import { Route as AiSettingsRouteImport } from './routes/ai-settings'
 import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
+import { Route as AdminLoginRouteImport } from './routes/admin-login'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QuizIndexRouteImport } from './routes/quiz.index'
 import { Route as GroupStudyIndexRouteImport } from './routes/group-study.index'
@@ -34,6 +36,8 @@ import { Route as PostPostIdRouteImport } from './routes/post.$postId'
 import { Route as MessageRequestsRouteImport } from './routes/message.requests'
 import { Route as MessageThreadIdRouteImport } from './routes/message.$threadId'
 import { Route as GroupStudyGroupIdRouteImport } from './routes/group-study.$groupId'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as QuizWrittenSubjectIdRouteImport } from './routes/quiz.written.$subjectId'
 import { Route as QuizSubjectSubjectIdRouteImport } from './routes/quiz.subject.$subjectId'
 import { Route as QuizMockTestTestIdRouteImport } from './routes/quiz.mock-test_.$testId'
@@ -42,6 +46,9 @@ import { Route as QuizCqSubjectIdRouteImport } from './routes/quiz.cq.$subjectId
 import { Route as QuizBoardBoardIdRouteImport } from './routes/quiz.board.$boardId'
 import { Route as MessageRequestRequestIdRouteImport } from './routes/message.request.$requestId'
 import { Route as GroupStudyManageGroupIdRouteImport } from './routes/group-study.manage.$groupId'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
+import { Route as AuthenticatedAdminResourceRouteImport } from './routes/_authenticated/admin.$resource'
 import { Route as QuizSubjectSubjectIdCategoryRouteImport } from './routes/quiz.subject.$subjectId_.$category'
 import { Route as QuizMockTestCategoryCategoryIdRouteImport } from './routes/quiz.mock-test_.category.$categoryId'
 import { Route as QuizMockTestTestIdRunRouteImport } from './routes/quiz.mock-test_.$testId_.run'
@@ -105,6 +112,15 @@ const AiSettingsRoute = AiSettingsRouteImport.update({
 const AiAssistantRoute = AiAssistantRouteImport.update({
   id: '/ai-assistant',
   path: '/ai-assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin-login',
+  path: '/admin-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -172,6 +188,16 @@ const GroupStudyGroupIdRoute = GroupStudyGroupIdRouteImport.update({
   path: '/$groupId',
   getParentRoute: () => GroupStudyRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const QuizWrittenSubjectIdRoute = QuizWrittenSubjectIdRouteImport.update({
   id: '/written/$subjectId',
   path: '/written/$subjectId',
@@ -212,6 +238,23 @@ const GroupStudyManageGroupIdRoute = GroupStudyManageGroupIdRouteImport.update({
   path: '/manage/$groupId',
   getParentRoute: () => GroupStudyRoute,
 } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminResourceRoute =
+  AuthenticatedAdminResourceRouteImport.update({
+    id: '/$resource',
+    path: '/$resource',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const QuizSubjectSubjectIdCategoryRoute =
   QuizSubjectSubjectIdCategoryRouteImport.update({
     id: '/subject/$subjectId_/$category',
@@ -238,6 +281,7 @@ const QuizSubjectSubjectIdCategoryChapterIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin-login': typeof AdminLoginRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/ai-settings': typeof AiSettingsRoute
   '/available-tutor': typeof AvailableTutorRoute
@@ -250,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/quiz': typeof QuizRouteWithChildren
   '/register': typeof RegisterRoute
   '/welcome': typeof WelcomeRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/group-study/$groupId': typeof GroupStudyGroupIdRoute
   '/message/$threadId': typeof MessageThreadIdRoute
   '/message/requests': typeof MessageRequestsRoute
@@ -262,6 +307,9 @@ export interface FileRoutesByFullPath {
   '/quiz/quick-practice': typeof QuizQuickPracticeRoute
   '/group-study/': typeof GroupStudyIndexRoute
   '/quiz/': typeof QuizIndexRoute
+  '/admin/$resource': typeof AuthenticatedAdminResourceRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
@@ -270,6 +318,7 @@ export interface FileRoutesByFullPath {
   '/quiz/mock-test/$testId': typeof QuizMockTestTestIdRoute
   '/quiz/subject/$subjectId': typeof QuizSubjectSubjectIdRoute
   '/quiz/written/$subjectId': typeof QuizWrittenSubjectIdRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/quiz/mock-test/$testId/run': typeof QuizMockTestTestIdRunRoute
   '/quiz/mock-test/category/$categoryId': typeof QuizMockTestCategoryCategoryIdRoute
   '/quiz/subject/$subjectId/$category': typeof QuizSubjectSubjectIdCategoryRoute
@@ -277,6 +326,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin-login': typeof AdminLoginRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/ai-settings': typeof AiSettingsRoute
   '/available-tutor': typeof AvailableTutorRoute
@@ -299,6 +349,9 @@ export interface FileRoutesByTo {
   '/quiz/quick-practice': typeof QuizQuickPracticeRoute
   '/group-study': typeof GroupStudyIndexRoute
   '/quiz': typeof QuizIndexRoute
+  '/admin/$resource': typeof AuthenticatedAdminResourceRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
@@ -307,6 +360,7 @@ export interface FileRoutesByTo {
   '/quiz/mock-test/$testId': typeof QuizMockTestTestIdRoute
   '/quiz/subject/$subjectId': typeof QuizSubjectSubjectIdRoute
   '/quiz/written/$subjectId': typeof QuizWrittenSubjectIdRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/quiz/mock-test/$testId/run': typeof QuizMockTestTestIdRunRoute
   '/quiz/mock-test/category/$categoryId': typeof QuizMockTestCategoryCategoryIdRoute
   '/quiz/subject/$subjectId/$category': typeof QuizSubjectSubjectIdCategoryRoute
@@ -315,6 +369,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/admin-login': typeof AdminLoginRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/ai-settings': typeof AiSettingsRoute
   '/available-tutor': typeof AvailableTutorRoute
@@ -327,6 +383,7 @@ export interface FileRoutesById {
   '/quiz': typeof QuizRouteWithChildren
   '/register': typeof RegisterRoute
   '/welcome': typeof WelcomeRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/group-study/$groupId': typeof GroupStudyGroupIdRoute
   '/message/$threadId': typeof MessageThreadIdRoute
   '/message/requests': typeof MessageRequestsRoute
@@ -339,6 +396,9 @@ export interface FileRoutesById {
   '/quiz/quick-practice': typeof QuizQuickPracticeRoute
   '/group-study/': typeof GroupStudyIndexRoute
   '/quiz/': typeof QuizIndexRoute
+  '/_authenticated/admin/$resource': typeof AuthenticatedAdminResourceRoute
+  '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
@@ -347,6 +407,7 @@ export interface FileRoutesById {
   '/quiz/mock-test_/$testId': typeof QuizMockTestTestIdRoute
   '/quiz/subject/$subjectId': typeof QuizSubjectSubjectIdRoute
   '/quiz/written/$subjectId': typeof QuizWrittenSubjectIdRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/quiz/mock-test_/$testId_/run': typeof QuizMockTestTestIdRunRoute
   '/quiz/mock-test_/category/$categoryId': typeof QuizMockTestCategoryCategoryIdRoute
   '/quiz/subject/$subjectId_/$category': typeof QuizSubjectSubjectIdCategoryRoute
@@ -356,6 +417,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin-login'
     | '/ai-assistant'
     | '/ai-settings'
     | '/available-tutor'
@@ -368,6 +430,7 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/register'
     | '/welcome'
+    | '/admin'
     | '/group-study/$groupId'
     | '/message/$threadId'
     | '/message/requests'
@@ -380,6 +443,9 @@ export interface FileRouteTypes {
     | '/quiz/quick-practice'
     | '/group-study/'
     | '/quiz/'
+    | '/admin/$resource'
+    | '/admin/settings'
+    | '/admin/users'
     | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
@@ -388,6 +454,7 @@ export interface FileRouteTypes {
     | '/quiz/mock-test/$testId'
     | '/quiz/subject/$subjectId'
     | '/quiz/written/$subjectId'
+    | '/admin/'
     | '/quiz/mock-test/$testId/run'
     | '/quiz/mock-test/category/$categoryId'
     | '/quiz/subject/$subjectId/$category'
@@ -395,6 +462,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin-login'
     | '/ai-assistant'
     | '/ai-settings'
     | '/available-tutor'
@@ -417,6 +485,9 @@ export interface FileRouteTypes {
     | '/quiz/quick-practice'
     | '/group-study'
     | '/quiz'
+    | '/admin/$resource'
+    | '/admin/settings'
+    | '/admin/users'
     | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
@@ -425,6 +496,7 @@ export interface FileRouteTypes {
     | '/quiz/mock-test/$testId'
     | '/quiz/subject/$subjectId'
     | '/quiz/written/$subjectId'
+    | '/admin'
     | '/quiz/mock-test/$testId/run'
     | '/quiz/mock-test/category/$categoryId'
     | '/quiz/subject/$subjectId/$category'
@@ -432,6 +504,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/admin-login'
     | '/ai-assistant'
     | '/ai-settings'
     | '/available-tutor'
@@ -444,6 +518,7 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/register'
     | '/welcome'
+    | '/_authenticated/admin'
     | '/group-study/$groupId'
     | '/message/$threadId'
     | '/message/requests'
@@ -456,6 +531,9 @@ export interface FileRouteTypes {
     | '/quiz/quick-practice'
     | '/group-study/'
     | '/quiz/'
+    | '/_authenticated/admin/$resource'
+    | '/_authenticated/admin/settings'
+    | '/_authenticated/admin/users'
     | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
@@ -464,6 +542,7 @@ export interface FileRouteTypes {
     | '/quiz/mock-test_/$testId'
     | '/quiz/subject/$subjectId'
     | '/quiz/written/$subjectId'
+    | '/_authenticated/admin/'
     | '/quiz/mock-test_/$testId_/run'
     | '/quiz/mock-test_/category/$categoryId'
     | '/quiz/subject/$subjectId_/$category'
@@ -472,6 +551,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AdminLoginRoute: typeof AdminLoginRoute
   AiAssistantRoute: typeof AiAssistantRoute
   AiSettingsRoute: typeof AiSettingsRoute
   AvailableTutorRoute: typeof AvailableTutorRoute
@@ -573,6 +654,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin-login': {
+      id: '/admin-login'
+      path: '/admin-login'
+      fullPath: '/admin-login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -664,6 +759,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupStudyGroupIdRouteImport
       parentRoute: typeof GroupStudyRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/quiz/written/$subjectId': {
       id: '/quiz/written/$subjectId'
       path: '/written/$subjectId'
@@ -720,6 +829,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupStudyManageGroupIdRouteImport
       parentRoute: typeof GroupStudyRoute
     }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/$resource': {
+      id: '/_authenticated/admin/$resource'
+      path: '/$resource'
+      fullPath: '/admin/$resource'
+      preLoaderRoute: typeof AuthenticatedAdminResourceRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/quiz/subject/$subjectId_/$category': {
       id: '/quiz/subject/$subjectId_/$category'
       path: '/subject/$subjectId/$category'
@@ -750,6 +880,34 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminResourceRoute: typeof AuthenticatedAdminResourceRoute
+  AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminResourceRoute: AuthenticatedAdminResourceRoute,
+  AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface GroupStudyRouteChildren {
   GroupStudyGroupIdRoute: typeof GroupStudyGroupIdRoute
@@ -827,6 +985,8 @@ const QuizRouteWithChildren = QuizRoute._addFileChildren(QuizRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AdminLoginRoute: AdminLoginRoute,
   AiAssistantRoute: AiAssistantRoute,
   AiSettingsRoute: AiSettingsRoute,
   AvailableTutorRoute: AvailableTutorRoute,
