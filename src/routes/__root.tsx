@@ -130,9 +130,10 @@ function RootComponent() {
   const search = useRouterState({ select: (s) => s.location.search as Record<string, unknown> });
 
   const inExamMode = /^\/quiz\/exam\//.test(pathname) && search?.mode === "exam";
-  const inChatThread = /^\/message\/[^/]+/.test(pathname);
+  const isChatThread = /^\/message\/[^/]+/.test(pathname);
+  const inAiAssistant = pathname.startsWith("/ai-assistant");
   const hideBottomNav =
-    /^\/(welcome|login|register|create-post)(\/|$)/.test(pathname) || inExamMode || inChatThread;
+    /^\/(welcome|login|register|create-post)(\/|$)/.test(pathname) || inExamMode || inChatThread || inAiAssistant;
 
   // Block the browser context menu app-wide. Elements that provide their own
   // custom menu (chat bubbles) opt out with [data-allow-contextmenu].
