@@ -324,10 +324,36 @@ function AiAssistant() {
           {/* Decorative Elements */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
           
-          <div 
-            ref={scrollRef}
-            className="flex-1 overflow-y-auto px-4 py-8 lg:px-8 relative z-10"
-          >
+          {messages.length === 0 ? (
+            <div className="flex h-full flex-col items-center justify-center p-8 text-center space-y-6">
+              <div className="h-20 w-20 rounded-3xl bg-primary/10 flex items-center justify-center text-primary">
+                <Bot className="h-10 w-10" />
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-2xl font-black text-foreground">How can I help you today?</h2>
+                <p className="text-muted-foreground text-sm max-w-sm">
+                  Choose a category to start or simply type your question below.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-3 w-full max-w-lg">
+                {[
+                  { label: "Explain Concept", icon: BookOpen },
+                  { label: "Quiz Me", icon: Trophy },
+                  { label: "Homework Help", icon: Target },
+                  { label: "Image Solve", icon: SearchCode },
+                ].map((cat) => (
+                  <button key={cat.label} className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-surface hover:bg-primary/5 hover:border-primary/20 transition-all text-sm font-bold text-foreground">
+                    <cat.icon className="h-5 w-5 text-primary" />
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div 
+              ref={scrollRef}
+              className="flex-1 overflow-y-auto px-4 py-8 lg:px-8 relative z-10"
+            >
             <div className="mx-auto max-w-3xl space-y-8">
               {messages.map((msg) => (
                 <motion.div
@@ -404,7 +430,7 @@ function AiAssistant() {
                 </div>
               )}
             </div>
-          </div>
+          </div>)}
 
           {/* Input Area */}
           <div className="relative z-20 border-t border-border bg-surface/80 backdrop-blur-xl p-4 lg:px-8">
@@ -469,13 +495,7 @@ function AiAssistant() {
                     </button>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleSend()}
-                  disabled={!input.trim()}
-                  className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:shadow-none"
-                >
-                  <Send className="h-6 w-6" />
-                </button>
+                {/* Removed extra send button as requested */}
               </div>
               <p className="mt-3 text-center text-[10px] text-muted-foreground/60 font-medium">
                 Learns Academy AI can make mistakes. Check important info.
