@@ -17,6 +17,8 @@ import {
 import { Topbar } from "@/components/Topbar";
 import { MobileNav } from "@/components/MobileNav";
 import { LeftNav } from "@/components/LeftNav";
+import { useNavigationStore } from "@/lib/navigation-store";
+import { cn } from "@/lib/utils";
 import { FavoriteButton } from "@/components/FavoriteButton";
 
 export const Route = createFileRoute("/available-tutor")({
@@ -155,6 +157,7 @@ const availabilityMeta: Record<Availability, { label: string; className: string 
 
 function AvailableTutorPage() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const isCollapsed = useNavigationStore((s) => s.isSidebarCollapsed);
   const [query, setQuery] = useState("");
   const [saved, setSaved] = useState<Record<string, boolean>>({});
   const [sort, setSort] = useState<"top" | "fee-low" | "fee-high" | "new">("top");
@@ -207,7 +210,12 @@ function AvailableTutorPage() {
       <Topbar variant="app" onMenu={() => setMenuOpen(true)} />
       <MobileNav open={menuOpen} onClose={() => setMenuOpen(false)} />
 
-      <main className="mx-auto grid max-w-[1400px] grid-cols-1 gap-6 px-3 py-4 pb-28 sm:px-4 sm:py-6 lg:h-[calc(100dvh-65px)] lg:grid-cols-[240px_minmax(0,1fr)] lg:overflow-hidden lg:px-8 lg:pb-6">
+      <main className={cn(
+        "mx-auto grid max-w-[1400px] gap-6 px-3 py-4 pb-28 sm:px-4 sm:py-6 transition-all duration-300 lg:h-[calc(100dvh-65px)] lg:overflow-hidden lg:px-8 lg:pb-6",
+        isCollapsed 
+          ? "grid-cols-1 lg:grid-cols-[72px_minmax(0,1fr)]" 
+          : "grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)]"
+      )}>
         <LeftNav stickyClass="lg:h-full" />
 
         <div className="min-w-0 space-y-5 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
