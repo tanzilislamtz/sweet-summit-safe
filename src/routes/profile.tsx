@@ -90,6 +90,15 @@ function ProfilePage() {
     readFav();
     readGroups();
     readAuth();
+    
+    // Sync AI settings on load
+    const syncAi = () => {
+      const saved = localStorage.getItem('ai-settings');
+      if (saved) {
+        // Just for re-render if needed
+      }
+    };
+    syncAi();
 
     window.addEventListener("la:practice-updated", readPractice);
     window.addEventListener(FAVORITES_EVENT, readFav);
@@ -291,7 +300,7 @@ function ProfilePage() {
                 />
               )}
               
-              {tab === "settings" && <SettingsTab />}
+              {tab === "settings" && <SettingsTab settings={JSON.parse(localStorage.getItem('ai-settings') || '{}')} />}
             </motion.div>
           </AnimatePresence>
         </div>
