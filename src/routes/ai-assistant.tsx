@@ -69,14 +69,7 @@ type Chat = {
 };
 
 function AiAssistant() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content: "Hello! I'm your Learns Academy AI Assistant. I can help you with your studies, analyze documents, and even find relevant posts for you. How can I help today?",
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -231,7 +224,10 @@ function AiAssistant() {
               className="hidden flex-col border-r border-border bg-muted/30 lg:flex shrink-0 overflow-hidden"
             >
               <div className="p-4">
-                <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition hover:bg-primary/90">
+                <button 
+                  onClick={() => setMessages([])}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition hover:bg-primary/90"
+                >
                   <Plus className="h-4 w-4" />
                   New Chat
                 </button>
@@ -463,9 +459,7 @@ function AiAssistant() {
                         <DropdownMenuItem onClick={() => handleFileUpload("document")} className="rounded-xl px-3 py-2.5 cursor-pointer">
                           <FileText className="mr-3 h-4 w-4" /> Upload Document
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => toggleVoice()} className="rounded-xl px-3 py-2.5 cursor-pointer">
-                          <Mic className="mr-3 h-4 w-4" /> Use Voice
-                        </DropdownMenuItem>
+                        {/* Removed Voice from plus menu as requested */}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
