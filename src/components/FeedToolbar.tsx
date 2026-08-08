@@ -230,21 +230,13 @@ export function FeedToolbar() {
         </div>
       </div>
 
-      {/* Meta row — updated UI to match the reference style */}
-      <div className="relative mt-3 flex items-center gap-3 border-t border-dashed border-border/70 pt-2.5 text-[11px] text-muted-foreground">
-        <span className="inline-flex items-center gap-1.5 font-medium">
-          <ArrowDownWideNarrow className="h-3.5 w-3.5" />
+      {/* Meta row — single responsive line */}
+      <div className="relative mt-3 flex min-w-0 items-center gap-1.5 overflow-x-auto border-t border-dashed border-border/70 pt-2.5 text-[11px] text-muted-foreground [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <ArrowDownWideNarrow className="h-3.5 w-3.5 shrink-0" />
+        <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap font-medium">
           Showing <span className="font-bold text-foreground">{TABS[active].label}</span>
           <span className="opacity-30">·</span>
           sorted by <span className="font-bold text-foreground">{SORTS[sort]}</span>
-        </span>
-        
-        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 font-bold text-emerald-600 dark:text-emerald-400">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-          </span>
-          128 tutors online
         </span>
       </div>
     </div>
