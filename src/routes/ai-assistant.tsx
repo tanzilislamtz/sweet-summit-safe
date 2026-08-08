@@ -493,12 +493,6 @@ function AiAssistant() {
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                     <button 
-                      onClick={() => handleSend()}
-                      className="p-2 text-primary hover:bg-primary/10 rounded-xl transition-colors"
-                    >
-                      <Send className="h-4 w-4" />
-                    </button>
-                    <button 
                       onClick={toggleVoice}
                       className={cn(
                         "p-2 rounded-xl transition-all",
@@ -509,7 +503,13 @@ function AiAssistant() {
                     </button>
                   </div>
                 </div>
-                {/* Removed extra send button as requested */}
+                <button
+                  onClick={() => handleSend()}
+                  disabled={!input.trim()}
+                  className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:shadow-none"
+                >
+                  <Send className="h-6 w-6" />
+                </button>
               </div>
               <p className="mt-3 text-center text-[10px] text-muted-foreground/60 font-medium">
                 Learns Academy AI can make mistakes. Check important info.
