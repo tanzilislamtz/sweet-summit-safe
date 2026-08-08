@@ -170,6 +170,16 @@ function AdCard({
   imageUrl?: string;
   sponsored?: boolean;
 }) {
+  const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState(12); // Random initial likes for demo
+  const [shares, setShares] = useState(5);
+  const [showComments, setShowComments] = useState(false);
+
+  const toggleLike = () => {
+    setLiked(!liked);
+    setLikes(prev => liked ? prev - 1 : prev + 1);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -186,9 +196,28 @@ function AdCard({
             {sponsored ? "Sponsored" : "Promoted"}
           </span>
         </div>
-        <button className="text-muted-foreground hover:text-foreground">
-          <MoreHorizontal className="h-4 w-4" />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="text-muted-foreground hover:text-foreground p-1 rounded-full transition-colors hover:bg-muted">
+              <MoreHorizontal className="h-4 w-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuItem onSelect={() => toast.success("Ad reported")}>
+              <Flag className="mr-2 h-4 w-4 text-destructive" /> Report Ad
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => toast.success("You will see fewer ads like this")}>
+              <EyeOff className="mr-2 h-4 w-4" /> Hide Ad
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => toast.success("Ad preference updated")}>
+              <BellOff className="mr-2 h-4 w-4" /> Ad Preferences
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => toast.info("Ads help keep Learns Academy free")}>
+              <HelpCircle className="mr-2 h-4 w-4" /> Why am I seeing this?
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {imageUrl && (
@@ -208,15 +237,55 @@ function AdCard({
         <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
           {description}
         </p>
+        
         <div className="mt-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-1.5 text-xs font-medium text-primary">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            Verified Academy
+          <div className="flex items-center gap-1.5 text-xs font-medium text-primary bg-primary/5 px-2 py-1 rounded-md">
+            <ChevronRight className="h-3.5 w-3.5" />
+            Click here to Enroll or Join
           </div>
           <button className="rounded-full bg-primary px-5 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md active:scale-95">
             {cta}
           </button>
         </div>
+
+        <footer className="mt-4 flex items-center gap-1 border-t border-border pt-3">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={toggleLike}
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+              liked ? "bg-destructive/10 text-destructive" : "text-foreground/70 hover:bg-muted hover:text-foreground"
+            }`}
+          >
+            <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
+            <span>{likes}</span>
+          </motion.button>
+
+          <button 
+            onClick={() => setShowComments(!showComments)}
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-foreground/70 transition hover:bg-muted hover:text-foreground"
+          >
+            <MessageCircle className="h-4 w-4" />
+            <span>3</span>
+          </button>
+
+          <button 
+            onClick={() => {
+              setShares(s => s + 1);
+              toast.success("Shared successfully");
+            }}
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-foreground/70 transition hover:bg-muted hover:text-foreground"
+          >
+            <Share2 className="h-4 w-4" />
+            <span>{shares}</span>
+          </button>
+
+          <div className="ml-auto">
+             <FavoriteButton 
+              item={{ id: "ad-" + title, type: "post", title: title }} 
+              compact 
+            />
+          </div>
+        </footer>
       </div>
     </motion.div>
   );
