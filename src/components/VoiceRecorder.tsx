@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Mic, Trash2, Send, Square } from "lucide-react";
+import { Mic, Trash2, Send, Square, Pause, Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatClock, type VoiceClip } from "@/lib/chat";
+import { cn } from "@/lib/utils";
 
 const MAX_SECONDS = 120;
 
@@ -11,6 +12,7 @@ const MAX_SECONDS = 120;
  */
 export default function VoiceRecorder({ onSend }: { onSend: (clip: VoiceClip) => void }) {
   const [recording, setRecording] = useState(false);
+  const [paused, setPaused] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const recRef = useRef<MediaRecorder | null>(null);
@@ -20,13 +22,18 @@ export default function VoiceRecorder({ onSend }: { onSend: (clip: VoiceClip) =>
   const keepRef = useRef(false);
   const secondsRef = useRef(0);
 
-  const cleanup = () => {
+  const clearTick = () => {
     if (tickRef.current) window.clearInterval(tickRef.current);
     tickRef.current = null;
+  };
+
+  const cleanup = () => {
+    clearTick();
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     recRef.current = null;
     setRecording(false);
+    setPaused(false);
   };
 
   useEffect(() => () => cleanup(), []);
@@ -58,6 +65,7 @@ export default function VoiceRecorder({ onSend }: { onSend: (clip: VoiceClip) =>
       recRef.current = rec;
       secondsRef.current = 0;
       setSeconds(0);
+      setPaused(false);
       setRecording(true);
       tickRef.current = window.setInterval(() => {
         setSeconds((s) => {
@@ -74,6 +82,30 @@ export default function VoiceRecorder({ onSend }: { onSend: (clip: VoiceClip) =>
       setError("Microphone permission is needed to record a voice message.");
       window.setTimeout(() => setError(null), 3000);
     }
+  };
+
+  const pause = () => {
+    if (!recRef.current || recRef.current.state !== "recording") return;
+    recRef.current.pause();
+    clearTick();
+    setPaused(true);
+  };
+
+  const resume = () => {
+    if (!recRef.current || recRef.current.state !== "paused") return;
+    recRef.current.resume();
+    setPaused(false);
+    tickRef.current = window.setInterval(() => {
+      setSeconds((s) => {
+        const next = s + 1;
+        secondsRef.current = next;
+        if (next >= MAX_SECONDS) {
+          keepRef.current = true;
+          recRef.current?.stop();
+        }
+        return next;
+      });
+    }, 1000);
   };
 
   const stop = (keep: boolean) => {
@@ -118,14 +150,19 @@ export default function VoiceRecorder({ onSend }: { onSend: (clip: VoiceClip) =>
               type="button"
               aria-label="Discard recording"
               onClick={() => stop(false)}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-red-500 transition hover:bg-red-500/10 active:scale-95"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-muted/60 text-red-500 transition hover:bg-red-500/10 active:scale-95"
             >
               <Trash2 className="h-4 w-4" />
             </button>
 
             <div className="flex min-w-0 flex-1 items-center gap-2 rounded-3xl bg-muted/60 px-3 py-2">
               <span className="relative grid h-2.5 w-2.5 place-items-center">
-                <span className="absolute h-2.5 w-2.5 animate-ping rounded-full bg-red-500/60" />
+                <span
+                  className={cn(
+                    "absolute h-2.5 w-2.5 rounded-full bg-red-500/60",
+                    paused ? "" : "animate-ping"
+                  )}
+                />
                 <span className="h-2 w-2 rounded-full bg-red-500" />
               </span>
               <span className="text-xs font-semibold tabular-nums text-foreground">
@@ -135,18 +172,35 @@ export default function VoiceRecorder({ onSend }: { onSend: (clip: VoiceClip) =>
                 {Array.from({ length: 26 }).map((_, i) => (
                   <motion.span
                     key={i}
-                    animate={{ scaleY: [0.3, 1, 0.45, 0.85, 0.3] }}
-                    transition={{
-                      duration: 1.1,
-                      repeat: Infinity,
-                      delay: (i % 7) * 0.09,
-                      ease: "easeInOut",
-                    }}
+                    animate={
+                      paused
+                        ? { scaleY: 0.25 }
+                        : { scaleY: [0.3, 1, 0.45, 0.85, 0.3] }
+                    }
+                    transition={
+                      paused
+                        ? { duration: 0.2 }
+                        : {
+                            duration: 1.1,
+                            repeat: Infinity,
+                            delay: (i % 7) * 0.09,
+                            ease: "easeInOut",
+                          }
+                    }
                     className="h-4 w-[3px] shrink-0 rounded-full bg-primary/60"
                   />
                 ))}
               </div>
             </div>
+
+            <button
+              type="button"
+              aria-label={paused ? "Resume recording" : "Pause recording"}
+              onClick={paused ? resume : pause}
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-muted/60 text-foreground/70 transition hover:bg-muted active:scale-95"
+            >
+              {paused ? <Play className="h-4 w-4 fill-current" /> : <Pause className="h-4 w-4" />}
+            </button>
 
             <button
               type="button"
