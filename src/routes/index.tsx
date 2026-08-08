@@ -279,12 +279,11 @@ function AdCard({
             <span>{shares}</span>
           </button>
 
-          <div className="ml-auto">
-             <FavoriteButton 
-              item={{ id: "ad-" + title, type: "post", title: title }} 
-              compact 
-            />
-          </div>
+          <FavoriteButton 
+            item={{ id: "ad-" + title, type: "post", title: title }} 
+            compact 
+            className="ml-auto"
+          />
         </footer>
       </div>
     </motion.div>
