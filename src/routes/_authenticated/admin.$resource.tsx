@@ -453,7 +453,7 @@ function Field({
             value ? "bg-primary" : "bg-muted",
           )}
         >
-          <span className={cn("h-6 w-6 rounded-full bg-background transition", value && "translate-x-5")} />
+          <span className={cn("h-6 w-6 rounded-full bg-background transition", value ? "translate-x-5" : "")} />
         </button>
       ) : relational ? (
         <select value={String(value ?? "")} onChange={(e) => onChange(e.target.value)} className={base}>
