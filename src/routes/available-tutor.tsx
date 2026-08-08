@@ -453,7 +453,7 @@ function AiRecommendedSection() {
     <motion.div 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl border border-primary/20 bg-primary/5 p-4 shadow-sm overflow-hidden"
+      className="rounded-2xl border border-primary/20 bg-primary/5 p-4 shadow-sm"
     >
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -465,54 +465,58 @@ function AiRecommendedSection() {
             <p className="text-[10px] text-primary font-bold uppercase tracking-wider">Top matches for your profile</p>
           </div>
         </div>
-        <div className="text-[10px] font-bold text-muted-foreground bg-surface/50 px-2 py-0.5 rounded-full border border-border">
-          AD
+        <div className="flex items-center gap-2">
+          <div className="text-[10px] font-bold text-muted-foreground bg-surface/50 px-2 py-0.5 rounded-full border border-border">
+            AD
+          </div>
         </div>
       </div>
 
-      <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {recommendations.map((t) => (
-          <motion.div
-            key={t.id}
-            whileHover={{ y: -4 }}
-            className="group relative w-[130px] shrink-0 rounded-xl border border-border bg-surface p-3 transition-all hover:border-primary/50 hover:shadow-md"
-          >
-            <div className="absolute top-1.5 right-1.5 z-10">
-               <div className="flex items-center gap-0.5 rounded-full bg-primary px-1.5 py-0.5 text-[8px] font-black text-white shadow-sm ring-1 ring-white/20">
-                {t.match}
-              </div>
-            </div>
-            
-            <div className="relative mx-auto mb-2 h-12 w-12 overflow-hidden rounded-full ring-2 ring-primary/10 group-hover:ring-primary/30">
-              <img
-                src={t.photo}
-                alt={t.name}
-                className="h-full w-full object-cover"
-              />
-            </div>
-
-            <div className="text-center">
-              <h4 className="truncate text-[11px] font-bold text-foreground">{t.name}</h4>
-              <p className="mt-0.5 text-[9px] font-bold text-primary/80">{t.subject}</p>
-              
-              <div className="mt-1.5 flex items-center justify-center gap-1 text-[9px] text-muted-foreground">
-                <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
-                <span className="font-bold text-foreground">{t.rating}</span>
-              </div>
-
-              <div className="mt-2 rounded-lg bg-muted/50 py-1 px-1.5 text-[8px] leading-tight text-muted-foreground italic line-clamp-2">
-                "{t.reason}"
+      <div className="relative group/slider">
+        <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {recommendations.map((t) => (
+            <motion.div
+              key={t.id}
+              whileHover={{ y: -4 }}
+              className="group relative w-[calc((100%-48px)/5)] min-w-[130px] shrink-0 snap-start rounded-xl border border-border bg-surface p-3 transition-all hover:border-primary/50 hover:shadow-md"
+            >
+              <div className="absolute top-1.5 right-1.5 z-10">
+                 <div className="flex items-center gap-0.5 rounded-full bg-primary px-1.5 py-0.5 text-[8px] font-black text-white shadow-sm ring-1 ring-white/20">
+                  {t.match}
+                </div>
               </div>
               
-              <button
-                type="button"
-                className="mt-3 block w-full rounded-lg bg-primary py-1.5 text-[9px] font-black text-primary-foreground transition-all hover:opacity-90 active:scale-95"
-              >
-                View Profile
-              </button>
-            </div>
-          </motion.div>
-        ))}
+              <div className="relative mx-auto mb-2 h-12 w-12 overflow-hidden rounded-full ring-2 ring-primary/10 group-hover:ring-primary/30">
+                <img
+                  src={t.photo}
+                  alt={t.name}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+
+              <div className="text-center">
+                <h4 className="truncate text-[11px] font-bold text-foreground">{t.name}</h4>
+                <p className="mt-0.5 text-[9px] font-bold text-primary/80">{t.subject}</p>
+                
+                <div className="mt-1.5 flex items-center justify-center gap-1 text-[9px] text-muted-foreground">
+                  <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
+                  <span className="font-bold text-foreground">{t.rating}</span>
+                </div>
+
+                <div className="mt-2 rounded-lg bg-muted/50 py-1 px-1.5 text-[8px] leading-tight text-muted-foreground italic line-clamp-2 min-h-[24px]">
+                  "{t.reason}"
+                </div>
+                
+                <button
+                  type="button"
+                  className="mt-3 block w-full rounded-lg bg-primary py-1.5 text-[9px] font-black text-primary-foreground transition-all hover:opacity-90 active:scale-95"
+                >
+                  View Profile
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </motion.div>
   );
