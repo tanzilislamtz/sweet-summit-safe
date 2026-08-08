@@ -36,6 +36,7 @@ import {
   SearchCode
 } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigationStore } from "@/lib/navigation-store";
 import { getSession } from "@/lib/session";
 import { posts } from "@/lib/posts";
 import { cn } from "@/lib/utils";
@@ -87,6 +88,7 @@ function AiAssistant() {
     { id: "3", title: "Physics Quiz Prep", lastMessage: "Newton's laws overview...", date: "Yesterday" },
   ]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { isSidebarCollapsed } = useNavigationStore();
   const scrollRef = useRef<HTMLDivElement>(null);
   
   const session = getSession();
@@ -127,6 +129,13 @@ function AiAssistant() {
 
     setMessages((prev) => [...prev, userMsg]);
     const currentInput = input;
+    
+    // Auto-reply logic for force-language requests
+    const settings = JSON.parse(localStorage.getItem('ai-settings') || '{}');
+    const lang = settings.language || 'English';
+    const isForcingOther = (lang === 'Bengali' && currentInput.toLowerCase().includes('english')) || 
+                           (lang === 'English' && currentInput.toLowerCase().includes('বাংলা'));
+    
     setInput("");
     setIsTyping(true);
 
@@ -135,10 +144,13 @@ function AiAssistant() {
       const relatedPosts = findRelatedPosts(currentInput);
       let aiContent = "";
       
-      const settings = JSON.parse(localStorage.getItem("ai-settings") || "{}");
-      const lang = settings.language || "English";
-      
-      if (lang === "Bengali") {
+      if (isForcingOther) {
+        if (lang === 'Bengali') {
+          aiContent = "আমি দেখছি আপনি ইংরেজিতে উত্তর চাচ্ছেন। দয়া করে আপনার AI Settings এ গিয়ে ভাষা পরিবর্তন করে নিন যাতে আমি সঠিকভাবে উত্তর দিতে পারি।";
+        } else {
+          aiContent = "I noticed you're asking for a reply in Bengali. Please update your AI Settings to Bengali so I can provide the best help in your preferred language.";
+        }
+      } else if (lang === "Bengali") {
         if (relatedPosts.length > 0) {
           aiContent = `আমি কমিউনিটিতে কিছু প্রাসঙ্গিক পোস্ট খুঁজে পেয়েছি যা আপনাকে "${currentInput}" এর বিষয়ে সাহায্য করতে পারে:\n\n- ${relatedPosts[0].title}: এটি একই ধরণের বিষয় নিয়ে লেখা। আরও ভালো ব্যাখ্যার জন্য আপনি এটি ভিজিট করতে পারেন।\n\nআমি আপনাকে আর কীভাবে সাহায্য করতে পারি?`;
         } else {
@@ -344,7 +356,10 @@ function AiAssistant() {
         </AnimatePresence>
 
         {/* Chat Area */}
-        <main className="relative flex flex-1 flex-col overflow-hidden bg-background">
+        <main className={cn(
+          "relative flex flex-1 flex-col overflow-hidden bg-background transition-all duration-300",
+          isSidebarCollapsed ? "lg:ml-0" : ""
+        )}>
           {/* Decorative Elements */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
           
