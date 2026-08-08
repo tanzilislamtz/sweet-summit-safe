@@ -39,6 +39,7 @@ import { toast } from "sonner";
 import { useNavigationStore } from "@/lib/navigation-store";
 import { getSession } from "@/lib/session";
 import { posts } from "@/lib/posts";
+import { getAiAssistantResponse } from "@/lib/ai.functions";
 import { cn } from "@/lib/utils";
 import { 
   DropdownMenu, 
