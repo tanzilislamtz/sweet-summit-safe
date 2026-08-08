@@ -32,6 +32,20 @@ export type ChatMessage = {
   replyTo?: { from: "me" | "them"; text: string };
   deletedFor?: "me" | "everyone";
   voice?: VoiceClip;
+  attachment?: Attachment;
+};
+
+/** An image or generic file shared inside a conversation (demo: data URL). */
+export type Attachment = {
+  kind: "image" | "file";
+  /** original file name, used for the download */
+  name: string;
+  /** data: URL of the file contents */
+  url: string;
+  /** size in bytes */
+  size: number;
+  /** MIME type as reported by the browser */
+  mime: string;
 };
 
 export const threads: ChatThread[] = [
@@ -380,6 +394,37 @@ export function markUnread(threadId: string) {
   delete read[threadId];
   window.localStorage.setItem(READ_KEY, JSON.stringify(read));
   listeners.forEach((l) => l());
+}
+
+/* ---------- attachments ---------- */
+
+/** Send an image or file attachment (demo: data URL kept in localStorage). */
+export function sendAttachment(
+  threadId: string,
+  attachment: Attachment,
+  replyTo?: ChatMessage,
+) {
+  const store = load();
+  const list = store[threadId] ?? [];
+  const msg: ChatMessage = {
+    id: Math.random().toString(36).slice(2),
+    threadId,
+    from: "me",
+    text: attachment.kind === "image" ? "🖼️ Photo" : `📎 ${attachment.name}`,
+    at: Date.now(),
+    status: "sent",
+    attachment,
+    replyTo: replyTo ? { from: replyTo.from, text: replyTo.text } : undefined,
+  };
+  store[threadId] = [...list, msg];
+  save(store);
+
+  setTimeout(() => {
+    const s = load();
+    const l = s[threadId] ?? [];
+    s[threadId] = l.map((m) => (m.id === msg.id ? { ...m, status: "delivered" } : m));
+    save(s);
+  }, 600);
 }
 
 /* ---------- voice messages ---------- */
