@@ -124,9 +124,11 @@ function Feed() {
     <section className="min-w-0 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
       <div className="space-y-5">
         <Leaderboard />
+        <AiRecommendedTutors />
         <Composer />
         <FeedToolbar />
       </div>
+
 
       <div className="mt-5 space-y-5">
         {posts.slice(0, 2).map((p) => (
@@ -487,6 +489,115 @@ function Leaderboard() {
     </div>
   );
 }
+
+function AiRecommendedTutors() {
+  const recommendations = [
+    {
+      id: "protiq",
+      name: "Protiq Halder",
+      photo: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&crop=faces",
+      match: "98% Match",
+      reason: "Based on your interest in Physics",
+      subject: "Physics",
+      rating: 4.8,
+    },
+    {
+      id: "farhana",
+      name: "Farhana Islam",
+      photo: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=faces",
+      match: "95% Match",
+      reason: "Fits your Class 10 profile",
+      subject: "English & ICT",
+      rating: 4.9,
+    },
+    {
+      id: "anika",
+      name: "Anika Rahman",
+      photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=faces",
+      match: "92% Match",
+      reason: "Popular for Math in your area",
+      subject: "Mathematics",
+      rating: 4.8,
+    },
+    {
+      id: "sadman",
+      name: "Sadman Chowdhury",
+      photo: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=200&h=200&fit=crop&crop=faces",
+      match: "89% Match",
+      reason: "Great for Biology basics",
+      subject: "Biology",
+      rating: 4.6,
+    },
+  ];
+
+  return (
+    <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm overflow-hidden">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/20">
+            <Sparkles className="h-4 w-4" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">AI Recommended Tutors</h3>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Personalized for you</p>
+          </div>
+        </div>
+        <Link 
+          to="/available-tutor" 
+          className="text-xs font-medium text-primary hover:underline flex items-center gap-0.5"
+        >
+          View all <ChevronRight className="h-3 w-3" />
+        </Link>
+      </div>
+
+      <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {recommendations.map((t) => (
+          <motion.div
+            key={t.id}
+            whileHover={{ y: -4 }}
+            className="group relative w-[140px] shrink-0 rounded-xl border border-border bg-muted/30 p-3 transition-colors hover:border-primary/30 hover:bg-muted/50"
+          >
+            <div className="absolute top-2 right-2 z-10">
+               <div className="flex items-center gap-0.5 rounded-full bg-surface/90 px-1.5 py-0.5 text-[9px] font-bold text-primary ring-1 ring-primary/10 shadow-sm">
+                {t.match}
+              </div>
+            </div>
+            
+            <div className="relative mx-auto mb-3 h-14 w-14 overflow-hidden rounded-full ring-2 ring-primary/5 group-hover:ring-primary/20">
+              <img
+                src={t.photo}
+                alt={t.name}
+                className="h-full w-full object-cover"
+              />
+            </div>
+
+            <div className="text-center">
+              <h4 className="truncate text-xs font-bold text-foreground">{t.name}</h4>
+              <p className="mt-0.5 text-[10px] font-medium text-primary/80">{t.subject}</p>
+              
+              <div className="mt-2 flex items-center justify-center gap-1 text-[10px] text-muted-foreground">
+                <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
+                <span className="font-semibold text-foreground">{t.rating}</span>
+              </div>
+
+              <div className="mt-2 text-[9px] leading-tight text-muted-foreground line-clamp-2 italic">
+                "{t.reason}"
+              </div>
+              
+              <Link
+                to="/available-tutor"
+                className="mt-3 block w-full rounded-lg bg-primary/10 py-1.5 text-[10px] font-bold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+              >
+                Visit Profile
+              </Link>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 
 
 function Composer() {
