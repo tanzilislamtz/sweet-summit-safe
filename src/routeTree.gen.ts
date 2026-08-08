@@ -46,6 +46,7 @@ import { Route as QuizCqSubjectIdRouteImport } from './routes/quiz.cq.$subjectId
 import { Route as QuizBoardBoardIdRouteImport } from './routes/quiz.board.$boardId'
 import { Route as MessageRequestRequestIdRouteImport } from './routes/message.request.$requestId'
 import { Route as GroupStudyManageGroupIdRouteImport } from './routes/group-study.manage.$groupId'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAdminResourceRouteImport } from './routes/_authenticated/admin.$resource'
 import { Route as QuizSubjectSubjectIdCategoryRouteImport } from './routes/quiz.subject.$subjectId_.$category'
 import { Route as QuizMockTestCategoryCategoryIdRouteImport } from './routes/quiz.mock-test_.category.$categoryId'
@@ -236,6 +237,11 @@ const GroupStudyManageGroupIdRoute = GroupStudyManageGroupIdRouteImport.update({
   path: '/manage/$groupId',
   getParentRoute: () => GroupStudyRoute,
 } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminResourceRoute =
   AuthenticatedAdminResourceRouteImport.update({
     id: '/$resource',
@@ -295,6 +301,7 @@ export interface FileRoutesByFullPath {
   '/group-study/': typeof GroupStudyIndexRoute
   '/quiz/': typeof QuizIndexRoute
   '/admin/$resource': typeof AuthenticatedAdminResourceRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
@@ -335,6 +342,7 @@ export interface FileRoutesByTo {
   '/group-study': typeof GroupStudyIndexRoute
   '/quiz': typeof QuizIndexRoute
   '/admin/$resource': typeof AuthenticatedAdminResourceRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
@@ -380,6 +388,7 @@ export interface FileRoutesById {
   '/group-study/': typeof GroupStudyIndexRoute
   '/quiz/': typeof QuizIndexRoute
   '/_authenticated/admin/$resource': typeof AuthenticatedAdminResourceRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/group-study/manage/$groupId': typeof GroupStudyManageGroupIdRoute
   '/message/request/$requestId': typeof MessageRequestRequestIdRoute
   '/quiz/board/$boardId': typeof QuizBoardBoardIdRoute
@@ -425,6 +434,7 @@ export interface FileRouteTypes {
     | '/group-study/'
     | '/quiz/'
     | '/admin/$resource'
+    | '/admin/users'
     | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
@@ -465,6 +475,7 @@ export interface FileRouteTypes {
     | '/group-study'
     | '/quiz'
     | '/admin/$resource'
+    | '/admin/users'
     | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
@@ -509,6 +520,7 @@ export interface FileRouteTypes {
     | '/group-study/'
     | '/quiz/'
     | '/_authenticated/admin/$resource'
+    | '/_authenticated/admin/users'
     | '/group-study/manage/$groupId'
     | '/message/request/$requestId'
     | '/quiz/board/$boardId'
@@ -804,6 +816,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupStudyManageGroupIdRouteImport
       parentRoute: typeof GroupStudyRoute
     }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/$resource': {
       id: '/_authenticated/admin/$resource'
       path: '/$resource'
@@ -844,11 +863,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminResourceRoute: typeof AuthenticatedAdminResourceRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminResourceRoute: AuthenticatedAdminResourceRoute,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
