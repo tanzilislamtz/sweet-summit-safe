@@ -931,14 +931,22 @@ function ChatWindow({ threadId, minimized }: { threadId: string; minimized: bool
               ref={fileRef}
               type="file"
               className="hidden"
-              onChange={(e) => {
+              onChange={async (e) => {
                 const f = e.target.files?.[0];
-                if (f) {
-                  sendMessage(threadId, `📎 ${f.name}`, replyTo ?? undefined);
+                e.target.value = "";
+                if (!f) return;
+                if (f.size > MAX_ATTACHMENT_BYTES) {
+                  notify("File is too large (max 4 MB)");
+                  return;
+                }
+                try {
+                  const att = await fileToAttachment(f);
+                  sendAttachment(threadId, att, replyTo ?? undefined);
                   setReplyTo(null);
                   notify("Attachment sent");
+                } catch {
+                  notify("Could not read that file");
                 }
-                e.target.value = "";
               }}
             />
             <button
