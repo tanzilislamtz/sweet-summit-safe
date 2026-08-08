@@ -36,6 +36,7 @@ import {
   SearchCode
 } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigationStore } from "@/lib/navigation-store";
 import { getSession } from "@/lib/session";
 import { posts } from "@/lib/posts";
 import { cn } from "@/lib/utils";
@@ -69,15 +70,16 @@ type Chat = {
 };
 
 function AiAssistant() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content: "Hello! I'm your Learns Academy AI Assistant. I can help you with your studies, analyze documents, and even find relevant posts for you. How can I help today?",
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [aiSettings, setAiSettings] = useState<any>({});
+  
+  useEffect(() => {
+    const saved = localStorage.getItem('ai-settings');
+    if (saved) {
+      setAiSettings(JSON.parse(saved));
+    }
+  }, []);
   const [isTyping, setIsTyping] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [chats, setChats] = useState<Chat[]>([
@@ -86,6 +88,7 @@ function AiAssistant() {
     { id: "3", title: "Physics Quiz Prep", lastMessage: "Newton's laws overview...", date: "Yesterday" },
   ]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { isSidebarCollapsed } = useNavigationStore();
   const scrollRef = useRef<HTMLDivElement>(null);
   
   const session = getSession();
@@ -98,13 +101,19 @@ function AiAssistant() {
   }, [messages]);
 
   const findRelatedPosts = (text: string) => {
-    const keywords = text.toLowerCase().split(/\s+/);
-    return posts.filter(post => 
-      keywords.some(k => k.length > 3 && (
+    const isPostMention = text.includes('$');
+    const query = text.replace('$', '').toLowerCase().trim();
+    if (!query) return [];
+    
+    const keywords = query.split(/\s+/);
+    const matches = posts.filter(post => 
+      keywords.some(k => k.length > 2 && (
         post.title.toLowerCase().includes(k) || 
         post.body.toLowerCase().includes(k)
       ))
-    ).slice(0, 2);
+    );
+
+    return isPostMention ? matches.slice(0, 5) : matches.slice(0, 2);
   };
 
   const handleSend = (attachment?: Message["attachments"]) => {
@@ -120,6 +129,13 @@ function AiAssistant() {
 
     setMessages((prev) => [...prev, userMsg]);
     const currentInput = input;
+    
+    // Auto-reply logic for force-language requests
+    const settings = JSON.parse(localStorage.getItem('ai-settings') || '{}');
+    const lang = settings.language || 'English';
+    const isForcingOther = (lang === 'Bengali' && currentInput.toLowerCase().includes('english')) || 
+                           (lang === 'English' && currentInput.toLowerCase().includes('বাংলা'));
+    
     setInput("");
     setIsTyping(true);
 
@@ -128,10 +144,24 @@ function AiAssistant() {
       const relatedPosts = findRelatedPosts(currentInput);
       let aiContent = "";
       
-      if (relatedPosts.length > 0) {
-        aiContent = `I found some relevant posts in the community that might help you with "${currentInput}":\n\n- ${relatedPosts[0].title}: This covers similar topics. You should visit it for a better explanation.\n\nHow else can I assist you?`;
+      if (isForcingOther) {
+        if (lang === 'Bengali') {
+          aiContent = "আমি দেখছি আপনি ইংরেজিতে উত্তর চাচ্ছেন। দয়া করে আপনার AI Settings এ গিয়ে ভাষা পরিবর্তন করে নিন যাতে আমি সঠিকভাবে উত্তর দিতে পারি।";
+        } else {
+          aiContent = "I noticed you're asking for a reply in Bengali. Please update your AI Settings to Bengali so I can provide the best help in your preferred language.";
+        }
+      } else if (lang === "Bengali") {
+        if (relatedPosts.length > 0) {
+          aiContent = `আমি কমিউনিটিতে কিছু প্রাসঙ্গিক পোস্ট খুঁজে পেয়েছি যা আপনাকে "${currentInput}" এর বিষয়ে সাহায্য করতে পারে:\n\n- ${relatedPosts[0].title}: এটি একই ধরণের বিষয় নিয়ে লেখা। আরও ভালো ব্যাখ্যার জন্য আপনি এটি ভিজিট করতে পারেন।\n\nআমি আপনাকে আর কীভাবে সাহায্য করতে পারি?`;
+        } else {
+          aiContent = `আমি আপনার "${currentInput}" সম্পর্কিত অনুরোধটি বিশ্লেষণ করেছি। একাডেমীর কারিকুলাম অনুযায়ী, আমি আপনাকে প্রথমে মৌলিক নীতিগুলোতে ফোকাস করার পরামর্শ দিচ্ছি। আপনি কি ধাপে ধাপে বিস্তারিত জানতে চান?`;
+        }
       } else {
-        aiContent = `I've analyzed your request about "${currentInput}". Based on the Academy's curriculum, I recommend focusing on the fundamental principles first. Would you like a step-by-step breakdown?`;
+        if (relatedPosts.length > 0) {
+          aiContent = `I found some relevant posts in the community that might help you with "${currentInput}":\n\n- ${relatedPosts[0].title}: This covers similar topics. You should visit it for a better explanation.\n\nHow else can I assist you?`;
+        } else {
+          aiContent = `I've analyzed your request about "${currentInput}". Based on the Academy's curriculum, I recommend focusing on the fundamental principles first. Would you like a step-by-step breakdown?`;
+        }
       }
 
       const aiMsg: Message = {
@@ -231,7 +261,10 @@ function AiAssistant() {
               className="hidden flex-col border-r border-border bg-muted/30 lg:flex shrink-0 overflow-hidden"
             >
               <div className="p-4">
-                <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition hover:bg-primary/90">
+                <button 
+                  onClick={() => setMessages([])}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition hover:bg-primary/90"
+                >
                   <Plus className="h-4 w-4" />
                   New Chat
                 </button>
@@ -271,36 +304,13 @@ function AiAssistant() {
               </div>
 
               <div className="border-t border-border p-4 bg-surface/50">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-surface transition-colors">
-                      <Settings className="h-4 w-4 text-primary" />
-                      AI Settings
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-64 rounded-2xl p-2 shadow-xl border-border/50 backdrop-blur-xl">
-                    <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground px-3 py-2">Assistant Configuration</DropdownMenuLabel>
-                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
-                      <Languages className="mr-3 h-4 w-4" /> AI Response Language
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
-                      <Zap className="mr-3 h-4 w-4" /> Performance Mode
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
-                      <Eye className="mr-3 h-4 w-4" /> Context Awareness
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator className="bg-border/50" />
-                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
-                      <HistoryIcon className="mr-3 h-4 w-4" /> Auto-save Conversations
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
-                      <ShieldCheck className="mr-3 h-4 w-4" /> Safe Search Filter
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer">
-                      <SearchCode className="mr-3 h-4 w-4" /> Search Community Posts
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Link 
+                  to="/ai-settings"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-surface transition-colors"
+                >
+                  <Settings className="h-4 w-4 text-primary" />
+                  AI Settings
+                </Link>
               </div>
             </motion.aside>
           )}
@@ -320,14 +330,43 @@ function AiAssistant() {
         </AnimatePresence>
 
         {/* Chat Area */}
-        <main className="relative flex flex-1 flex-col overflow-hidden bg-background">
+        <main className={cn(
+          "relative flex flex-1 flex-col overflow-hidden bg-background transition-all duration-300",
+          isSidebarCollapsed ? "lg:ml-0" : ""
+        )}>
           {/* Decorative Elements */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
           
-          <div 
-            ref={scrollRef}
-            className="flex-1 overflow-y-auto px-4 py-8 lg:px-8 relative z-10"
-          >
+          {messages.length === 0 ? (
+            <div className="flex h-full flex-col items-center justify-center p-8 text-center space-y-6">
+              <div className="h-20 w-20 rounded-3xl bg-primary/10 flex items-center justify-center text-primary">
+                <Bot className="h-10 w-10" />
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-2xl font-black text-foreground">How can I help you today?</h2>
+                <p className="text-muted-foreground text-sm max-w-sm">
+                  Choose a category to start or simply type your question below.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-3 w-full max-w-lg">
+                {[
+                  { label: "Explain Concept", icon: BookOpen },
+                  { label: "Quiz Me", icon: Trophy },
+                  { label: "Homework Help", icon: Target },
+                  { label: "Image Solve", icon: SearchCode },
+                ].map((cat) => (
+                  <button key={cat.label} className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-surface hover:bg-primary/5 hover:border-primary/20 transition-all text-sm font-bold text-foreground">
+                    <cat.icon className="h-5 w-5 text-primary" />
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div 
+              ref={scrollRef}
+              className="flex-1 overflow-y-auto px-4 py-8 lg:px-8 relative z-10"
+            >
             <div className="mx-auto max-w-3xl space-y-8">
               {messages.map((msg) => (
                 <motion.div
@@ -404,7 +443,7 @@ function AiAssistant() {
                 </div>
               )}
             </div>
-          </div>
+          </div>)}
 
           {/* Input Area */}
           <div className="relative z-20 border-t border-border bg-surface/80 backdrop-blur-xl p-4 lg:px-8">
@@ -437,9 +476,7 @@ function AiAssistant() {
                         <DropdownMenuItem onClick={() => handleFileUpload("document")} className="rounded-xl px-3 py-2.5 cursor-pointer">
                           <FileText className="mr-3 h-4 w-4" /> Upload Document
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => toggleVoice()} className="rounded-xl px-3 py-2.5 cursor-pointer">
-                          <Mic className="mr-3 h-4 w-4" /> Use Voice
-                        </DropdownMenuItem>
+                        {/* Removed Voice from plus menu as requested */}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -452,12 +489,6 @@ function AiAssistant() {
                     className="w-full rounded-2xl border border-border bg-background pl-14 pr-12 py-4 text-sm font-medium outline-none transition-all focus:border-primary/50 focus:ring-4 focus:ring-primary/10 group-hover:border-primary/30"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                    <button 
-                      onClick={() => handleSend()}
-                      className="p-2 text-primary hover:bg-primary/10 rounded-xl transition-colors"
-                    >
-                      <Send className="h-4 w-4" />
-                    </button>
                     <button 
                       onClick={toggleVoice}
                       className={cn(
