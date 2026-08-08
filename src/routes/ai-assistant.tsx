@@ -117,7 +117,7 @@ function AiAssistant() {
     return isPostMention ? matches.slice(0, 5) : matches.slice(0, 2);
   };
 
-  const handleSend = (attachment?: Message["attachments"]) => {
+  const handleSend = async (attachment?: Message["attachments"]) => {
     if (!input.trim() && !attachment) return;
 
     const userMsg: Message = {
@@ -131,7 +131,6 @@ function AiAssistant() {
     setMessages((prev) => [...prev, userMsg]);
     const currentInput = input;
     
-    // Auto-reply logic for force-language requests
     const settings = JSON.parse(localStorage.getItem('ai-settings') || '{}');
     const lang = settings.language || 'English';
     const isForcingOther = (lang === 'Bengali' && currentInput.toLowerCase().includes('english')) || 
@@ -140,49 +139,44 @@ function AiAssistant() {
     setInput("");
     setIsTyping(true);
 
-    // AI Logic for custom replies and post matching
-    setTimeout(() => {
-      const relatedPosts = findRelatedPosts(currentInput);
-      let aiContent = "";
-      
-      const isGreeting = /^(hi|hello|hey|hola|ki khobor|ohe|asalamu alaikum|namaste)/i.test(currentInput.trim());
-      
-      if (isGreeting) {
-        if (lang === "Bengali") {
-          aiContent = `হ্যালো! কেমন আছেন? আমি আপনার লার্নস একাডেমি (Learns Academy) স্টাডি অ্যাসিস্ট্যান্ট। আমি আপনাকে আপনার পড়াশোনা বা কারিকুলাম নিয়ে সাহায্য করতে পারি। আপনি আজ কি বিষয়ে জানতে চাচ্ছেন? friendly ভাবে কথা বলতে পারেন আমার সাথে, কোনো সমস্যা নেই!`;
-        } else {
-          aiContent = `Hello! How are you? I'm your Learns Academy study assistant. I'm here to help you with your studies or any curriculum-related questions. What would you like to learn about today? Feel free to chat with me friendly!`;
-        }
-      } else if (isForcingOther) {
-        if (lang === 'Bengali') {
-          aiContent = "আমি দেখছি আপনি ইংরেজিতে উত্তর চাচ্ছেন। দয়া করে আপনার AI Settings এ গিয়ে ভাষা পরিবর্তন করে নিন যাতে আমি সঠিকভাবে উত্তর দিতে পারি।";
-        } else {
-          aiContent = "I noticed you're asking for a reply in Bengali. Please update your AI Settings to Bengali so I can provide the best help in your preferred language.";
-        }
-      } else if (lang === "Bengali") {
-        if (relatedPosts.length > 0) {
-          aiContent = `আমি কমিউনিটিতে কিছু প্রাসঙ্গিক পোস্ট খুঁজে পেয়েছি যা আপনাকে "${currentInput}" এর বিষয়ে সাহায্য করতে পারে:\n\n- ${relatedPosts[0].title}: এটি একই ধরণের বিষয় নিয়ে লেখা। আরও ভালো ব্যাখ্যার জন্য আপনি এটি ভিজিট করতে পারেন।\n\nআমি আপনাকে আর কীভাবে সাহায্য করতে পারি?`;
-        } else {
-          aiContent = `আপনার "${currentInput}" বিষয়টি আমি বুঝতে পেরেছি। আপনার প্রোফাইল এনালাইজ করে আমি দেখছি যে এই টপিকে আপনার কিছু বেসিক ঘাটতি থাকতে পারে। আমরা কি এই বিষয়টি নিয়ে বিস্তারিত আলোচনা করতে পারি? আমি আপনাকে শিখতে সাহায্য করতে চাই!`;
-        }
-      } else {
-        if (relatedPosts.length > 0) {
-          aiContent = `I found some relevant posts in the community that might help you with "${currentInput}":\n\n- ${relatedPosts[0].title}: This covers similar topics. You should visit it for a better explanation.\n\nHow else can I assist you?`;
-        } else {
-          aiContent = `I've analyzed your request about "${currentInput}". Based on your profile and progress, I think we could focus on strengthening your understanding of this topic. Shall we break it down together? I'm here to support your learning journey!`;
-        }
+    try {
+      if (isForcingOther) {
+        const aiContent = lang === 'Bengali' 
+          ? "আমি দেখছি আপনি ইংরেজিতে উত্তর চাচ্ছেন। দয়া করে আপনার AI Settings এ গিয়ে ভাষা পরিবর্তন করে নিন যাতে আমি সঠিকভাবে উত্তর দিতে পারি।"
+          : "I noticed you're asking for a reply in Bengali. Please update your AI Settings to Bengali so I can provide the best help in your preferred language.";
+        
+        const aiMsg: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: aiContent,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, aiMsg]);
+        setIsTyping(false);
+        return;
       }
+
+      // Call real AI
+      const response = await getAiAssistantResponse({
+        messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
+        language: lang,
+        context: `Student name: ${session?.name || "Guest"}, Role: Student`
+      });
 
       const aiMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: aiContent,
+        content: response.content,
         timestamp: new Date(),
-        suggestedPosts: relatedPosts.length > 0 ? relatedPosts : undefined,
+        suggestedPosts: response.suggestedPosts,
       };
+      
       setMessages((prev) => [...prev, aiMsg]);
+    } catch (error) {
+      toast.error("Failed to get AI response");
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleFileUpload = (type: "image" | "document") => {
