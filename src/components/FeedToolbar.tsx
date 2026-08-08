@@ -8,7 +8,9 @@ import {
   GraduationCap,
   MapPin,
   ArrowDownWideNarrow,
+  Check,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const TABS = [
   { label: "For You", Icon: Sparkles },
@@ -44,9 +46,9 @@ export function FeedToolbar() {
 
   const toggleType = (t: string) =>
     setTypes((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
-  const activeCount = types.length + (verifiedOnly ? 1 : 0) + (range !== 1 ? 1 : 0);
-
   
+  // count active filters (excluding default sort)
+  const activeCount = types.length + (verifiedOnly ? 1 : 0) + (range !== 1 ? 1 : 0);
 
   return (
     <div className="group relative rounded-2xl border border-border bg-gradient-to-br from-surface via-background to-surface p-2 shadow-sm">
@@ -57,7 +59,7 @@ export function FeedToolbar() {
       </div>
 
       <div className="relative flex items-center gap-2">
-        {/* Tab chips */}
+        {/* Tab chips — occupies full width after removing sorts */}
         <div className="relative flex min-w-0 flex-1 items-center gap-1 overflow-x-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {TABS.map((t, i) => {
             const isActive = i === active;
@@ -66,11 +68,12 @@ export function FeedToolbar() {
               <button
                 key={t.label}
                 onClick={() => setActive(i)}
-                className={`relative shrink-0 rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
+                className={cn(
+                  "relative shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-all",
                   isActive
                     ? "text-background"
-                    : "text-foreground/60 hover:text-foreground"
-                }`}
+                    : "text-foreground/60 hover:text-foreground hover:bg-muted/50"
+                )}
               >
                 {isActive && (
                   <motion.span
@@ -79,8 +82,8 @@ export function FeedToolbar() {
                     transition={{ type: "spring", stiffness: 400, damping: 32 }}
                   />
                 )}
-                <span className="relative inline-flex items-center gap-1.5">
-                  <Icon className="h-3.5 w-3.5" strokeWidth={2.2} />
+                <span className="relative inline-flex items-center gap-2">
+                  <Icon className={cn("h-4 w-4", isActive ? "text-background" : "text-foreground/40")} strokeWidth={2.2} />
                   {t.label}
                 </span>
               </button>
@@ -88,47 +91,21 @@ export function FeedToolbar() {
           })}
         </div>
 
-        {/* Divider */}
-        <span className="hidden h-6 w-px bg-border/70 sm:block" />
-
-        {/* Sort — segmented dark pill */}
-        <div className="hidden items-center gap-0.5 rounded-full bg-foreground/[0.06] p-0.5 ring-1 ring-inset ring-border md:flex">
-          {SORTS.map((s, i) => (
-            <button
-              key={s}
-              onClick={() => setSort(i)}
-              className={`relative rounded-full px-2.5 py-1 text-xs font-semibold transition ${
-                sort === i
-                  ? "text-background"
-                  : "text-foreground/60 hover:text-foreground"
-              }`}
-            >
-              {sort === i && (
-                <motion.span
-                  layoutId="feed-sort-pill"
-                  className="absolute inset-0 rounded-full bg-foreground shadow-sm"
-                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                />
-              )}
-              <span className="relative">{s}</span>
-            </button>
-          ))}
-        </div>
-
-
+        {/* Filter Trigger — Now containing Sort + Filters */}
         <div ref={filterRef} className="relative shrink-0">
           <button
-            aria-label="Filters"
+            aria-label="Filter and Sort"
             onClick={() => setFilterOpen((o) => !o)}
-            className={`relative grid h-9 w-9 place-items-center rounded-full border transition ${
+            className={cn(
+              "relative grid h-10 w-10 place-items-center rounded-full border transition-all active:scale-95",
               filterOpen || activeCount > 0
-                ? "border-primary/40 bg-primary/10 text-primary"
+                ? "border-primary/40 bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                 : "border-border bg-surface text-foreground/70 hover:border-primary/40 hover:text-primary"
-            }`}
+            )}
           >
-            <SlidersHorizontal className="h-4 w-4" />
+            <SlidersHorizontal className="h-4.5 w-4.5" />
             {activeCount > 0 && (
-              <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+              <span className="absolute -right-1 -top-1 grid h-4.5 min-w-[18px] place-items-center rounded-full bg-destructive px-1 text-[10px] font-black text-white ring-2 ring-background">
                 {activeCount}
               </span>
             )}
@@ -137,78 +114,115 @@ export function FeedToolbar() {
           <AnimatePresence>
             {filterOpen && (
               <motion.div
-                initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                initial={{ opacity: 0, y: 8, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                transition={{ duration: 0.15 }}
-                className="absolute right-0 top-11 z-50 w-72 rounded-2xl border border-border bg-background p-3 shadow-lg"
+                exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute right-0 top-12 z-50 w-72 origin-top-right rounded-3xl border border-border bg-surface p-4 shadow-2xl backdrop-blur-xl"
               >
-                <div className="mb-2 flex items-center justify-between">
-                  <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Filters</p>
+                <div className="mb-4 flex items-center justify-between border-b border-border/50 pb-2">
+                  <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Preferences</p>
                   <button
                     onClick={() => {
                       setTypes([]);
                       setRange(1);
                       setVerifiedOnly(false);
+                      setSort(0);
                     }}
-                    className="text-xs font-semibold text-primary hover:underline"
+                    className="text-xs font-bold text-primary transition hover:opacity-80"
                   >
-                    Reset
+                    Reset all
                   </button>
                 </div>
 
-                <p className="mb-1.5 text-[11px] font-semibold text-foreground/70">Post type</p>
-                <div className="mb-3 flex flex-wrap gap-1.5">
-                  {POST_TYPES.map((t) => {
-                    const on = types.includes(t);
-                    return (
+                {/* Sort Section */}
+                <div className="mb-5">
+                  <p className="mb-2 text-xs font-bold text-foreground">Sort Feed by</p>
+                  <div className="grid grid-cols-3 gap-1.5 rounded-2xl bg-muted/40 p-1">
+                    {SORTS.map((s, i) => (
                       <button
-                        key={t}
-                        onClick={() => toggleType(t)}
-                        className={`rounded-full border px-2.5 py-1 text-xs font-medium transition ${
-                          on
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border bg-surface text-foreground/70 hover:border-primary/40"
-                        }`}
+                        key={s}
+                        onClick={() => setSort(i)}
+                        className={cn(
+                          "relative rounded-xl py-2 text-[11px] font-black uppercase tracking-tight transition-all",
+                          sort === i
+                            ? "bg-background text-primary shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
                       >
-                        {t}
+                        {s}
                       </button>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
 
-                <p className="mb-1.5 text-[11px] font-semibold text-foreground/70">Time range</p>
-                <div className="mb-3 grid grid-cols-2 gap-1.5">
-                  {TIME_RANGES.map((r, i) => (
-                    <button
-                      key={r}
-                      onClick={() => setRange(i)}
-                      className={`rounded-lg border px-2 py-1.5 text-xs font-medium transition ${
-                        range === i
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-surface text-foreground/70 hover:border-primary/40"
-                      }`}
-                    >
-                      {r}
-                    </button>
-                  ))}
-                </div>
+                {/* Filter Section */}
+                <div className="space-y-4">
+                  <div>
+                    <p className="mb-2 text-xs font-bold text-foreground">Content Types</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {POST_TYPES.map((t) => {
+                        const on = types.includes(t);
+                        return (
+                          <button
+                            key={t}
+                            onClick={() => toggleType(t)}
+                            className={cn(
+                              "rounded-full border px-3 py-1.5 text-[11px] font-bold transition-all",
+                              on
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                            )}
+                          >
+                            {t}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
 
-                <label className="flex cursor-pointer items-center justify-between rounded-lg border border-border bg-surface px-2.5 py-2">
-                  <span className="text-xs font-medium text-foreground">Verified tutors only</span>
-                  <input
-                    type="checkbox"
-                    checked={verifiedOnly}
-                    onChange={(e) => setVerifiedOnly(e.target.checked)}
-                    className="h-4 w-4 accent-primary"
-                  />
-                </label>
+                  <div>
+                    <p className="mb-2 text-xs font-bold text-foreground">Time Range</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {TIME_RANGES.map((r, i) => (
+                        <button
+                          key={r}
+                          onClick={() => setRange(i)}
+                          className={cn(
+                            "flex items-center justify-between rounded-xl border px-3 py-2 text-xs font-bold transition-all",
+                            range === i
+                              ? "border-primary/40 bg-primary/10 text-primary"
+                              : "border-border bg-background text-muted-foreground hover:border-primary/30"
+                          )}
+                        >
+                          {r}
+                          {range === i && <Check className="h-3 w-3" />}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <label className="flex cursor-pointer items-center justify-between rounded-xl border border-border bg-background px-3 py-2.5 transition hover:border-primary/30">
+                    <div className="flex items-center gap-2">
+                      <div className="grid h-5 w-5 place-items-center rounded bg-tutor/10 text-tutor">
+                        <GraduationCap className="h-3 w-3" />
+                      </div>
+                      <span className="text-xs font-bold text-foreground">Verified tutors</span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={verifiedOnly}
+                      onChange={(e) => setVerifiedOnly(e.target.checked)}
+                      className="h-4 w-4 rounded-md border-border bg-surface text-primary accent-primary outline-none ring-offset-background focus:ring-2 focus:ring-primary/20"
+                    />
+                  </label>
+                </div>
 
                 <button
                   onClick={() => setFilterOpen(false)}
-                  className="mt-3 w-full rounded-lg bg-foreground py-2 text-xs font-semibold text-background transition hover:opacity-90"
+                  className="mt-6 w-full rounded-2xl bg-foreground py-3 text-xs font-black uppercase tracking-widest text-background transition-all hover:opacity-90 active:scale-[0.98]"
                 >
-                  Apply filters
+                  Apply Settings
                 </button>
               </motion.div>
             )}
@@ -216,18 +230,19 @@ export function FeedToolbar() {
         </div>
       </div>
 
-      {/* Meta row */}
-      <div className="relative mt-2 hidden items-center gap-3 border-t border-dashed border-border/70 pt-2 text-xs text-muted-foreground sm:flex">
-        <span className="inline-flex items-center gap-1.5">
-          <ArrowDownWideNarrow className="h-3 w-3" />
-          Showing <span className="font-semibold text-foreground">{TABS[active].label}</span>
-          <span className="text-foreground/30">·</span>
-          sorted by <span className="font-semibold text-foreground">{SORTS[sort]}</span>
+      {/* Meta row — updated UI to match the reference style */}
+      <div className="relative mt-3 flex items-center gap-3 border-t border-dashed border-border/70 pt-2.5 text-[11px] text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5 font-medium">
+          <ArrowDownWideNarrow className="h-3.5 w-3.5" />
+          Showing <span className="font-bold text-foreground">{TABS[active].label}</span>
+          <span className="opacity-30">·</span>
+          sorted by <span className="font-bold text-foreground">{SORTS[sort]}</span>
         </span>
-        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-tutor/10 px-2 py-0.5 font-medium text-tutor">
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-tutor opacity-60" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-tutor" />
+        
+        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 font-bold text-emerald-600 dark:text-emerald-400">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
           </span>
           128 tutors online
         </span>
