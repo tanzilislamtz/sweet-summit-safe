@@ -69,7 +69,7 @@ export function FeedToolbar() {
                 key={t.label}
                 onClick={() => setActive(i)}
                 className={cn(
-                  "relative shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-all",
+                  "relative shrink-0 rounded-full px-2.5 py-1.5 text-xs font-semibold transition-all",
                   isActive
                     ? "text-background"
                     : "text-foreground/60 hover:text-foreground hover:bg-muted/50"
@@ -82,8 +82,8 @@ export function FeedToolbar() {
                     transition={{ type: "spring", stiffness: 400, damping: 32 }}
                   />
                 )}
-                <span className="relative inline-flex items-center gap-2">
-                  <Icon className={cn("h-4 w-4", isActive ? "text-background" : "text-foreground/40")} strokeWidth={2.2} />
+                <span className="relative inline-flex items-center gap-1.5 whitespace-nowrap">
+                  <Icon className={cn("h-3.5 w-3.5", isActive ? "text-background" : "text-foreground/40")} strokeWidth={2.2} />
                   {t.label}
                 </span>
               </button>
