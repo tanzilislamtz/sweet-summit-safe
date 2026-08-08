@@ -158,9 +158,11 @@ function AiAssistant() {
 
       // Call real AI
       const response = await getAiAssistantResponse({
-        messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
-        language: lang,
-        context: `Student name: ${session?.name || "Guest"}, Role: Student`
+        data: {
+          messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
+          language: lang,
+          context: `Student name: ${session?.name || "Guest"}, Role: Student`
+        }
       });
 
       const aiMsg: Message = {
