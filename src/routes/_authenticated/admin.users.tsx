@@ -56,7 +56,7 @@ function UsersPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const users = data ?? [];
+  const users = (data ?? []) as unknown as Record<string, unknown>[];
 
   return (
     <AdminShell
