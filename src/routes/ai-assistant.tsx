@@ -162,7 +162,7 @@ function AiAssistant() {
           messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
           language: lang,
           context: `Student name: ${session?.name || "Guest"}, Role: Student`
-        }
+        } as any
       });
 
       const aiMsg: Message = {
