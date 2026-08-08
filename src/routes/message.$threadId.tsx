@@ -1194,7 +1194,7 @@ function ThreadView() {
           </motion.div>
         )}
       </AnimatePresence>
-      <div className="relative flex items-end gap-1 sm:gap-2">
+      <div className="relative flex items-center gap-1 sm:gap-2">
         <input
           ref={fileRef}
           type="file"
@@ -1212,7 +1212,7 @@ function ThreadView() {
           type="button"
           aria-label="Attach"
           onClick={() => fileRef.current?.click()}
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-foreground/70 hover:bg-muted"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-muted/60 text-foreground/70 transition hover:bg-muted active:scale-95"
         >
           <Paperclip className="h-4 w-4" />
         </button>
@@ -1223,7 +1223,7 @@ function ThreadView() {
             setReplyTo(null);
           }}
         />
-        <div className="flex flex-1 items-end gap-2 rounded-3xl border border-border bg-muted/50 px-3 py-1.5">
+        <div className="flex flex-1 items-center gap-2 rounded-3xl border border-border bg-muted/50 px-3 py-1.5">
           <textarea
             ref={inputRef}
             value={text}
