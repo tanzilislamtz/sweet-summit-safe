@@ -470,7 +470,7 @@ function AiAssistant() {
                   </div>
                 </div>
                 <button
-                  onClick={handleSend}
+                  onClick={() => handleSend()}
                   disabled={!input.trim()}
                   className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:shadow-none"
                 >
