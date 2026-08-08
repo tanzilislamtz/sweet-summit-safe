@@ -236,7 +236,7 @@ export function FeedToolbar() {
         <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap font-medium">
           Showing <span className="font-bold text-foreground">{TABS[active].label}</span>
           <span className="opacity-30">·</span>
-          sorted by <span className="font-bold text-foreground">{SORTS[sort]}</span>
+          Sorted by <span className="font-bold text-foreground">{SORTS[sort]}</span>
         </span>
       </div>
     </div>
