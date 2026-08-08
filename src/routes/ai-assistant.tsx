@@ -32,12 +32,13 @@ import {
   Languages,
   Eye,
   History as HistoryIcon,
-  ShieldCheck,
+  ShieldCheck, 
   SearchCode
 } from "lucide-react";
 import { toast } from "sonner";
 import { getSession } from "@/lib/session";
 import { posts } from "@/lib/posts";
+import { cn } from "@/lib/utils";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -101,7 +102,7 @@ function AiAssistant() {
     return posts.filter(post => 
       keywords.some(k => k.length > 3 && (
         post.title.toLowerCase().includes(k) || 
-        post.content.toLowerCase().includes(k)
+        post.description.toLowerCase().includes(k)
       ))
     ).slice(0, 2);
   };
@@ -451,6 +452,12 @@ function AiAssistant() {
                     className="w-full rounded-2xl border border-border bg-background pl-14 pr-12 py-4 text-sm font-medium outline-none transition-all focus:border-primary/50 focus:ring-4 focus:ring-primary/10 group-hover:border-primary/30"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                    <button 
+                      onClick={() => handleSend()}
+                      className="p-2 text-primary hover:bg-primary/10 rounded-xl transition-colors"
+                    >
+                      <Send className="h-4 w-4" />
+                    </button>
                     <button 
                       onClick={toggleVoice}
                       className={cn(
