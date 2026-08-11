@@ -809,3 +809,67 @@ function PostApprovalSection({ group, tick }: { group: StudyGroup; tick: number 
     </Panel>
   );
 }
+
+function PendingPostsSection({ group, tick }: { group: StudyGroup; tick: number }) {
+  const { draft, set, save } = useSettingsDraft(group, tick);
+  const posts = useMemo(() => {
+    try {
+      const postsMap = JSON.parse(localStorage.getItem("la:groups:posts") || "{}");
+      return (postsMap[group.id] || [])
+        .filter((p: any) => draft.pendingPostIds.includes(p.id));
+    } catch {
+      return [];
+    }
+  }, [group.id, draft.pendingPostIds, tick]);
+
+  const resolve = (postId: string, approve: boolean) => {
+    const next = draft.pendingPostIds.filter(id => id !== postId);
+    if (!approve) {
+      try {
+        const postsMap = JSON.parse(localStorage.getItem("la:groups:posts") || "{}");
+        postsMap[group.id] = (postsMap[group.id] || []).filter((p: any) => p.id !== postId);
+        localStorage.setItem("la:groups:posts", JSON.stringify(postsMap));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    set("pendingPostIds", next);
+    // Force a save to update the store
+    updateGroupSettings(group, { ...draft, pendingPostIds: next });
+    window.dispatchEvent(new Event(GROUPS_EVENT));
+  };
+
+  return (
+    <Panel icon={ShieldCheck} title="Post approval" hint="Approve or decline posts waiting for review">
+      <ul className="divide-y divide-border">
+        {posts.map((p: any) => (
+          <li key={p.id} className="p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <Avatar initials={p.initials} />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold truncate">{p.author}</p>
+                <p className="text-[10px] text-muted-foreground">{p.section} · Just now</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => resolve(p.id, true)}
+                  className="rounded-lg bg-primary px-3 py-1.5 text-[11px] font-bold text-primary-foreground hover:brightness-110"
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => resolve(p.id, false)}
+                  className="rounded-lg border border-border px-3 py-1.5 text-[11px] font-semibold hover:bg-muted"
+                >
+                  Decline
+                </button>
+              </div>
+            </div>
+            <p className="text-sm leading-relaxed">{p.body}</p>
+          </li>
+        ))}
+        {posts.length === 0 && <Empty text="No posts waiting for approval." />}
+      </ul>
+    </Panel>
+  );
+}
