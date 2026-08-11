@@ -30,6 +30,9 @@ export type GroupSettings = {
   membersCanInvite: boolean;
   membersCanUpload: boolean;
   postsNeedApproval: boolean;
+  autoApproveQuestions: boolean;
+  requireMemberApproval: boolean;
+  pendingPostIds: string[];
 };
 
 export type JoinRequest = {
@@ -72,13 +75,23 @@ export type StoredPost = GroupPost & { images?: string[]; createdAt: number };
 
 type PostMap = Record<string, StoredPost[]>;
 
-export const listGroupPosts = (groupId: string): StoredPost[] =>
-  read<PostMap>(POSTS_KEY, {})[groupId] ?? [];
+export const listGroupPosts = (groupId: string): StoredPost[] => {
+  const all = read<PostMap>(POSTS_KEY, {})[groupId] ?? [];
+  const settings = read<SettingsMap>(SETTINGS_KEY, {})[groupId];
+  const pending = settings?.pendingPostIds || [];
+  return all.filter(p => !pending.includes(p.id));
+};
 
 export const addGroupPost = (
   groupId: string,
   input: { body: string; section: string; images: string[]; author: string },
 ): StoredPost => {
+  const settings = read<SettingsMap>(SETTINGS_KEY, {})[groupId];
+  const isQuestion = input.body.includes("$");
+  const needsApproval =
+    settings?.postsNeedApproval &&
+    !(settings?.autoApproveQuestions && isQuestion);
+
   const post: StoredPost = {
     id: `p-${Date.now()}`,
     author: input.author,
@@ -92,6 +105,14 @@ export const addGroupPost = (
     createdAt: Date.now(),
   };
   const map = read<PostMap>(POSTS_KEY, {});
+  
+  if (needsApproval) {
+    const sMap = read<SettingsMap>(SETTINGS_KEY, {});
+    const s = sMap[groupId] || defaultGroupSettings({ id: groupId } as any);
+    s.pendingPostIds = [post.id, ...(s.pendingPostIds || [])];
+    write(SETTINGS_KEY, { ...sMap, [groupId]: s });
+  }
+
   write(POSTS_KEY, { ...map, [groupId]: [post, ...(map[groupId] ?? [])] });
   return post;
 };
@@ -221,6 +242,9 @@ export const defaultGroupSettings = (group: StudyGroup): GroupSettings => ({
   membersCanInvite: true,
   membersCanUpload: true,
   postsNeedApproval: false,
+  autoApproveQuestions: true,
+  requireMemberApproval: group.privacy === "Private Group",
+  pendingPostIds: [],
 });
 
 export const getGroupSettings = (group: StudyGroup): GroupSettings => ({

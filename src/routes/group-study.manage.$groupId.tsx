@@ -67,6 +67,7 @@ const SECTIONS = [
   { id: "identity", label: "Group info", icon: Info },
   { id: "privacy", label: "Privacy & type", icon: Lock },
   { id: "requests", label: "Join requests", icon: UserPlus },
+  { id: "pending_posts", label: "Post approval", icon: ShieldCheck },
   { id: "members", label: "Members & roles", icon: Users },
   { id: "permissions", label: "Permissions", icon: SlidersHorizontal },
   { id: "rules", label: "Group rules", icon: ScrollText },
@@ -186,8 +187,10 @@ function GroupManagePage() {
           {active === "identity" && <IdentitySection group={raw} tick={tick} />}
           {active === "privacy" && <PrivacySection group={raw} tick={tick} />}
           {active === "requests" && <RequestsSection group={raw} tick={tick} />}
+          {active === "pending_posts" && <PendingPostsSection group={raw} tick={tick} />}
           {active === "members" && <MembersSection group={raw} tick={tick} />}
           {active === "permissions" && <PermissionsSection group={raw} tick={tick} />}
+          {active === "permissions" && <PostApprovalSection group={raw} tick={tick} />}
           {active === "rules" && <RulesSection group={raw} tick={tick} />}
           {active === "profile" && <ProfileSection group={raw} tick={tick} />}
           {active === "danger" && (
@@ -481,8 +484,17 @@ function PrivacySection({ group, tick }: { group: StudyGroup; tick: number }) {
         <Toggle
           label="Approve new members"
           hint="Every join request waits for an admin decision"
-          checked={draft.approveMembers}
-          onChange={(v) => set("approveMembers", v)}
+          checked={draft.approveMembers || draft.requireMemberApproval}
+          onChange={(v) => {
+            set("approveMembers", v);
+            set("requireMemberApproval", v);
+          }}
+        />
+        <Toggle
+          label="Auto-approve academic questions"
+          hint="Questions with $ mention are approved automatically"
+          checked={draft.autoApproveQuestions}
+          onChange={(v) => set("autoApproveQuestions", v)}
         />
         <SaveBar dirty={dirty} onSave={save} saved={saved} />
       </Panel>
@@ -771,5 +783,93 @@ function DangerSection({ group, onDeleted }: { group: StudyGroup; onDeleted: () 
         </div>
       )}
     </section>
+  );
+}
+
+function PostApprovalSection({ group, tick }: { group: StudyGroup; tick: number }) {
+  const { draft, set, save, dirty, saved } = useSettingsDraft(group, tick);
+
+  return (
+    <Panel icon={ShieldCheck} title="Content Approval" hint="Manage how posts are approved in this group">
+      <Toggle
+        label="Post approval system"
+        hint="Posts from members need admin approval before appearing"
+        checked={draft.postsNeedApproval}
+        onChange={(v) => set("postsNeedApproval", v)}
+      />
+      {draft.postsNeedApproval && (
+        <Toggle
+          label="Auto-approve trusted members"
+          hint="Moderators and Tutors can post without approval"
+          checked={true}
+          onChange={() => {}}
+        />
+      )}
+      <SaveBar dirty={dirty} onSave={save} saved={saved} />
+    </Panel>
+  );
+}
+
+function PendingPostsSection({ group, tick }: { group: StudyGroup; tick: number }) {
+  const { draft, set, save } = useSettingsDraft(group, tick);
+  const posts = useMemo(() => {
+    try {
+      const postsMap = JSON.parse(localStorage.getItem("la:groups:posts") || "{}");
+      return (postsMap[group.id] || [])
+        .filter((p: any) => draft.pendingPostIds.includes(p.id));
+    } catch {
+      return [];
+    }
+  }, [group.id, draft.pendingPostIds, tick]);
+
+  const resolve = (postId: string, approve: boolean) => {
+    const next = draft.pendingPostIds.filter(id => id !== postId);
+    if (!approve) {
+      try {
+        const postsMap = JSON.parse(localStorage.getItem("la:groups:posts") || "{}");
+        postsMap[group.id] = (postsMap[group.id] || []).filter((p: any) => p.id !== postId);
+        localStorage.setItem("la:groups:posts", JSON.stringify(postsMap));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    set("pendingPostIds", next);
+    // Force a save to update the store
+    updateGroupSettings(group, { ...draft, pendingPostIds: next });
+    window.dispatchEvent(new Event(GROUPS_EVENT));
+  };
+
+  return (
+    <Panel icon={ShieldCheck} title="Post approval" hint="Approve or decline posts waiting for review">
+      <ul className="divide-y divide-border">
+        {posts.map((p: any) => (
+          <li key={p.id} className="p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <Avatar initials={p.initials} />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold truncate">{p.author}</p>
+                <p className="text-[10px] text-muted-foreground">{p.section} · Just now</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => resolve(p.id, true)}
+                  className="rounded-lg bg-primary px-3 py-1.5 text-[11px] font-bold text-primary-foreground hover:brightness-110"
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => resolve(p.id, false)}
+                  className="rounded-lg border border-border px-3 py-1.5 text-[11px] font-semibold hover:bg-muted"
+                >
+                  Decline
+                </button>
+              </div>
+            </div>
+            <p className="text-sm leading-relaxed">{p.body}</p>
+          </li>
+        ))}
+        {posts.length === 0 && <Empty text="No posts waiting for approval." />}
+      </ul>
+    </Panel>
   );
 }

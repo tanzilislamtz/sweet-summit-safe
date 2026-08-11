@@ -50,6 +50,7 @@ import {
   applyGroupOverrides,
   canManageGroup,
   deleteGroupPost,
+  getGroupSettings,
   hideGroupPost,
   isPostLoved,
   listGroupPosts,
@@ -465,7 +466,18 @@ function Composer({ group }: { group: StudyGroup }) {
 
   const submit = () => {
     if (!body.trim() && images.length === 0) return;
-    addGroupPost(group.id, { body: body.trim(), section, images, author });
+    const post = addGroupPost(group.id, { body: body.trim(), section, images, author });
+    
+    const settings = getGroupSettings(group);
+    const isQuestion = body.trim().includes("$");
+    const willNeedApproval = settings.postsNeedApproval && !(settings.autoApproveQuestions && isQuestion);
+    
+    if (willNeedApproval) {
+      toast.success("Post submitted for admin approval");
+    } else {
+      toast.success("Post shared with the group");
+    }
+
     setBody("");
     setImages([]);
     setOpen(false);
