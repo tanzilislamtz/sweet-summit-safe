@@ -162,7 +162,7 @@ function AiAssistant() {
         data: {
           messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
           language: lang,
-          context: `Student name: ${session?.name || "Guest"}, Role: Student${activeMode ? `, Current Active Mode: ${activeMode}` : ""}`
+          context: `Student name: ${session?.name || "Guest"}, Role: Student${activeMode ? `, Current Active Mode: ${activeMode}. ONLY perform tasks related to ${activeMode}.` : ""}`
         } as any
       });
 
@@ -386,18 +386,21 @@ function AiAssistant() {
               </div>
               <div className="grid grid-cols-2 gap-3 w-full max-w-lg">
                 {[
-                  { label: "Explain Concept", icon: BookOpen },
-                  { label: "Quiz Me", icon: Trophy },
-                  { label: "Homework Help", icon: Target },
-                  { label: "Image Solve", icon: SearchCode },
+                  { label: "Explain Concept", icon: BookOpen, sub: "Deeply analyze any study topic" },
+                  { label: "Quiz Me", icon: Trophy, sub: "Test your knowledge with AI" },
+                  { label: "Homework Help", icon: Target, sub: "Step-by-step guidance" },
+                  { label: "Image Solve", icon: SearchCode, sub: "Analyze diagrams & problems" },
                 ].map((cat) => (
                   <button 
                     key={cat.label} 
                     onClick={() => handleModeSelect(cat.label)}
-                    className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-surface hover:bg-primary/5 hover:border-primary/20 transition-all text-sm font-bold text-foreground"
+                    className="flex flex-col items-start gap-3 p-5 rounded-2xl border border-border bg-surface hover:bg-primary/5 hover:border-primary/20 transition-all text-left group"
                   >
-                    <cat.icon className="h-5 w-5 text-primary" />
-                    {cat.label}
+                    <div className="flex items-center gap-3">
+                      <cat.icon className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                      <span className="text-sm font-bold text-foreground">{cat.label}</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">{cat.sub}</p>
                   </button>
                 ))}
               </div>
