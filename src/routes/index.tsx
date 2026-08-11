@@ -88,16 +88,16 @@ function Index() {
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-background text-foreground lg:h-[100dvh] lg:overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground lg:h-[100dvh] lg:overflow-hidden">
       <Topbar variant="app" onMenu={() => setMenuOpen(true)} />
       <MobileNav open={menuOpen} onClose={() => setMenuOpen(false)} />
       <main className={cn(
-        "mx-auto grid w-full max-w-[1400px] flex-1 gap-6 px-4 py-6 transition-all duration-300 lg:h-0 lg:overflow-hidden lg:px-8",
+        "mx-auto grid max-w-[1400px] gap-6 px-4 py-6 transition-all duration-300 lg:h-[calc(100dvh-65px)] lg:overflow-hidden lg:px-8",
         isCollapsed 
           ? "grid-cols-1 lg:grid-cols-[72px_minmax(0,1fr)_320px]" 
           : "grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)_320px]"
       )}>
-        <LeftNav stickyClass="lg:h-full lg:sticky lg:top-0" />
+        <LeftNav stickyClass="lg:h-full" />
         <Feed />
         <RightRail />
       </main>
@@ -121,7 +121,7 @@ function IconBtn({ children, label }: { children: React.ReactNode; label: string
 
 function Feed() {
   return (
-    <section className="min-w-0 pb-20 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:pb-0 lg:pr-1">
+    <section className="min-w-0 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
       <div className="space-y-5">
         <Leaderboard />
         <Composer />
@@ -1363,7 +1363,7 @@ function Post({
 function RightRail() {
   const [msgTab, setMsgTab] = useState<"active" | "all">("active");
   return (
-    <aside className="hidden space-y-5 lg:block lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:pr-1 lg:sticky lg:top-0">
+    <aside className="hidden space-y-5 lg:block lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
       <div className="space-y-5">
 
         {/* Sponsored */}
