@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState, useEffect } from "react";
@@ -443,6 +443,7 @@ function Field({
     "mt-1 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-primary";
 
   const relational = RELATION_MAP[field.key] ? lookups[field.key] : undefined;
+  const isMedia = field.type === "image" || field.type === "video";
 
   return (
     <label className="block">
@@ -462,6 +463,12 @@ function Field({
         >
           <span className={cn("h-6 w-6 rounded-full bg-background transition", value ? "translate-x-5" : "")} />
         </button>
+      ) : isMedia ? (
+        <MediaUpload
+          type={field.type as "image" | "video"}
+          value={String(value ?? "")}
+          onChange={onChange}
+        />
       ) : relational ? (
         <select value={String(value ?? "")} onChange={(e) => onChange(e.target.value)} className={base}>
           <option value="">— none —</option>
