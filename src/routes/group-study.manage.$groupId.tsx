@@ -494,6 +494,7 @@ function IdentitySection({ group, tick }: { group: StudyGroup; tick: number }) {
             maxLength={600}
           />
         </div>
+        </div>
       </div>
       <SaveBar dirty={dirty} onSave={save} saved={saved} />
     </Panel>
