@@ -176,51 +176,66 @@ function GroupHeader({
   ];
 
   return (
-    <header className="overflow-hidden rounded-2xl border border-border bg-primary text-primary-foreground shadow-md">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 p-4 sm:flex sm:items-center sm:gap-4">
-        <div className="flex min-w-0 items-center gap-3">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary-foreground/12 text-lg font-bold ring-1 ring-primary-foreground/20">
-            {group.name.charAt(0)}
-          </span>
-          <div className="min-w-0">
-            <h1 className="truncate text-base font-bold sm:text-lg">{group.name}</h1>
-            <p className="flex min-w-0 items-center gap-1.5 truncate text-[11px] text-primary-foreground/75">
-              {group.privacy === "Public Group" ? (
-                <Globe className="h-3 w-3 shrink-0" />
+    <header className="overflow-hidden rounded-2xl border border-border bg-surface text-foreground shadow-md">
+      <div className="relative h-28 w-full overflow-hidden bg-primary/10">
+        {group.cover ? (
+          <img src={group.cover} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <div className="h-full w-full bg-gradient-to-br from-primary to-primary/60" />
+        )}
+      </div>
+      <div className="relative z-10 -mt-8 flex flex-col px-4 pb-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex items-end gap-3">
+            <span className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-2xl bg-surface p-1 shadow-lg ring-1 ring-border">
+              {group.icon ? (
+                <img src={group.icon} alt={group.name} className="h-full w-full rounded-xl object-cover" />
               ) : (
-                <Lock className="h-3 w-3 shrink-0" />
+                <span className="grid h-full w-full place-items-center rounded-xl bg-primary text-2xl font-bold text-primary-foreground">
+                  {group.name.charAt(0)}
+                </span>
               )}
-              {group.privacy} · {group.batch}
-              {canManage && " · You are an admin"}
-            </p>
+            </span>
+            <div className="mb-1 min-w-0">
+              <h1 className="truncate text-xl font-bold">{group.name}</h1>
+              <p className="flex min-w-0 items-center gap-1.5 truncate text-[11px] text-muted-foreground">
+                {group.privacy === "Public Group" ? (
+                  <Globe className="h-3 w-3 shrink-0" />
+                ) : (
+                  <Lock className="h-3 w-3 shrink-0" />
+                )}
+                {group.privacy} · {group.batch}
+                {canManage && " · Admin"}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div className="flex shrink-0 items-center gap-2">
-          {joined ? (
-            <JoinedMenu groupId={group.id} />
-          ) : (
-            <button
-              onClick={() => setJoined(group.id, true)}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground transition hover:brightness-95"
-            >
-              <UserPlus className="h-3.5 w-3.5" /> Join
+          <div className="flex shrink-0 items-center gap-2">
+            {joined ? (
+              <JoinedMenu groupId={group.id} />
+            ) : (
+              <button
+                onClick={() => setJoined(group.id, true)}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition hover:brightness-110"
+              >
+                <UserPlus className="h-3.5 w-3.5" /> Join
+              </button>
+            )}
+            <button className="hidden items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-semibold hover:bg-muted sm:inline-flex">
+              <Share2 className="h-3.5 w-3.5" /> Invite
             </button>
-          )}
-          <button className="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold ring-1 ring-primary-foreground/30 hover:bg-primary-foreground/10 sm:inline-flex">
-            <Share2 className="h-3.5 w-3.5" /> Invite
-          </button>
-          {canManage && (
-            <Link
-              to="/group-study/manage/$groupId"
-              params={{ groupId: group.id }}
-              aria-label="Admin tools"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-primary-foreground/15 px-3 py-2 text-xs font-semibold ring-1 ring-primary-foreground/30 transition hover:bg-primary-foreground/25"
-            >
-              <Settings2 className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Admin tools</span>
-            </Link>
-          )}
+            {canManage && (
+              <Link
+                to="/group-study/manage/$groupId"
+                params={{ groupId: group.id }}
+                aria-label="Admin tools"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition hover:brightness-110"
+              >
+                <Settings2 className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Admin tools</span>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
