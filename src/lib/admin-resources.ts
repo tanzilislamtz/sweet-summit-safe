@@ -342,7 +342,6 @@ export const RESOURCES: ResourceDef[] = [
       { key: "name", label: "Group" },
       { key: "batch", label: "Batch" },
       { key: "privacy", label: "Privacy", type: "badge" },
-      { key: "member_count", label: "Members", type: "number" },
       { key: "status", label: "Status", type: "badge" },
     ],
     fields: [
@@ -355,7 +354,6 @@ export const RESOURCES: ResourceDef[] = [
       { key: "icon_url", label: "Group Icon", type: "image" },
       { key: "cover_url", label: "Cover Image", type: "image" },
       { key: "tags", label: "Tags", type: "tags" },
-      { key: "member_count", label: "Member count", type: "number" },
       { key: "status", label: "Status", type: "select", options: ["active", "pending", "archived", "blocked"] },
     ],
     filters: [{ column: "status", label: "Status", options: ["active", "pending", "archived", "blocked"] }],
