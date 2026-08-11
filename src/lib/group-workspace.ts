@@ -30,6 +30,8 @@ export type GroupSettings = {
   membersCanInvite: boolean;
   membersCanUpload: boolean;
   postsNeedApproval: boolean;
+  autoApproveQuestions: boolean;
+  requireMemberApproval: boolean;
 };
 
 export type JoinRequest = {
@@ -221,6 +223,8 @@ export const defaultGroupSettings = (group: StudyGroup): GroupSettings => ({
   membersCanInvite: true,
   membersCanUpload: true,
   postsNeedApproval: false,
+  autoApproveQuestions: true,
+  requireMemberApproval: group.privacy === "Private Group",
 });
 
 export const getGroupSettings = (group: StudyGroup): GroupSettings => ({
