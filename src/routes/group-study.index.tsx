@@ -677,7 +677,7 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
-}
+
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
