@@ -343,7 +343,7 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
     });
 
     // Save initial workspace settings for the new group
-    updateGroupSettings(group, {
+    updateGroupSettings(hydrateCreatedGroup(group), {
       requireMemberApproval: approveMembers,
       approveMembers: approveMembers,
       postsNeedApproval: approvePosts,
