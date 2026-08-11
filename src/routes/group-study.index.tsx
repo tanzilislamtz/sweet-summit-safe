@@ -16,6 +16,7 @@ import {
   Loader2,
   ChevronDown,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
 import { studyGroups, type StudyGroup } from "@/data/groups";
 import {
@@ -26,7 +27,7 @@ import {
   listCreatedGroups,
   setJoined,
 } from "@/lib/groups";
-import { applyGroupOverrides } from "@/lib/group-workspace";
+import { applyGroupOverrides, updateGroupSettings } from "@/lib/group-workspace";
 
 export const Route = createFileRoute("/group-study/")({
   head: () => ({
@@ -325,19 +326,29 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
   const [batch, setBatch] = useState("");
   const [tagline, setTagline] = useState("");
   const [privacy, setPrivacy] = useState<"Public Group" | "Private Group">("Public Group");
+  const [approveMembers, setApproveMembers] = useState(false);
+  const [approvePosts, setApprovePosts] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
 
   const valid = name.trim().length >= 3;
 
   const submit = () => {
     if (!valid) return;
-    createGroup({
+    const group = createGroup({
       name: name.trim(),
       batch: batch.trim() || "General Batch",
       tagline: tagline.trim() || "A study group for focused preparation.",
       privacy,
       tags: tags.length ? tags : ["Common"],
     });
+
+    // Save initial workspace settings for the new group
+    updateGroupSettings(group, {
+      requireMemberApproval: approveMembers,
+      approveMembers: approveMembers,
+      postsNeedApproval: approvePosts,
+    });
+
     onClose();
   };
 
@@ -405,6 +416,28 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
                 </button>
               ))}
             </div>
+          </Field>
+          <Field label="Member approval">
+            <button
+              onClick={() => setApproveMembers(!approveMembers)}
+              className={`flex w-full items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${
+                approveMembers ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-muted"
+              }`}
+            >
+              <Users className="h-4 w-4" />
+              {approveMembers ? "New members need approval" : "Anyone can join directly"}
+            </button>
+          </Field>
+          <Field label="Post approval">
+            <button
+              onClick={() => setApprovePosts(!approvePosts)}
+              className={`flex w-full items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${
+                approvePosts ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-muted"
+              }`}
+            >
+              <ShieldCheck className="h-4 w-4" />
+              {approvePosts ? "Posts need admin approval" : "Members can post directly"}
+            </button>
           </Field>
           <Field label="Sections / subjects">
             <div className="flex flex-wrap gap-2">
