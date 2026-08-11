@@ -374,7 +374,7 @@ function AiAssistant() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
           
           {messages.length === 0 ? (
-            <div className="flex h-full flex-col items-center justify-center p-8 text-center space-y-6">
+            <div className="flex h-full flex-col items-center justify-start overflow-y-auto p-8 text-center space-y-6 lg:justify-center">
               <div className="h-20 w-20 rounded-3xl bg-primary/10 flex items-center justify-center text-primary">
                 <Bot className="h-10 w-10" />
               </div>
