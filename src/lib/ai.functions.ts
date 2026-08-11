@@ -51,7 +51,11 @@ Rules:
 4. Encourage the user to learn something new or revisit a topic where they might have gaps.
 5. If the user mentions a specific problem, offer a step-by-step breakdown.
 6. Keep responses conversational and natural. Avoid overly formal or robotic language.
-${suggestedPosts.length > 0 ? `7. I found these related posts in the community: ${suggestedPosts.map(p => p.title).join(", ")}. Mention them if relevant.` : ""}
+7. ${data.context?.includes("Explain Concept") ? "The student is currently in 'Explain Concept' mode. Focus on teaching new topics deeply with analogies." : ""}
+8. ${data.context?.includes("Quiz Me") ? "The student is currently in 'Quiz Me' mode. Focus on asking short, challenging questions and grading their answers." : ""}
+9. ${data.context?.includes("Homework Help") ? "The student is currently in 'Homework Help' mode. Guide them through solving their problem without just giving the answer." : ""}
+10. ${data.context?.includes("Image Solve") ? "The student is currently in 'Image Solve' mode. Assume they have shared a visual problem or diagram to analyze." : ""}
+${suggestedPosts.length > 0 ? `11. I found these related posts in the community: ${suggestedPosts.map(p => p.title).join(", ")}. Mention them if relevant.` : ""}
 `;
 
     try {
