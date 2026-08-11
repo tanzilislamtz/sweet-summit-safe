@@ -121,7 +121,7 @@ function IconBtn({ children, label }: { children: React.ReactNode; label: string
 
 function Feed() {
   return (
-    <section className="min-w-0 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
+    <section className="min-w-0 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
       <div className="space-y-5">
         <Leaderboard />
         <Composer />
