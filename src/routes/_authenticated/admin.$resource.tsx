@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Search, Loader2, Pencil, Trash2, X, ChevronLeft, ChevronRight, Inbox } from "lucide-react";
+import { Plus, Search, Loader2, Pencil, Trash2, X, ChevronLeft, ChevronRight, Inbox, ImagePlus, Play, Film, Settings2 } from "lucide-react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { useAdminAccess } from "@/lib/use-admin-access";
@@ -206,6 +206,16 @@ function ResourceView({ def }: { def: ResourceDef }) {
                       ))}
                       <td className="px-4 py-3 text-right">
                         <div className="flex justify-end gap-1">
+                          {def.slug === "groups" && (
+                            <Link
+                              to="/group-study/manage/$groupId"
+                              params={{ groupId: String(row['id']) }}
+                              className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                              title="Manage Group Content"
+                            >
+                              <Settings2 className="h-3.5 w-3.5" />
+                            </Link>
+                          )}
                           {def.fields.length > 0 && !readOnly && (
                             <button
                               onClick={() => setEditing(row)}

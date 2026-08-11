@@ -226,17 +226,6 @@ function GroupHeader({
             <button className="hidden items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-semibold hover:bg-muted sm:inline-flex">
               <Share2 className="h-3.5 w-3.5" /> Invite
             </button>
-            {canManage && (
-              <Link
-                to="/group-study/manage/$groupId"
-                params={{ groupId: group.id }}
-                aria-label="Admin tools"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition hover:brightness-110"
-              >
-                <Settings2 className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Admin tools</span>
-              </Link>
-            )}
           </div>
         </div>
       </div>
