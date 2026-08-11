@@ -37,13 +37,9 @@ function AdminLoginPage() {
   }, [navigate]);
 
   async function handleDemoLogin() {
-    setEmail("demo@learnsacademy.com");
-    setPassword("demo123");
     setError(null);
     setNotice(null);
     setBusy(true);
-    // Note: This assumes a demo account exists in the database. 
-    // For a real app, you'd use a server function to handle demo sessions securely.
     try {
       const { error: err } = await supabase.auth.signInWithPassword({
         email: "demo@learnsacademy.com",
@@ -52,7 +48,7 @@ function AdminLoginPage() {
       if (err) throw err;
       navigate({ to: "/admin" });
     } catch (err) {
-      setError("Demo account is currently unavailable. Please try signing up.");
+      setError("Demo account is currently unavailable. Please sign in with your own credentials.");
     } finally {
       setBusy(false);
     }
@@ -65,12 +61,15 @@ function AdminLoginPage() {
     setBusy(true);
     try {
       if (mode === "signin") {
-        const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+        const { error: err } = await supabase.auth.signInWithPassword({ 
+          email: email.trim(), 
+          password 
+        });
         if (err) throw err;
         navigate({ to: "/admin" });
       } else {
         const { data, error: err } = await supabase.auth.signUp({
-          email,
+          email: email.trim(),
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/admin`,

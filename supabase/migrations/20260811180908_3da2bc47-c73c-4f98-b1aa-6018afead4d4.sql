@@ -1,0 +1,1 @@
+UPDATE auth.users SET aud = 'authenticated' WHERE email = 'demo@learnsacademy.com';
