@@ -536,7 +536,7 @@ function MediaUpload({
   value: string;
   onChange: (v: string) => void;
 }) {
-  const isVideo = (type as string) === "video" || (value && (value.startsWith("data:video") || value.match(/\.(mp4|webm|ogg)$/i)));
+  const isVideo = (type as string) === "video" || (value && (typeof value === "string" && (value.startsWith("data:video") || value.match(/\.(mp4|webm|ogg)$/i))));
 
   return (
     <div className="mt-2 space-y-3">
