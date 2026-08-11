@@ -15,9 +15,9 @@ import {
   UserCircle2,
   TriangleAlert,
   Check,
-  Trash2,
-  Plus,
-  Search,
+  Settings2,
+  ImagePlus,
+  X,
 } from "lucide-react";
 import type { GroupMember, StudyGroup } from "@/data/groups";
 import {
