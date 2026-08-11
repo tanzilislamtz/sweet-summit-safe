@@ -271,6 +271,8 @@ export const applyGroupOverrides = (group: StudyGroup): StudyGroup => {
     language: s.language,
     privacy: s.privacy,
     rules: s.rules,
+    icon: s.icon,
+    cover: s.cover,
   };
 };
 
