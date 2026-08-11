@@ -74,6 +74,7 @@ function AiAssistant() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [aiSettings, setAiSettings] = useState<any>({});
+  const [activeMode, setActiveMode] = useState<string | null>(null);
   
   useEffect(() => {
     const saved = localStorage.getItem('ai-settings');
@@ -161,7 +162,7 @@ function AiAssistant() {
         data: {
           messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
           language: lang,
-          context: `Student name: ${session?.name || "Guest"}, Role: Student`
+          context: `Student name: ${session?.name || "Guest"}, Role: Student${activeMode ? `, Current Active Mode: ${activeMode}. ONLY perform tasks related to ${activeMode}.` : ""}`
         } as any
       });
 
@@ -202,6 +203,12 @@ function AiAssistant() {
     } else {
       setIsRecording(false);
     }
+  };
+
+  const handleModeSelect = (mode: string) => {
+    setActiveMode(mode);
+    setMessages([]); // Clear for fresh start in new mode
+    toast.info(`Switched to ${mode} mode`);
   };
 
   return (
@@ -267,7 +274,10 @@ function AiAssistant() {
             >
               <div className="p-4">
                 <button 
-                  onClick={() => setMessages([])}
+                  onClick={() => {
+                    setMessages([]);
+                    setActiveMode(null);
+                  }}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition hover:bg-primary/90"
                 >
                   <Plus className="h-4 w-4" />
@@ -299,8 +309,15 @@ function AiAssistant() {
                       { icon: Trophy, label: "Quiz Me", color: "text-amber-500" },
                       { icon: Target, label: "Homework Help", color: "text-emerald-500" },
                     ].map((mode) => (
-                      <button key={mode.label} className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-surface">
-                        <mode.icon className={`h-4 w-4 ${mode.color}`} />
+                      <button 
+                        key={mode.label} 
+                        onClick={() => handleModeSelect(mode.label)}
+                        className={cn(
+                          "flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-surface transition-colors",
+                          activeMode === mode.label ? "bg-primary/10 text-primary" : ""
+                        )}
+                      >
+                        <mode.icon className={`h-4 w-4 ${activeMode === mode.label ? "text-primary" : mode.color}`} />
                         {mode.label}
                       </button>
                     ))}
@@ -339,6 +356,20 @@ function AiAssistant() {
           "relative flex flex-1 flex-col overflow-hidden bg-background transition-all duration-300",
           isSidebarCollapsed ? "lg:ml-0" : ""
         )}>
+          {/* Active Mode Indicator */}
+          {activeMode && (
+            <div className="absolute top-4 left-4 z-20 flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 text-[11px] font-bold text-primary shadow-sm">
+              <Sparkles className="h-3 w-3" />
+              {activeMode.toUpperCase()} MODE ACTIVE
+              <button 
+                onClick={() => setActiveMode(null)}
+                className="ml-1 rounded-full p-0.5 hover:bg-primary/10"
+              >
+                <X className="h-2.5 w-2.5" />
+              </button>
+            </div>
+          )}
+
           {/* Decorative Elements */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
           
@@ -355,14 +386,21 @@ function AiAssistant() {
               </div>
               <div className="grid grid-cols-2 gap-3 w-full max-w-lg">
                 {[
-                  { label: "Explain Concept", icon: BookOpen },
-                  { label: "Quiz Me", icon: Trophy },
-                  { label: "Homework Help", icon: Target },
-                  { label: "Image Solve", icon: SearchCode },
+                  { label: "Explain Concept", icon: BookOpen, sub: "Deeply analyze any study topic" },
+                  { label: "Quiz Me", icon: Trophy, sub: "Test your knowledge with AI" },
+                  { label: "Homework Help", icon: Target, sub: "Step-by-step guidance" },
+                  { label: "Image Solve", icon: SearchCode, sub: "Analyze diagrams & problems" },
                 ].map((cat) => (
-                  <button key={cat.label} className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-surface hover:bg-primary/5 hover:border-primary/20 transition-all text-sm font-bold text-foreground">
-                    <cat.icon className="h-5 w-5 text-primary" />
-                    {cat.label}
+                  <button 
+                    key={cat.label} 
+                    onClick={() => handleModeSelect(cat.label)}
+                    className="flex flex-col items-start gap-3 p-5 rounded-2xl border border-border bg-surface hover:bg-primary/5 hover:border-primary/20 transition-all text-left group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <cat.icon className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                      <span className="text-sm font-bold text-foreground">{cat.label}</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">{cat.sub}</p>
                   </button>
                 ))}
               </div>
