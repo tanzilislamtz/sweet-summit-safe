@@ -18,6 +18,9 @@ import {
   Trash2,
   Plus,
   Search,
+  Settings2,
+  ImagePlus,
+  X,
 } from "lucide-react";
 import type { GroupMember, StudyGroup } from "@/data/groups";
 import {
@@ -404,7 +407,66 @@ function IdentitySection({ group, tick }: { group: StudyGroup; tick: number }) {
 
   return (
     <Panel icon={Info} title="Group info" hint="Name, tagline, board and class shown across the group">
-      <div className="grid gap-3 p-4 sm:grid-cols-2">
+      <div className="space-y-4 p-4">
+        <div className="flex flex-wrap gap-4">
+          <div>
+            <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+              Group Icon
+            </span>
+            <div className="relative h-20 w-20">
+              {draft.icon ? (
+                <img src={draft.icon} alt="Icon" className="h-full w-full rounded-2xl object-cover" />
+              ) : (
+                <div className="grid h-full w-full place-items-center rounded-2xl bg-primary/10 text-primary">
+                  <Plus className="h-6 w-6" />
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => set("icon", reader.result as string);
+                    reader.readAsDataURL(file);
+                  }
+                }}
+                className="absolute inset-0 cursor-pointer opacity-0"
+              />
+            </div>
+          </div>
+          <div className="min-w-0 flex-1">
+            <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+              Cover Image
+            </span>
+            <div className="relative h-20 overflow-hidden rounded-2xl border border-dashed border-border transition hover:border-primary/50">
+              {draft.cover ? (
+                <img src={draft.cover} alt="Cover" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full items-center justify-center gap-2 text-muted-foreground">
+                  <ImagePlus className="h-5 w-5" />
+                  <span className="text-xs font-semibold">Upload cover photo</span>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => set("cover", reader.result as string);
+                    reader.readAsDataURL(file);
+                  }
+                }}
+                className="absolute inset-0 cursor-pointer opacity-0"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <Field label="Group name" value={draft.name} onChange={(v) => set("name", v)} maxLength={70} />
         </div>
@@ -434,6 +496,7 @@ function IdentitySection({ group, tick }: { group: StudyGroup; tick: number }) {
             multiline
             maxLength={600}
           />
+        </div>
         </div>
       </div>
       <SaveBar dirty={dirty} onSave={save} saved={saved} />

@@ -89,6 +89,8 @@ export type StudyGroup = {
   eventList: GroupEvent[];
   postList: GroupPost[];
   rules: string[];
+  icon?: string;
+  cover?: string;
 };
 
 const sections: GroupSection[] = [

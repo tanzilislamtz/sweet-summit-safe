@@ -19,6 +19,8 @@ export type GroupSettings = {
   board: string;
   classLevel: string;
   language: string;
+  icon?: string;
+  cover?: string;
   /** how the signed-in admin is shown inside this group */
   displayName: string;
   rules: string[];
@@ -269,6 +271,8 @@ export const applyGroupOverrides = (group: StudyGroup): StudyGroup => {
     language: s.language,
     privacy: s.privacy,
     rules: s.rules,
+    icon: s.icon,
+    cover: s.cover,
   };
 };
 
