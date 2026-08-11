@@ -536,9 +536,11 @@ export type Database = {
       study_groups: {
         Row: {
           batch: string | null
+          cover_url: string | null
           created_at: string
           created_by: string | null
           description: string | null
+          icon_url: string | null
           id: string
           member_count: number
           name: string
@@ -551,9 +553,11 @@ export type Database = {
         }
         Insert: {
           batch?: string | null
+          cover_url?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
+          icon_url?: string | null
           id?: string
           member_count?: number
           name: string
@@ -566,9 +570,11 @@ export type Database = {
         }
         Update: {
           batch?: string | null
+          cover_url?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
+          icon_url?: string | null
           id?: string
           member_count?: number
           name?: string
