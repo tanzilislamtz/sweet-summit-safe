@@ -65,7 +65,7 @@ function AdminLoginPage() {
     setBusy(true);
     try {
       if (mode === "signin") {
-        const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+        const { error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (err) throw err;
         navigate({ to: "/admin" });
       } else {
