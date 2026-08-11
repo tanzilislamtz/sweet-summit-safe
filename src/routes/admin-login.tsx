@@ -36,6 +36,28 @@ function AdminLoginPage() {
     });
   }, [navigate]);
 
+  async function handleDemoLogin() {
+    setEmail("demo@learnsacademy.com");
+    setPassword("demo123");
+    setError(null);
+    setNotice(null);
+    setBusy(true);
+    // Note: This assumes a demo account exists in the database. 
+    // For a real app, you'd use a server function to handle demo sessions securely.
+    try {
+      const { error: err } = await supabase.auth.signInWithPassword({
+        email: "demo@learnsacademy.com",
+        password: "demo123",
+      });
+      if (err) throw err;
+      navigate({ to: "/admin" });
+    } catch (err) {
+      setError("Demo account is currently unavailable. Please try signing up.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -156,6 +178,32 @@ function AdminLoginPage() {
             {mode === "signin" ? "Sign in" : "Create admin account"}
           </button>
         </form>
+
+        <div className="mt-6 flex flex-col gap-3">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">Demo Preview</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleDemoLogin}
+            disabled={busy}
+            className="group flex w-full items-center justify-between rounded-xl border border-dashed border-primary/40 bg-primary/5 px-4 py-3 transition hover:border-primary hover:bg-primary/10 disabled:opacity-60"
+          >
+            <div className="text-left">
+              <p className="text-sm font-semibold text-primary">Explore as Guest Admin</p>
+              <p className="text-[10px] text-muted-foreground">No credentials required for demo</p>
+            </div>
+            <div className="rounded-full bg-primary/20 p-1.5 transition group-hover:bg-primary group-hover:text-primary-foreground">
+              <ShieldCheck className="h-4 w-4" />
+            </div>
+          </button>
+        </div>
 
         <p className="mt-4 text-center text-[11px] leading-relaxed text-muted-foreground">
           The first account created becomes the owner administrator. Everyone else joins as a standard user until an
