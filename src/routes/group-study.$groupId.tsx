@@ -224,7 +224,7 @@ function GroupHeader({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-x-5 gap-y-1.5 border-t border-primary-foreground/15 bg-primary-foreground/5 px-4 py-2 text-[11px] font-medium text-primary-foreground/85">
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 border-t border-border bg-muted/30 px-4 py-2 text-[11px] font-medium text-muted-foreground">
         {stats.map((s) => (
           <span key={s.label} className="inline-flex items-center gap-1.5">
             <s.icon className="h-3.5 w-3.5" />

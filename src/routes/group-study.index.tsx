@@ -198,8 +198,12 @@ function GroupCard({ group, joined }: { group: StudyGroup; joined: boolean }) {
         className="block"
       >
         <div className="flex min-w-0 items-center gap-2.5">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary text-sm font-bold text-primary-foreground">
-            {group.name.charAt(0)}
+          <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-xl bg-primary text-sm font-bold text-primary-foreground">
+            {group.icon ? (
+              <img src={group.icon} alt={group.name} className="h-full w-full object-cover" />
+            ) : (
+              group.name.charAt(0)
+            )}
           </span>
           <div className="min-w-0 flex-1">
             <h3 className="truncate text-[13px] font-bold group-hover:text-primary">
@@ -349,6 +353,8 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
       requireMemberApproval: approveMembers,
       approveMembers: approveMembers,
       postsNeedApproval: approvePosts,
+      icon,
+      cover,
     });
 
     onClose();
@@ -376,6 +382,56 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="mt-5 space-y-4">
+          <div className="flex gap-4">
+            <div className="relative h-20 w-20 shrink-0">
+              {icon ? (
+                <img src={icon} alt="Icon preview" className="h-full w-full rounded-2xl object-cover" />
+              ) : (
+                <div className="grid h-full w-full place-items-center rounded-2xl bg-primary/10 text-primary">
+                  <Plus className="h-6 w-6" />
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => setIcon(reader.result as string);
+                    reader.readAsDataURL(file);
+                  }
+                }}
+                className="absolute inset-0 cursor-pointer opacity-0"
+              />
+              <span className="absolute -bottom-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground ring-2 ring-surface">
+                <ImagePlus className="h-3.5 w-3.5" />
+              </span>
+            </div>
+            <div className="relative h-20 flex-1 overflow-hidden rounded-2xl border border-dashed border-border transition hover:border-primary/50">
+              {cover ? (
+                <img src={cover} alt="Cover preview" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full flex-col items-center justify-center gap-1 text-muted-foreground">
+                  <ImagePlus className="h-5 w-5" />
+                  <span className="text-[10px] font-semibold">Cover (Optional)</span>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => setCover(reader.result as string);
+                    reader.readAsDataURL(file);
+                  }
+                }}
+                className="absolute inset-0 cursor-pointer opacity-0"
+              />
+            </div>
+          </div>
           <Field label="Group name">
             <input
               value={name}
