@@ -370,12 +370,12 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-3xl border border-border bg-surface p-6 shadow-xl"
+        className="max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-3xl border border-border bg-surface shadow-xl"
       >
-        <div className="flex items-start justify-between">
+        <div className="sticky top-0 z-10 flex items-start justify-between bg-surface/80 px-6 py-5 backdrop-blur-md">
           <div>
-            <h2 className="h5">Create a study group</h2>
-            <p className="caption">Set up your group in a few seconds.</p>
+            <h2 className="text-lg font-bold">Create Study Group</h2>
+            <p className="text-xs text-muted-foreground">Set up your group in a few seconds.</p>
           </div>
           <button
             onClick={onClose}
@@ -386,7 +386,7 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
           </button>
         </div>
 
-        <div className="mt-5 space-y-4">
+        <div className="space-y-6 px-6 pb-8 pt-2">
           <div className="flex gap-4">
             <div className="relative h-20 w-20 shrink-0">
               {icon ? (
@@ -442,66 +442,62 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="SSC 2026 Batch"
-              className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-primary/50"
+              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm font-medium outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
           </Field>
-          <Field label="Batch / class">
-            <input
-              value={batch}
-              onChange={(e) => setBatch(e.target.value)}
-              placeholder="SSC · 2026 Batch"
-              className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-primary/50"
-            />
-          </Field>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Batch / class">
+              <input
+                value={batch}
+                onChange={(e) => setBatch(e.target.value)}
+                placeholder="SSC · 2026 Batch"
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm font-medium outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
+              />
+            </Field>
+            <Field label="Privacy">
+              <select
+                value={privacy}
+                onChange={(e) => setPrivacy(e.target.value as any)}
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm font-bold outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
+              >
+                <option value="Public Group">Public Group</option>
+                <option value="Private Group">Private Group</option>
+              </select>
+            </Field>
+          </div>
           <Field label="Short description">
             <textarea
               value={tagline}
               onChange={(e) => setTagline(e.target.value)}
               rows={3}
               placeholder="What is this group about?"
-              className="w-full resize-none rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-primary/50"
+              className="w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm font-medium leading-relaxed outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
           </Field>
-          <Field label="Privacy">
-            <div className="grid grid-cols-2 gap-2">
-              {(["Public Group", "Private Group"] as const).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setPrivacy(p)}
-                  className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${
-                    privacy === p
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border hover:bg-muted"
-                  }`}
-                >
-                  {p === "Public Group" ? <Globe className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
-                  {p.replace(" Group", "")}
-                </button>
-              ))}
-            </div>
-          </Field>
-          <Field label="Member approval">
-            <button
-              onClick={() => setApproveMembers(!approveMembers)}
-              className={`flex w-full items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${
-                approveMembers ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-muted"
-              }`}
-            >
-              <Users className="h-4 w-4" />
-              {approveMembers ? "New members need approval" : "Anyone can join directly"}
-            </button>
-          </Field>
-          <Field label="Post approval">
-            <button
-              onClick={() => setApprovePosts(!approvePosts)}
-              className={`flex w-full items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${
-                approvePosts ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-muted"
-              }`}
-            >
-              <ShieldCheck className="h-4 w-4" />
-              {approvePosts ? "Posts need admin approval" : "Members can post directly"}
-            </button>
-          </Field>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label="Member approval">
+              <button
+                onClick={() => setApproveMembers(!approveMembers)}
+                className={`flex h-full w-full items-center gap-2 rounded-xl border px-3 py-3 text-sm font-semibold transition ${
+                  approveMembers ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-muted"
+                }`}
+              >
+                <Users className="h-4 w-4 shrink-0" />
+                <span className="text-left leading-tight">{approveMembers ? "Needs approval" : "Join directly"}</span>
+              </button>
+            </Field>
+            <Field label="Post approval">
+              <button
+                onClick={() => setApprovePosts(!approvePosts)}
+                className={`flex h-full w-full items-center gap-2 rounded-xl border px-3 py-3 text-sm font-semibold transition ${
+                  approvePosts ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-muted"
+                }`}
+              >
+                <ShieldCheck className="h-4 w-4 shrink-0" />
+                <span className="text-left leading-tight">{approvePosts ? "Admin approval" : "Direct posting"}</span>
+              </button>
+            </Field>
+          </div>
           <Field label="Sections / subjects">
             <div className="flex flex-wrap gap-2">
               {TAG_OPTIONS.map((t) => {
@@ -521,22 +517,21 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
               })}
             </div>
           </Field>
-        </div>
-
-        <div className="mt-6 flex items-center justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold hover:bg-muted"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={submit}
-            disabled={!valid}
-            className="rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:brightness-110 disabled:opacity-50"
-          >
-            Create group
-          </button>
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={onClose}
+              className="flex-1 rounded-xl border border-border py-3 text-sm font-bold transition hover:bg-muted"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={submit}
+              disabled={!valid}
+              className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground transition hover:brightness-110 disabled:opacity-50"
+            >
+              Create Group
+            </button>
+          </div>
         </div>
       </motion.div>
     </div>
@@ -545,9 +540,9 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="block space-y-1.5">
-      <span className="text-xs font-semibold text-muted-foreground">{label}</span>
+    <div className="space-y-1.5">
+      <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{label}</label>
       {children}
-    </label>
+    </div>
   );
 }

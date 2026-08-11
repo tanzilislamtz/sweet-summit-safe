@@ -25,7 +25,9 @@ export type FieldType =
   | "select"
   | "tags"
   | "json"
-  | "readonly";
+  | "readonly"
+  | "image"
+  | "video";
 
 export type FieldDef = {
   key: string;
@@ -288,7 +290,7 @@ export const RESOURCES: ResourceDef[] = [
       { key: "title", label: "Title", type: "text" },
       { key: "body", label: "Body", type: "textarea", required: true },
       { key: "tag", label: "Tag", type: "text" },
-      { key: "media_url", label: "Media URL", type: "text" },
+      { key: "media_url", label: "Media (Image/Video)", type: "video" },
       { key: "status", label: "Status", type: "select", options: ["published", "pending", "hidden", "removed"] },
       { key: "pinned", label: "Pinned", type: "boolean" },
       { key: "likes", label: "Likes", type: "number" },
@@ -350,8 +352,8 @@ export const RESOURCES: ResourceDef[] = [
       { key: "privacy", label: "Privacy", type: "select", options: ["public", "private"] },
       { key: "tagline", label: "Tagline", type: "text" },
       { key: "description", label: "Description", type: "textarea" },
-      { key: "icon_url", label: "Icon URL", type: "text" },
-      { key: "cover_url", label: "Cover URL", type: "text" },
+      { key: "icon_url", label: "Group Icon", type: "image" },
+      { key: "cover_url", label: "Cover Image", type: "image" },
       { key: "tags", label: "Tags", type: "tags" },
       { key: "member_count", label: "Member count", type: "number" },
       { key: "status", label: "Status", type: "select", options: ["active", "pending", "archived", "blocked"] },
@@ -379,7 +381,7 @@ export const RESOURCES: ResourceDef[] = [
     fields: [
       { key: "title", label: "Title", type: "text", required: true },
       { key: "body", label: "Body", type: "textarea" },
-      { key: "image_url", label: "Image URL", type: "text" },
+      { key: "image_url", label: "Ad Image", type: "image" },
       { key: "cta_label", label: "Button label", type: "text" },
       { key: "cta_url", label: "Button URL", type: "text" },
       { key: "sponsor", label: "Sponsor", type: "text" },

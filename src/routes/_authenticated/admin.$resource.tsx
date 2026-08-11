@@ -1,9 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Search, Loader2, Pencil, Trash2, X, ChevronLeft, ChevronRight, Inbox } from "lucide-react";
+import { Plus, Search, Loader2, Pencil, Trash2, X, ChevronLeft, ChevronRight, Inbox, ImagePlus, Play, Film, Settings2 } from "lucide-react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { useAdminAccess } from "@/lib/use-admin-access";
@@ -206,6 +206,16 @@ function ResourceView({ def }: { def: ResourceDef }) {
                       ))}
                       <td className="px-4 py-3 text-right">
                         <div className="flex justify-end gap-1">
+                          {def.slug === "groups" && (
+                            <Link
+                              to="/group-study/manage/$groupId"
+                              params={{ groupId: String(row['id']) }}
+                              className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                              title="Manage Group Content"
+                            >
+                              <Settings2 className="h-3.5 w-3.5" />
+                            </Link>
+                          )}
                           {def.fields.length > 0 && !readOnly && (
                             <button
                               onClick={() => setEditing(row)}
@@ -433,6 +443,7 @@ function Field({
     "mt-1 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-primary";
 
   const relational = RELATION_MAP[field.key] ? lookups[field.key] : undefined;
+  const isMedia = field.type === "image" || field.type === "video";
 
   return (
     <label className="block">
@@ -452,6 +463,12 @@ function Field({
         >
           <span className={cn("h-6 w-6 rounded-full bg-background transition", value ? "translate-x-5" : "")} />
         </button>
+      ) : isMedia ? (
+        <MediaUpload
+          type={field.type as "image" | "video"}
+          value={String(value ?? "")}
+          onChange={onChange}
+        />
       ) : relational ? (
         <select value={String(value ?? "")} onChange={(e) => onChange(e.target.value)} className={base}>
           <option value="">— none —</option>
@@ -507,5 +524,69 @@ function Field({
 
       {field.help && <span className="mt-1 block text-[11px] text-muted-foreground">{field.help}</span>}
     </label>
+  );
+}
+
+function MediaUpload({
+  type,
+  value,
+  onChange,
+}: {
+  type: "image" | "video";
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const isVideo = (type as string) === "video" || (value && (typeof value === "string" && (value.startsWith("data:video") || value.match(/\.(mp4|webm|ogg)$/i))));
+
+  return (
+    <div className="mt-2 space-y-3">
+      <div
+        className={cn(
+          "relative flex aspect-video w-full flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-border transition-all hover:border-primary/50",
+          value ? "border-solid" : "bg-muted/50",
+        )}
+      >
+        {value ? (
+          isVideo ? (
+            <video src={value} className="h-full w-full object-cover" controls />
+          ) : (
+            <img src={value} alt="Preview" className="h-full w-full object-cover" />
+          )
+        ) : (
+          <div className="flex flex-col items-center gap-2 text-muted-foreground">
+            {type === "image" ? <ImagePlus className="h-8 w-8" /> : <Film className="h-8 w-8" />}
+            <p className="text-xs font-medium">Click or drag to upload {type}</p>
+          </div>
+        )}
+        <input
+          type="file"
+          accept={type === "image" ? "image/*" : "video/*,image/*"}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onloadend = () => onChange(reader.result as string);
+              reader.readAsDataURL(file);
+            }
+          }}
+          className="absolute inset-0 cursor-pointer opacity-0"
+        />
+        {value && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              onChange("");
+            }}
+            className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-background/80 text-foreground shadow-sm backdrop-blur-sm hover:bg-destructive hover:text-destructive-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+      {value && !isVideo && type === "video" && (
+          <p className="text-[10px] text-muted-foreground italic">Detected as image, video functionality will activate on video upload.</p>
+      )}
+    </div>
   );
 }
