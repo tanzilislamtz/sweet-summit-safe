@@ -50,6 +50,7 @@ import {
   applyGroupOverrides,
   canManageGroup,
   deleteGroupPost,
+  getGroupSettings,
   hideGroupPost,
   isPostLoved,
   listGroupPosts,
