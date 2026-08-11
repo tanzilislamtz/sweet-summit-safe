@@ -17,6 +17,7 @@ import {
   ChevronDown,
   LogOut,
   ShieldCheck,
+  ImagePlus,
 } from "lucide-react";
 import { studyGroups, type StudyGroup } from "@/data/groups";
 import {
