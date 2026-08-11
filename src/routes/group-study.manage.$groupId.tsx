@@ -44,6 +44,7 @@ import {
   type GroupRole,
   type GroupSettings,
 } from "@/lib/group-workspace";
+import { useAdminAccess } from "@/lib/use-admin-access";
 
 export const Route = createFileRoute("/group-study/manage/$groupId")({
   head: () => ({
@@ -105,7 +106,8 @@ function GroupManagePage() {
   }, [groupId]);
 
   const group = useMemo(() => (raw ? applyGroupOverrides(raw) : undefined), [raw, tick]);
-  const canManage = raw ? canManageGroup(raw, joined) : false;
+  const { isAdmin: isSiteAdmin } = useAdminAccess();
+  const canManage = raw ? (canManageGroup(raw, joined) || isSiteAdmin) : false;
 
   if (!raw || !group) {
     return (

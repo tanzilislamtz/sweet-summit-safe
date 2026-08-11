@@ -29,6 +29,7 @@ import {
   setJoined,
 } from "@/lib/groups";
 import { applyGroupOverrides, updateGroupSettings } from "@/lib/group-workspace";
+import { useAdminAccess } from "@/lib/use-admin-access";
 
 export const Route = createFileRoute("/group-study/")({
   head: () => ({
@@ -52,6 +53,7 @@ export const Route = createFileRoute("/group-study/")({
 const TAG_OPTIONS = ["Science", "Commerce", "Humanities", "Common", "Higher Math", "English"];
 
 function GroupStudyIndex() {
+  const { isAdmin } = useAdminAccess();
   const [query, setQuery] = useState("");
   const [showCreate, setShowCreate] = useState(false);
   const [version, setVersion] = useState(0);
@@ -89,12 +91,14 @@ function GroupStudyIndex() {
               Create a group for your batch or join a suggested one — notes, live rooms and events in one place.
             </p>
           </div>
-          <button
-            onClick={() => setShowCreate(true)}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground transition hover:brightness-95"
-          >
-            <Plus className="h-4 w-4" /> Create
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => setShowCreate(true)}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground transition hover:brightness-95"
+            >
+              <Plus className="h-4 w-4" /> Create
+            </button>
+          )}
         </div>
         <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[11px] text-primary-foreground/85">
           <span className="inline-flex items-center gap-1.5">

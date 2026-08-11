@@ -62,6 +62,7 @@ import {
   type StoredPost,
 } from "@/lib/group-workspace";
 import { getSession } from "@/lib/session";
+import { useAdminAccess } from "@/lib/use-admin-access";
 
 export const Route = createFileRoute("/group-study/$groupId")({
   head: () => ({
@@ -106,7 +107,8 @@ function GroupDetailPage() {
     return () => window.removeEventListener(GROUPS_EVENT, sync);
   }, [groupId]);
 
-  const canManage = group ? canManageGroup(group, joined) : false;
+  const { isAdmin: isSiteAdmin } = useAdminAccess();
+  const canManage = group ? (canManageGroup(group, joined) || isSiteAdmin) : false;
   const tabs: Tab[] = [...BASE_TABS];
 
   if (!group) {

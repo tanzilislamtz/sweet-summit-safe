@@ -431,6 +431,13 @@ export const RESOURCES: ResourceDef[] = [
 
 export const RESOURCE_BY_SLUG = new Map(RESOURCES.map((r) => [r.slug, r]));
 
+// Helper to resolve related record labels for generic resources
+export const RELATION_MAP: Record<string, string> = {
+  subject_id: "subjects",
+  chapter_id: "chapters",
+  board_id: "boards",
+};
+
 export const NAV_GROUPS: { group: ResourceDef["group"]; items: { slug: string; label: string; icon: LucideIcon }[] }[] =
   (["People", "Learning", "Community", "Growth", "System"] as const).map((group) => ({
     group,
