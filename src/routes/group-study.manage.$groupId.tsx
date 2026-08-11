@@ -67,6 +67,7 @@ const SECTIONS = [
   { id: "identity", label: "Group info", icon: Info },
   { id: "privacy", label: "Privacy & type", icon: Lock },
   { id: "requests", label: "Join requests", icon: UserPlus },
+  { id: "pending_posts", label: "Post approval", icon: ShieldCheck },
   { id: "members", label: "Members & roles", icon: Users },
   { id: "permissions", label: "Permissions", icon: SlidersHorizontal },
   { id: "rules", label: "Group rules", icon: ScrollText },
@@ -186,6 +187,7 @@ function GroupManagePage() {
           {active === "identity" && <IdentitySection group={raw} tick={tick} />}
           {active === "privacy" && <PrivacySection group={raw} tick={tick} />}
           {active === "requests" && <RequestsSection group={raw} tick={tick} />}
+          {active === "pending_posts" && <PendingPostsSection group={raw} tick={tick} />}
           {active === "members" && <MembersSection group={raw} tick={tick} />}
           {active === "permissions" && <PermissionsSection group={raw} tick={tick} />}
           {active === "permissions" && <PostApprovalSection group={raw} tick={tick} />}
