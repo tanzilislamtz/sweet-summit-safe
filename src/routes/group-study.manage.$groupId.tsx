@@ -188,6 +188,7 @@ function GroupManagePage() {
           {active === "requests" && <RequestsSection group={raw} tick={tick} />}
           {active === "members" && <MembersSection group={raw} tick={tick} />}
           {active === "permissions" && <PermissionsSection group={raw} tick={tick} />}
+          {active === "permissions" && <PostApprovalSection group={raw} tick={tick} />}
           {active === "rules" && <RulesSection group={raw} tick={tick} />}
           {active === "profile" && <ProfileSection group={raw} tick={tick} />}
           {active === "danger" && (
@@ -481,8 +482,17 @@ function PrivacySection({ group, tick }: { group: StudyGroup; tick: number }) {
         <Toggle
           label="Approve new members"
           hint="Every join request waits for an admin decision"
-          checked={draft.approveMembers}
-          onChange={(v) => set("approveMembers", v)}
+          checked={draft.approveMembers || draft.requireMemberApproval}
+          onChange={(v) => {
+            set("approveMembers", v);
+            set("requireMemberApproval", v);
+          }}
+        />
+        <Toggle
+          label="Auto-approve academic questions"
+          hint="Questions with $ mention are approved automatically"
+          checked={draft.autoApproveQuestions}
+          onChange={(v) => set("autoApproveQuestions", v)}
         />
         <SaveBar dirty={dirty} onSave={save} saved={saved} />
       </Panel>
