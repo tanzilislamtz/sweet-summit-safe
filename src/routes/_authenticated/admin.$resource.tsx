@@ -7,7 +7,7 @@ import { Plus, Search, Loader2, Pencil, Trash2, X, ChevronLeft, ChevronRight, In
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { useAdminAccess } from "@/lib/use-admin-access";
-import { RESOURCE_BY_SLUG, type FieldDef, type ResourceDef } from "@/lib/admin-resources";
+import { RESOURCE_BY_SLUG, RELATION_MAP, type FieldDef, type ResourceDef } from "@/lib/admin-resources";
 import { adminList, adminSave, adminDelete } from "@/lib/admin.functions";
 import { cn } from "@/lib/utils";
 
@@ -66,22 +66,19 @@ function ResourceView({ def }: { def: ResourceDef }) {
   });
 
   // lookup labels for relational selects
-  const needsLookups = def.fields.some((f) => f.key.endsWith("_id"));
+  const needsLookups = def.fields.some((f) => RELATION_MAP[f.key]);
   const lookups = useQuery({
     queryKey: ["admin", "lookups"],
     enabled: needsLookups,
     staleTime: 300_000,
     queryFn: async () => {
-      const [subjects, chapters, boards] = await Promise.all([
-        list({ data: { table: "subjects", pageSize: 100, orderBy: "sort_order", ascending: true } }),
-        list({ data: { table: "chapters", pageSize: 100, orderBy: "sort_order", ascending: true } }),
-        list({ data: { table: "boards", pageSize: 100, orderBy: "name", ascending: true } }),
-      ]);
-      return {
-        subject_id: subjects.rows.map((r) => ({ value: String(r['id']), label: String(r['name']) })),
-        chapter_id: chapters.rows.map((r) => ({ value: String(r['id']), label: String(r['name']) })),
-        board_id: boards.rows.map((r) => ({ value: String(r['id']), label: String(r['name']) })),
-      } as Record<string, { value: string; label: string }[]>;
+      const results = await Promise.all(
+        Object.entries(RELATION_MAP).map(async ([key, table]) => {
+          const res = await list({ data: { table, pageSize: 200, orderBy: "name", ascending: true } });
+          return [key, res.rows.map((r: any) => ({ value: String(r.id), label: String(r.name) }))];
+        }),
+      );
+      return Object.fromEntries(results) as Record<string, { value: string; label: string }[]>;
     },
   });
 
@@ -115,7 +112,7 @@ function ResourceView({ def }: { def: ResourceDef }) {
   const canCreate = def.canCreate !== false && def.fields.length > 0 && !readOnly;
 
   const labelFor = (key: string, value: unknown) => {
-    if (!needsLookups || !key.endsWith("_id")) return value;
+    if (!needsLookups || !RELATION_MAP[key]) return value;
     const opts = lookups.data?.[key];
     return opts?.find((o) => o.value === String(value))?.label ?? value;
   };
@@ -361,7 +358,7 @@ function RecordEditor({
           return;
         }
       }
-      if (f.key.endsWith("_id") && v === "") v = null;
+      if (RELATION_MAP[f.key] && v === "") v = null;
       payload[f.key] = v;
     }
     onSave(payload);
@@ -435,7 +432,7 @@ function Field({
   const base =
     "mt-1 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-primary";
 
-  const relational = field.key.endsWith("_id") ? lookups[field.key] : undefined;
+  const relational = RELATION_MAP[field.key] ? lookups[field.key] : undefined;
 
   return (
     <label className="block">
