@@ -350,6 +350,8 @@ export const RESOURCES: ResourceDef[] = [
       { key: "privacy", label: "Privacy", type: "select", options: ["public", "private"] },
       { key: "tagline", label: "Tagline", type: "text" },
       { key: "description", label: "Description", type: "textarea" },
+      { key: "icon_url", label: "Icon URL", type: "text" },
+      { key: "cover_url", label: "Cover URL", type: "text" },
       { key: "tags", label: "Tags", type: "tags" },
       { key: "member_count", label: "Member count", type: "number" },
       { key: "status", label: "Status", type: "select", options: ["active", "pending", "archived", "blocked"] },
