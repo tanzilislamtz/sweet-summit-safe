@@ -526,3 +526,67 @@ function Field({
     </label>
   );
 }
+
+function MediaUpload({
+  type,
+  value,
+  onChange,
+}: {
+  type: "image" | "video";
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const isVideo = type === "video" || (value && (value.startsWith("data:video") || value.match(/\.(mp4|webm|ogg)$/i)));
+
+  return (
+    <div className="mt-2 space-y-3">
+      <div
+        className={cn(
+          "relative flex aspect-video w-full flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-border transition-all hover:border-primary/50",
+          value ? "border-solid" : "bg-muted/50",
+        )}
+      >
+        {value ? (
+          isVideo ? (
+            <video src={value} className="h-full w-full object-cover" controls />
+          ) : (
+            <img src={value} alt="Preview" className="h-full w-full object-cover" />
+          )
+        ) : (
+          <div className="flex flex-col items-center gap-2 text-muted-foreground">
+            {type === "image" ? <ImagePlus className="h-8 w-8" /> : <Film className="h-8 w-8" />}
+            <p className="text-xs font-medium">Click or drag to upload {type}</p>
+          </div>
+        )}
+        <input
+          type="file"
+          accept={type === "image" ? "image/*" : "video/*,image/*"}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onloadend = () => onChange(reader.result as string);
+              reader.readAsDataURL(file);
+            }
+          }}
+          className="absolute inset-0 cursor-pointer opacity-0"
+        />
+        {value && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              onChange("");
+            }}
+            className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-background/80 text-foreground shadow-sm backdrop-blur-sm hover:bg-destructive hover:text-destructive-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+      {value && !isVideo && type === "video" && (
+          <p className="text-[10px] text-muted-foreground italic">Detected as image, video functionality will activate on video upload.</p>
+      )}
+    </div>
+  );
+}
