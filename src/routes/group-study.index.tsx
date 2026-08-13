@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   ImagePlus,
 } from "lucide-react";
+import { toast } from "sonner";
 import { studyGroups, type StudyGroup } from "@/data/groups";
 import {
   GROUPS_EVENT,
@@ -196,6 +197,15 @@ function GroupCard({ group, joined }: { group: StudyGroup; joined: boolean }) {
 
     setTimeout(() => {
       setJoined(group.id, true);
+      setIsJoining(false);
+    }, 800);
+  };
+
+  const handleLeave = () => {
+    setMenuOpen(false);
+    setIsJoining(true);
+    setTimeout(() => {
+      setJoined(group.id, false);
       setIsJoining(false);
     }, 800);
   };
