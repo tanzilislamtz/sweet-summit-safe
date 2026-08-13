@@ -649,6 +649,20 @@ function PostCard({
   const onShare = () => {
     setShared((n) => n + 1);
     navigator.clipboard?.writeText(window.location.href);
+    
+    // Create floating copy animation effect
+    const btn = (window.event?.currentTarget as HTMLElement);
+    if (btn) {
+      const rect = btn.getBoundingClientRect();
+      const effect = document.createElement("div");
+      effect.className = "fixed z-[999] pointer-events-none text-[10px] font-bold text-primary animate-in fade-in slide-in-from-bottom-2 duration-500";
+      effect.style.left = `${rect.left + rect.width / 2}px`;
+      effect.style.top = `${rect.top - 20}px`;
+      effect.innerText = "Copied!";
+      document.body.appendChild(effect);
+      setTimeout(() => effect.remove(), 600);
+    }
+
     toast.success("Post link copied — share it with your group");
   };
 
@@ -1030,6 +1044,18 @@ function RoomCard({
     const url = new URL(window.location.href);
     url.searchParams.set("room", room.inviteCode || "");
     navigator.clipboard.writeText(url.toString());
+    
+    // Create floating copy animation effect
+    const btn = e.currentTarget as HTMLElement;
+    const rect = btn.getBoundingClientRect();
+    const effect = document.createElement("div");
+    effect.className = "fixed z-[999] pointer-events-none text-[10px] font-bold text-primary animate-in fade-in slide-in-from-bottom-2 duration-500";
+    effect.style.left = `${rect.left + rect.width / 2}px`;
+    effect.style.top = `${rect.top - 20}px`;
+    effect.innerText = "Link Copied!";
+    document.body.appendChild(effect);
+    setTimeout(() => effect.remove(), 600);
+    
     toast.success("Invite link copied!");
   };
 
@@ -1066,13 +1092,17 @@ function RoomCard({
           disabled={isFull && !isJoined && room.privacy !== "Private"}
           className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition ${
             isJoined 
-              ? "bg-muted text-foreground" 
+              ? "bg-primary text-primary-foreground hover:brightness-110" 
               : room.privacy === "Private"
                 ? isRequested ? "bg-muted text-muted-foreground" : "bg-primary/20 text-primary hover:bg-primary/30"
                 : "bg-primary text-primary-foreground hover:brightness-110 disabled:opacity-50"
           }`}
         >
-          {isJoined ? "Open Room" : room.privacy === "Private" ? (isRequested ? "Request Sent" : "Request Access") : isFull ? "Room Full" : "Join Room"}
+          {isJoined ? (
+            <Link to="/group-study/room/$groupId/$roomId" params={{ groupId, roomId: room.id }} className="flex h-full w-full items-center justify-center gap-1.5">
+              <Video className="h-3.5 w-3.5" /> Open Room
+            </Link>
+          ) : room.privacy === "Private" ? (isRequested ? "Request Sent" : "Request Access") : isFull ? "Room Full" : "Join Room"}
         </button>
         {isHost && (
           <button 

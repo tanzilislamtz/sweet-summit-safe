@@ -125,6 +125,19 @@ function ExamFlow() {
       else wrongIds.push(q.id);
     });
     setResult({ correct, wrongIds });
+
+    // Celebration animation on completion
+    const container = document.body;
+    for (let i = 0; i < 15; i++) {
+      const effect = document.createElement("div");
+      effect.className = "fixed z-[999] pointer-events-none text-xl animate-in fade-in slide-in-from-bottom-10 duration-1000";
+      effect.style.left = `${Math.random() * 100}vw`;
+      effect.style.top = `${Math.random() * 100}vh`;
+      effect.innerText = ["🏆", "✨", "🎯", "💯", "👏"][i % 5];
+      container.appendChild(effect);
+      setTimeout(() => effect.remove(), 1000);
+    }
+
     // Feed the MCQ score into the shared progress store.
     if (subject && paper.length > 0) {
       saveAttempt({

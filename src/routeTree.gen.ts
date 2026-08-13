@@ -52,6 +52,7 @@ import { Route as AuthenticatedAdminResourceRouteImport } from './routes/_authen
 import { Route as QuizSubjectSubjectIdCategoryRouteImport } from './routes/quiz.subject.$subjectId_.$category'
 import { Route as QuizMockTestCategoryCategoryIdRouteImport } from './routes/quiz.mock-test_.category.$categoryId'
 import { Route as QuizMockTestTestIdRunRouteImport } from './routes/quiz.mock-test_.$testId_.run'
+import { Route as GroupStudyRoomGroupIdRoomIdRouteImport } from './routes/group-study.room.$groupId.$roomId'
 import { Route as QuizSubjectSubjectIdCategoryChapterIdRouteImport } from './routes/quiz.subject.$subjectId_.$category_.$chapterId'
 
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -272,6 +273,12 @@ const QuizMockTestTestIdRunRoute = QuizMockTestTestIdRunRouteImport.update({
   path: '/mock-test/$testId/run',
   getParentRoute: () => QuizRoute,
 } as any)
+const GroupStudyRoomGroupIdRoomIdRoute =
+  GroupStudyRoomGroupIdRoomIdRouteImport.update({
+    id: '/room/$groupId/$roomId',
+    path: '/room/$groupId/$roomId',
+    getParentRoute: () => GroupStudyRoute,
+  } as any)
 const QuizSubjectSubjectIdCategoryChapterIdRoute =
   QuizSubjectSubjectIdCategoryChapterIdRouteImport.update({
     id: '/subject/$subjectId_/$category_/$chapterId',
@@ -319,6 +326,7 @@ export interface FileRoutesByFullPath {
   '/quiz/subject/$subjectId': typeof QuizSubjectSubjectIdRoute
   '/quiz/written/$subjectId': typeof QuizWrittenSubjectIdRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/group-study/room/$groupId/$roomId': typeof GroupStudyRoomGroupIdRoomIdRoute
   '/quiz/mock-test/$testId/run': typeof QuizMockTestTestIdRunRoute
   '/quiz/mock-test/category/$categoryId': typeof QuizMockTestCategoryCategoryIdRoute
   '/quiz/subject/$subjectId/$category': typeof QuizSubjectSubjectIdCategoryRoute
@@ -361,6 +369,7 @@ export interface FileRoutesByTo {
   '/quiz/subject/$subjectId': typeof QuizSubjectSubjectIdRoute
   '/quiz/written/$subjectId': typeof QuizWrittenSubjectIdRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/group-study/room/$groupId/$roomId': typeof GroupStudyRoomGroupIdRoomIdRoute
   '/quiz/mock-test/$testId/run': typeof QuizMockTestTestIdRunRoute
   '/quiz/mock-test/category/$categoryId': typeof QuizMockTestCategoryCategoryIdRoute
   '/quiz/subject/$subjectId/$category': typeof QuizSubjectSubjectIdCategoryRoute
@@ -408,6 +417,7 @@ export interface FileRoutesById {
   '/quiz/subject/$subjectId': typeof QuizSubjectSubjectIdRoute
   '/quiz/written/$subjectId': typeof QuizWrittenSubjectIdRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/group-study/room/$groupId/$roomId': typeof GroupStudyRoomGroupIdRoomIdRoute
   '/quiz/mock-test_/$testId_/run': typeof QuizMockTestTestIdRunRoute
   '/quiz/mock-test_/category/$categoryId': typeof QuizMockTestCategoryCategoryIdRoute
   '/quiz/subject/$subjectId_/$category': typeof QuizSubjectSubjectIdCategoryRoute
@@ -455,6 +465,7 @@ export interface FileRouteTypes {
     | '/quiz/subject/$subjectId'
     | '/quiz/written/$subjectId'
     | '/admin/'
+    | '/group-study/room/$groupId/$roomId'
     | '/quiz/mock-test/$testId/run'
     | '/quiz/mock-test/category/$categoryId'
     | '/quiz/subject/$subjectId/$category'
@@ -497,6 +508,7 @@ export interface FileRouteTypes {
     | '/quiz/subject/$subjectId'
     | '/quiz/written/$subjectId'
     | '/admin'
+    | '/group-study/room/$groupId/$roomId'
     | '/quiz/mock-test/$testId/run'
     | '/quiz/mock-test/category/$categoryId'
     | '/quiz/subject/$subjectId/$category'
@@ -543,6 +555,7 @@ export interface FileRouteTypes {
     | '/quiz/subject/$subjectId'
     | '/quiz/written/$subjectId'
     | '/_authenticated/admin/'
+    | '/group-study/room/$groupId/$roomId'
     | '/quiz/mock-test_/$testId_/run'
     | '/quiz/mock-test_/category/$categoryId'
     | '/quiz/subject/$subjectId_/$category'
@@ -871,6 +884,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuizMockTestTestIdRunRouteImport
       parentRoute: typeof QuizRoute
     }
+    '/group-study/room/$groupId/$roomId': {
+      id: '/group-study/room/$groupId/$roomId'
+      path: '/room/$groupId/$roomId'
+      fullPath: '/group-study/room/$groupId/$roomId'
+      preLoaderRoute: typeof GroupStudyRoomGroupIdRoomIdRouteImport
+      parentRoute: typeof GroupStudyRoute
+    }
     '/quiz/subject/$subjectId_/$category_/$chapterId': {
       id: '/quiz/subject/$subjectId_/$category_/$chapterId'
       path: '/subject/$subjectId/$category/$chapterId'
@@ -913,12 +933,14 @@ interface GroupStudyRouteChildren {
   GroupStudyGroupIdRoute: typeof GroupStudyGroupIdRoute
   GroupStudyIndexRoute: typeof GroupStudyIndexRoute
   GroupStudyManageGroupIdRoute: typeof GroupStudyManageGroupIdRoute
+  GroupStudyRoomGroupIdRoomIdRoute: typeof GroupStudyRoomGroupIdRoomIdRoute
 }
 
 const GroupStudyRouteChildren: GroupStudyRouteChildren = {
   GroupStudyGroupIdRoute: GroupStudyGroupIdRoute,
   GroupStudyIndexRoute: GroupStudyIndexRoute,
   GroupStudyManageGroupIdRoute: GroupStudyManageGroupIdRoute,
+  GroupStudyRoomGroupIdRoomIdRoute: GroupStudyRoomGroupIdRoomIdRoute,
 }
 
 const GroupStudyRouteWithChildren = GroupStudyRoute._addFileChildren(
