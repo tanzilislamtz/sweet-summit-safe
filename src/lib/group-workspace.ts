@@ -411,28 +411,6 @@ export const resolveJoinRequest = (groupId: string, requestId: string) => {
   });
 };
 
-/* ------------------------ join requests --------------------------- */
-
-const DEFAULT_REQUESTS: JoinRequest[] = [
-  { id: "jr1", name: "Tanvir Hasan", initials: "TH", section: "Science", requestedOn: "Today" },
-  { id: "jr2", name: "Sadia Afrin", initials: "SA", section: "Commerce", requestedOn: "Today" },
-  { id: "jr3", name: "Rafid Chowdhury", initials: "RC", section: "Humanities", requestedOn: "Yesterday" },
-];
-
-type RequestMap = Record<string, JoinRequest[]>;
-
-export const listJoinRequests = (groupId: string): JoinRequest[] => {
-  const map = read<RequestMap>(REQUESTS_KEY, {});
-  return map[groupId] ?? DEFAULT_REQUESTS;
-};
-
-export const resolveJoinRequest = (groupId: string, requestId: string) => {
-  const map = read<RequestMap>(REQUESTS_KEY, {});
-  write(REQUESTS_KEY, {
-    ...map,
-    [groupId]: listJoinRequests(groupId).filter((r) => r.id !== requestId),
-  });
-};
 
 /* -------------------- group membership requests ------------------- */
 
@@ -455,8 +433,7 @@ export const approveGroupJoin = (groupId: string, userId: string) => {
   write(GROUP_MEMBERSHIP_REQUESTS_KEY, { ...map, [groupId]: current.filter(id => id !== userId) });
   
   // Actually mark as joined in the global groups state
-  const { setJoined } = require("./groups");
-  setJoined(groupId, true);
+  import("./groups").then(m => m.setJoined(groupId, true));
 };
 
 /* ---------------------------- ownership --------------------------- */
