@@ -786,11 +786,11 @@ const kindConfig: Record<
   question: {
     label: "Question",
     Icon: HelpCircle,
-    accent: "text-amber-800 dark:text-amber-300",
-    chip: "bg-amber-500/20 text-amber-900 dark:text-amber-200",
+    accent: "text-amber-700 dark:text-amber-400",
+    chip: "bg-amber-500/20 text-amber-900 dark:text-amber-100",
     ring: "ring-amber-500/60",
     frame:
-      "border border-violet-300/70 bg-[linear-gradient(135deg,#fbf8ff_0%,#f3ecff_55%,#ece5ff_100%)] dark:border-violet-400/25 dark:bg-[linear-gradient(135deg,#221f33_0%,#241f3d_55%,#1d1a2e_100%)]",
+      "border border-violet-300/60 bg-[linear-gradient(135deg,#fdfbff_0%,#f5f0ff_55%,#f0eaff_100%)] dark:border-violet-400/20 dark:bg-[linear-gradient(135deg,#1d1a2b_0%,#1a172e_55%,#161326_100%)]",
   },
   "seeking-tutor": {
     label: "Seeking Tutor",
