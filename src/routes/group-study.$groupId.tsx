@@ -163,7 +163,7 @@ function GroupDetailPage() {
       </nav>
 
       {tab === "Feed" && <FeedTab group={group} tick={tick} />}
-      {tab === "Rooms" && <RoomsTab group={group} />}
+      {tab === "Rooms" && <RoomsTab group={group} tick={tick} onTick={() => setTick(t => t + 1)} />}
       {tab === "Members" && <MembersTab group={group} />}
       {tab === "Files" && <FilesTab group={group} />}
       {tab === "Events" && <EventsTab group={group} />}
@@ -911,31 +911,50 @@ function PostCard({
 
 /* ----------------------------- Rooms ----------------------------- */
 
-function RoomsTab({ group }: { group: StudyGroup }) {
-  const live = group.roomList.filter((r) => r.live);
-  const upcoming = group.roomList.filter((r) => !r.live);
+function RoomsTab({ group, tick, onTick }: { group: StudyGroup; tick: number; onTick: () => void }) {
+  const [showCreate, setShowCreate] = useState(false);
+  const userRooms = useMemo(() => listGroupRooms(group.id), [group.id, tick]);
+  const allRooms = useMemo(() => [...userRooms, ...group.roomList], [userRooms, group.roomList]);
+  
+  const live = allRooms.filter((r) => r.live);
+  const upcoming = allRooms.filter((r) => !r.live);
+  
+  const { isAdmin: isSiteAdmin } = useAdminAccess();
+  const joined = isJoined(group);
+  const settings = getGroupSettings(group);
+  const canCreate = joined && (settings.membersCanCreateRooms || canManageGroup(group, joined) || isSiteAdmin);
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-bold">Study Rooms</h3>
+        {canCreate && (
+          <button
+            onClick={() => setShowCreate(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition hover:brightness-110"
+          >
+            <Plus className="h-3.5 w-3.5" /> Create Room
+          </button>
+        )}
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {live.map((r) => (
-          <Panel key={r.id} className="p-3.5">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 rounded-full bg-destructive px-2 py-0.5 text-[9px] font-bold text-destructive-foreground">
-                <span className="h-1.5 w-1.5 rounded-full bg-destructive-foreground" /> LIVE
-              </span>
-              <Pill>{r.section}</Pill>
-              <span className="ml-auto text-[11px] text-muted-foreground">{r.participants}</span>
-            </div>
-            <h3 className="mt-2 truncate text-sm font-bold">{r.title}</h3>
-            <p className="truncate text-[11px] text-muted-foreground">{r.focus} · {r.host}</p>
-            <button className="mt-2.5 w-full rounded-lg bg-primary py-1.5 text-xs font-semibold text-primary-foreground hover:brightness-110">
-              Join room
-            </button>
-          </Panel>
+          <RoomCard key={r.id} room={r} groupId={group.id} onTick={onTick} />
         ))}
         {live.length === 0 && <Panel className="sm:col-span-2 xl:col-span-3"><Empty text="No live rooms right now." /></Panel>}
       </div>
+
+      {showCreate && (
+        <CreateRoomModal 
+          groupId={group.id} 
+          sections={group.sections.map(s => s.name)} 
+          onClose={() => {
+            setShowCreate(false);
+            onTick();
+          }} 
+        />
+      )}
 
       <Panel>
         <PanelHead icon={CalendarDays} title="Upcoming rooms" />
@@ -955,6 +974,218 @@ function RoomsTab({ group }: { group: StudyGroup }) {
           {upcoming.length === 0 && <li><Empty text="Nothing scheduled yet." /></li>}
         </ul>
       </Panel>
+    </div>
+  );
+}
+
+function RoomCard({ 
+  room, 
+  groupId,
+  onTick 
+}: { 
+  room: GroupRoom; 
+  groupId: string;
+  onTick: () => void;
+}) {
+  const isJoined = isRoomJoined(groupId, room.id);
+  const isFull = room.limit ? room.participants >= room.limit : false;
+  
+  const handleJoin = () => {
+    if (isFull && !isJoined) {
+      toast.error("This room is full.");
+      return;
+    }
+    joinRoom(groupId, room.id);
+    onTick();
+    toast.success(`Joined ${room.title}`);
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = new URL(window.location.href);
+    url.searchParams.set("room", room.inviteCode || "");
+    navigator.clipboard.writeText(url.toString());
+    toast.success("Invite link copied!");
+  };
+
+  return (
+    <Panel className="p-3.5">
+      <div className="flex items-center gap-2">
+        {room.live ? (
+          <span className="inline-flex items-center gap-1 rounded-full bg-destructive px-2 py-0.5 text-[9px] font-bold text-destructive-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-destructive-foreground" /> LIVE
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[9px] font-bold text-muted-foreground">
+             UPCOMING
+          </span>
+        )}
+        <Pill>{room.section}</Pill>
+        <div className="ml-auto flex items-center gap-1.5">
+          {room.privacy === "Private" ? (
+            <Lock className="h-3 w-3 text-muted-foreground" />
+          ) : (
+            <Globe className="h-3 w-3 text-muted-foreground" />
+          )}
+          <span className="text-[11px] text-muted-foreground">
+            {room.participants}{room.limit ? `/${room.limit}` : ""}
+          </span>
+        </div>
+      </div>
+      <h3 className="mt-2 truncate text-sm font-bold">{room.title}</h3>
+      <p className="truncate text-[11px] text-muted-foreground">{room.focus} · {room.host}</p>
+      
+      <div className="mt-3 flex gap-2">
+        <button 
+          onClick={handleJoin}
+          disabled={isFull && !isJoined}
+          className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition ${
+            isJoined 
+              ? "bg-muted text-foreground" 
+              : "bg-primary text-primary-foreground hover:brightness-110 disabled:opacity-50"
+          }`}
+        >
+          {isJoined ? "Open Room" : isFull ? "Room Full" : "Join Room"}
+        </button>
+        {room.privacy === "Private" && (
+          <button 
+            onClick={handleShare}
+            className="grid h-8 w-8 place-items-center rounded-lg border border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+            title="Copy invite link"
+          >
+            <Share2 className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
+    </Panel>
+  );
+}
+
+function CreateRoomModal({ 
+  groupId, 
+  sections,
+  onClose 
+}: { 
+  groupId: string; 
+  sections: string[];
+  onClose: () => void;
+}) {
+  const [title, setTitle] = useState("");
+  const [focus, setFocus] = useState("");
+  const [section, setSection] = useState(sections[0] || "Common");
+  const [limit, setLimit] = useState("10");
+  const [privacy, setPrivacy] = useState<"Public" | "Private">("Public");
+  
+  const author = getSession()?.name || "You";
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+    
+    addGroupRoom(groupId, {
+      title: title.trim(),
+      focus: focus.trim(),
+      section,
+      host: author,
+      limit: limit ? parseInt(limit) : undefined,
+      privacy
+    });
+    
+    toast.success("Study room created!");
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-[60] grid place-items-center bg-foreground/40 p-4 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-xl"
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-bold">Create Study Room</h2>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Room Title</label>
+            <input 
+              autoFocus
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              placeholder="e.g. Physics Formulas Marathon"
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary/50"
+              required
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Focus Topic</label>
+            <input 
+              value={focus}
+              onChange={e => setFocus(e.target.value)}
+              placeholder="What are we studying?"
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary/50"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Section</label>
+              <select 
+                value={section}
+                onChange={e => setSection(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary/50"
+              >
+                {[...sections, "Common"].map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Member Limit</label>
+              <input 
+                type="number"
+                value={limit}
+                onChange={e => setLimit(e.target.value)}
+                placeholder="No limit"
+                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary/50"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Privacy</label>
+            <div className="flex gap-2">
+              {(["Public", "Private"] as const).map(p => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setPrivacy(p)}
+                  className={`flex-1 flex items-center justify-center gap-2 rounded-xl border py-2 text-xs font-semibold transition ${
+                    privacy === p 
+                      ? "border-primary bg-primary/5 text-primary" 
+                      : "border-border hover:bg-muted"
+                  }`}
+                >
+                  {p === "Public" ? <Globe className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />}
+                  {p}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button 
+            type="submit"
+            className="mt-2 w-full rounded-xl bg-primary py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110"
+          >
+            Create Room
+          </button>
+        </form>
+      </motion.div>
     </div>
   );
 }
