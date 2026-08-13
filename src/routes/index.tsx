@@ -1332,12 +1332,20 @@ function Post({
                   animate={{ opacity: 1, y: 0 }}
                   className="flex gap-2"
                 >
-                  <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                  <Link 
+                    to="/profile"
+                    className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity"
+                  >
                     {c.author.charAt(0)}
-                  </div>
+                  </Link>
                   <div className="min-w-0 flex-1 rounded-2xl bg-muted/60 px-3 py-2">
                     <div className="flex items-center gap-2 text-xs">
-                      <span className="font-semibold text-foreground">{c.author}</span>
+                      <Link 
+                        to="/profile"
+                        className="font-semibold text-foreground hover:underline"
+                      >
+                        {c.author}
+                      </Link>
                       <span className="text-muted-foreground">· {c.time}</span>
                     </div>
                     <p className="mt-0.5 text-sm text-foreground/85">{c.text}</p>
