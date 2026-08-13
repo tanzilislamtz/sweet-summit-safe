@@ -469,16 +469,16 @@ function Leaderboard() {
             whileHover={{ y: -3 }}
             className="relative w-40 shrink-0 snap-start overflow-hidden rounded-2xl border border-border bg-surface shadow-sm"
           >
-            <div className="relative aspect-[4/5] overflow-hidden">
-              <img src={e.img} alt={e.name} loading="lazy" className="h-full w-full object-cover" />
-              <span className="absolute left-2 top-2 rounded-lg bg-background/95 px-1.5 py-0.5 text-[10px] font-bold text-primary shadow-sm">
+            <Link to="/profile" className="relative block aspect-[4/5] overflow-hidden group">
+              <img src={e.img} alt={e.name} loading="lazy" className="h-full w-full object-cover transition-transform group-hover:scale-110" />
+              <span className="absolute left-2 top-2 rounded-lg bg-background/95 px-1.5 py-0.5 text-[10px] font-bold text-primary shadow-sm z-10">
                 #{e.rank}
               </span>
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/85 via-foreground/40 to-transparent p-2">
-                <p className="truncate text-xs font-semibold text-background">{e.name}</p>
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/85 via-foreground/40 to-transparent p-2 z-10">
+                <p className="truncate text-xs font-semibold text-background hover:underline">{e.name}</p>
                 <p className="truncate text-[10px] text-background/80">{e.sub}</p>
               </div>
-            </div>
+            </Link>
             <div className="p-2">
               <button
                 className={`w-full rounded-full py-1.5 text-[11px] font-semibold transition ${
