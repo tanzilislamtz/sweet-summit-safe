@@ -60,7 +60,7 @@ import VoiceMessage from "@/components/VoiceMessage";
 import ChatAttachment from "@/components/ChatAttachment";
 import { fileToAttachment, MAX_ATTACHMENT_BYTES } from "@/lib/attachments";
 import VoiceRecorder from "@/components/VoiceRecorder";
-import CallOverlay from "@/components/CallOverlay";
+import { CallOverlay } from "@/components/CallOverlay";
 
 const REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 

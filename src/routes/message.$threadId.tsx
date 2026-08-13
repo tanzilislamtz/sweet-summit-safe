@@ -59,7 +59,7 @@ const REPORT_REASONS = [
   "Something else",
 ];
 import { AnimatePresence, motion } from "framer-motion";
-import CallOverlay, { type CallKind } from "@/components/CallOverlay";
+import { CallOverlay } from "@/components/CallOverlay";
 import VoiceMessage from "@/components/VoiceMessage";
 import ChatAttachment from "@/components/ChatAttachment";
 import { fileToAttachment, MAX_ATTACHMENT_BYTES } from "@/lib/attachments";
@@ -97,7 +97,7 @@ function ThreadView() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const [openMenu, setOpenMenu] = useState<null | "profile" | "more">(null);
-  const [call, setCall] = useState<null | CallKind>(null);
+  const [call, setCall] = useState<null | "audio" | "video">(null);
   const tState = getThreadState(threadId);
   const notifMuted = !!tState.muted;
   
