@@ -50,6 +50,7 @@ const ROLES_KEY = "la:groups:roles";
 const REMOVED_KEY = "la:groups:removed";
 const SETTINGS_KEY = "la:groups:settings";
 const REQUESTS_KEY = "la:groups:requests";
+const GROUP_MEMBERSHIP_REQUESTS_KEY = "la:groups:membership-requests";
 
 const read = <T,>(key: string, fallback: T): T => {
   if (typeof window === "undefined") return fallback;
@@ -408,6 +409,54 @@ export const resolveJoinRequest = (groupId: string, requestId: string) => {
     ...map,
     [groupId]: listJoinRequests(groupId).filter((r) => r.id !== requestId),
   });
+};
+
+/* ------------------------ join requests --------------------------- */
+
+const DEFAULT_REQUESTS: JoinRequest[] = [
+  { id: "jr1", name: "Tanvir Hasan", initials: "TH", section: "Science", requestedOn: "Today" },
+  { id: "jr2", name: "Sadia Afrin", initials: "SA", section: "Commerce", requestedOn: "Today" },
+  { id: "jr3", name: "Rafid Chowdhury", initials: "RC", section: "Humanities", requestedOn: "Yesterday" },
+];
+
+type RequestMap = Record<string, JoinRequest[]>;
+
+export const listJoinRequests = (groupId: string): JoinRequest[] => {
+  const map = read<RequestMap>(REQUESTS_KEY, {});
+  return map[groupId] ?? DEFAULT_REQUESTS;
+};
+
+export const resolveJoinRequest = (groupId: string, requestId: string) => {
+  const map = read<RequestMap>(REQUESTS_KEY, {});
+  write(REQUESTS_KEY, {
+    ...map,
+    [groupId]: listJoinRequests(groupId).filter((r) => r.id !== requestId),
+  });
+};
+
+/* -------------------- group membership requests ------------------- */
+
+type MembershipRequestMap = Record<string, string[]>; // groupId -> [userIds]
+
+export const requestGroupJoin = (groupId: string) => {
+  const map = read<MembershipRequestMap>(GROUP_MEMBERSHIP_REQUESTS_KEY, {});
+  const current = map[groupId] ?? [];
+  if (current.includes("me")) return;
+  write(GROUP_MEMBERSHIP_REQUESTS_KEY, { ...map, [groupId]: ["me", ...current] });
+};
+
+export const isGroupJoinRequested = (groupId: string): boolean => {
+  return (read<MembershipRequestMap>(GROUP_MEMBERSHIP_REQUESTS_KEY, {})[groupId] ?? []).includes("me");
+};
+
+export const approveGroupJoin = (groupId: string, userId: string) => {
+  const map = read<MembershipRequestMap>(GROUP_MEMBERSHIP_REQUESTS_KEY, {});
+  const current = map[groupId] ?? [];
+  write(GROUP_MEMBERSHIP_REQUESTS_KEY, { ...map, [groupId]: current.filter(id => id !== userId) });
+  
+  // Actually mark as joined in the global groups state
+  const { setJoined } = require("./groups");
+  setJoined(groupId, true);
 };
 
 /* ---------------------------- ownership --------------------------- */
