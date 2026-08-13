@@ -1,4 +1,4 @@
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute, useParams, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -15,13 +15,16 @@ import {
   Layout,
   ArrowLeft,
   Settings,
-  MoreVertical
+  MoreVertical,
+  Minimize2
 } from "lucide-react";
 import { toast } from "sonner";
 import { getSession } from "@/lib/session";
 import { findGroup } from "@/lib/groups";
 import { listGroupRooms } from "@/lib/group-workspace";
 import { cn } from "@/lib/utils";
+import { useCallStore } from "@/lib/call-store";
+
 
 export const Route = createFileRoute("/group-study/room/$groupId/$roomId")({
   component: StudyRoomPage,
@@ -34,14 +37,25 @@ function StudyRoomPage() {
   const [screenSharing, setScreenSharing] = useState(false);
   const [isDeafened, setIsDeafened] = useState(false);
   const [layout, setLayout] = useState<"grid" | "focus">("grid");
+  const setActiveCall = useCallStore(s => s.setActiveCall);
   
   const session = getSession();
   const group = findGroup(groupId);
   const room = listGroupRooms(groupId).find(r => r.id === roomId);
 
   useEffect(() => {
+    if (room && group) {
+      setActiveCall({
+        groupId,
+        roomId,
+        roomTitle: room.title,
+        groupName: group.name,
+        startTime: Date.now()
+      });
+    }
     toast.info("Welcome to the study room!");
-  }, []);
+  }, [room, group, groupId, roomId, setActiveCall]);
+
 
   const handleLeave = () => {
     window.history.back();
