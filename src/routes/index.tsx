@@ -1143,7 +1143,7 @@ function Post({
             <div
               key={m.label}
               className={cn(
-                "flex flex-col justify-between rounded-xl border px-3 py-2",
+                  "flex flex-col justify-between rounded-xl border px-3 py-1.5",
                 kc.dark
                   ? "border-cyan-400/20 bg-white/5 backdrop-blur-sm"
                   : kind === "offering-tutor"
@@ -1161,7 +1161,7 @@ function Post({
                 {m.label}
               </div>
               <div className={cn(
-                "mt-0.5 break-words text-sm font-semibold leading-tight",
+                "mt-0.5 break-words text-sm font-semibold leading-tight first-letter:text-lg",
                 kc.dark ? "text-slate-50" : "text-foreground"
               )}>
                 {m.value}
