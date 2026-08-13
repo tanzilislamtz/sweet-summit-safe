@@ -72,6 +72,8 @@ import {
   approveRoomRequest,
   inviteToRoom,
   togglePostLove,
+  requestGroupJoin,
+  isGroupJoinRequested,
   type GroupPostComment,
   type StoredPost,
 } from "@/lib/group-workspace";
@@ -239,6 +241,27 @@ function GroupHeader({
           <div className="flex shrink-0 items-center gap-2">
             {joined ? (
               <JoinedMenu groupId={group.id} />
+            ) : group.privacy === "Private Group" ? (
+              isGroupJoinRequested(group.id) ? (
+                <button
+                  disabled
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground cursor-default"
+                >
+                  <Check className="h-3.5 w-3.5" /> Requested
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    requestGroupJoin(group.id);
+                    toast.success("Join request sent to group admins", {
+                      description: "You'll be able to access the group once approved.",
+                    });
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition hover:brightness-110"
+                >
+                  <Lock className="h-3.5 w-3.5" /> Request to Join
+                </button>
+              )
             ) : (
               <button
                 onClick={() => setJoined(group.id, true)}
