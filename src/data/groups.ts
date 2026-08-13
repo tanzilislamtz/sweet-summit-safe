@@ -27,6 +27,9 @@ export type GroupRoom = {
   section: string;
   host: string;
   participants: number;
+  limit?: number;
+  privacy?: "Public" | "Private";
+  inviteCode?: string;
   live: boolean;
   when: string;
 };
