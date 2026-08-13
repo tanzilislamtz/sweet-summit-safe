@@ -28,7 +28,12 @@ import {
   listCreatedGroups,
   setJoined,
 } from "@/lib/groups";
-import { applyGroupOverrides, updateGroupSettings } from "@/lib/group-workspace";
+import {
+  applyGroupOverrides,
+  updateGroupSettings,
+  requestGroupJoin,
+  isGroupJoinRequested,
+} from "@/lib/group-workspace";
 import { useAdminAccess } from "@/lib/use-admin-access";
 
 export const Route = createFileRoute("/group-study/")({
@@ -163,6 +168,7 @@ function GroupCard({ group, joined }: { group: StudyGroup; joined: boolean }) {
   const [isJoining, setIsJoining] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const isRequested = isGroupJoinRequested(group.id);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -176,17 +182,20 @@ function GroupCard({ group, joined }: { group: StudyGroup; joined: boolean }) {
   const handleJoin = () => {
     if (isJoining || joined) return;
     setIsJoining(true);
+    
+    if (group.privacy === "Private Group") {
+      setTimeout(() => {
+        requestGroupJoin(group.id);
+        setIsJoining(false);
+        toast.success("Join request sent", {
+          description: "An admin needs to approve your request.",
+        });
+      }, 600);
+      return;
+    }
+
     setTimeout(() => {
       setJoined(group.id, true);
-      setIsJoining(false);
-    }, 800);
-  };
-
-  const handleLeave = () => {
-    setMenuOpen(false);
-    setIsJoining(true);
-    setTimeout(() => {
-      setJoined(group.id, false);
       setIsJoining(false);
     }, 800);
   };
@@ -304,6 +313,14 @@ function GroupCard({ group, joined }: { group: StudyGroup; joined: boolean }) {
               )}
             </AnimatePresence>
           </div>
+        ) : isRequested ? (
+          <button
+            disabled
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-muted px-3 py-2 text-[11px] font-semibold text-muted-foreground cursor-default"
+          >
+            <Check className="h-3.5 w-3.5" />
+            Requested
+          </button>
         ) : (
           <button
             onClick={(e) => {
@@ -317,10 +334,15 @@ function GroupCard({ group, joined }: { group: StudyGroup; joined: boolean }) {
             {isJoining ? (
               <>
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                Joining...
+                {group.privacy === "Private Group" ? "Requesting..." : "Joining..."}
               </>
             ) : (
-              "Join"
+              group.privacy === "Private Group" ? (
+                <>
+                  <Lock className="h-3.5 w-3.5" />
+                  Request to Join
+                </>
+              ) : "Join"
             )}
           </button>
         )}
