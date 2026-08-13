@@ -786,8 +786,8 @@ const kindConfig: Record<
   question: {
     label: "Question",
     Icon: HelpCircle,
-    accent: "text-amber-700 dark:text-amber-400",
-    chip: "bg-amber-500/20 text-amber-900 dark:text-amber-100",
+    accent: "text-amber-600 dark:text-amber-400/90",
+    chip: "bg-amber-500/15 text-amber-700 dark:text-amber-100",
     ring: "ring-amber-500/60",
     frame:
       "border border-violet-300/60 bg-[linear-gradient(135deg,#fdfbff_0%,#f5f0ff_55%,#f0eaff_100%)] dark:border-violet-400/20 dark:bg-[linear-gradient(135deg,#1d1a2b_0%,#1a172e_55%,#161326_100%)]",
@@ -1080,7 +1080,7 @@ function Post({
         {kind === "question" ? (
           <div className="flex gap-3">
             {/* Vote rail */}
-            <div className="flex h-fit shrink-0 flex-col items-center justify-between gap-1 rounded-full border border-amber-500/40 bg-white/70 px-2 py-2 text-amber-900 dark:bg-white/5 dark:text-amber-200">
+            <div className="flex h-fit shrink-0 flex-col items-center justify-between gap-1 rounded-full border border-amber-500/30 bg-white/60 px-2 py-2 text-amber-700 dark:bg-white/5 dark:text-amber-100/80">
               <button aria-label="Upvote" className="grid place-items-center rounded-full p-1 transition-colors hover:bg-amber-500/20">
                 <ChevronUp className="h-4 w-4" strokeWidth={2.5} />
               </button>
@@ -1093,8 +1093,8 @@ function Post({
               className="min-w-0 flex-1 cursor-pointer"
               onClick={openDetail}
             >
-              <h2 className="text-lg font-bold leading-snug text-amber-950 line-clamp-2">{title}</h2>
-              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-amber-950/80 line-clamp-3">{body}</p>
+              <h2 className="text-lg font-bold leading-snug text-amber-900 dark:text-amber-100 line-clamp-2">{title}</h2>
+              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-amber-900/80 dark:text-amber-100/70 line-clamp-3">{body}</p>
               {canExpand && (
                 <button
                   type="button"
