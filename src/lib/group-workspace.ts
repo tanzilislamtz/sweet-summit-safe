@@ -5,7 +5,7 @@
  *
  * Everything is stored in localStorage so the UI feels real without a backend.
  */
-import type { GroupMember, GroupPost, StudyGroup } from "@/data/groups";
+import type { GroupMember, GroupPost, GroupRoom, StudyGroup } from "@/data/groups";
 import { GROUPS_EVENT, listCreatedGroups } from "@/lib/groups";
 
 export type GroupRole = GroupMember["role"];
@@ -117,6 +117,69 @@ export const addGroupPost = (
 
   write(POSTS_KEY, { ...map, [groupId]: [post, ...(map[groupId] ?? [])] });
   return post;
+};
+
+/* ----------------------------- rooms ----------------------------- */
+
+const ROOMS_KEY = "la:groups:rooms";
+const ROOM_JOINS_KEY = "la:groups:room-joins";
+
+type RoomMap = Record<string, GroupRoom[]>;
+type RoomJoinMap = Record<string, string[]>; // groupId::roomId -> [userIds]
+
+export const listGroupRooms = (groupId: string): GroupRoom[] => {
+  return read<RoomMap>(ROOMS_KEY, {})[groupId] ?? [];
+};
+
+export const addGroupRoom = (
+  groupId: string,
+  input: { 
+    title: string; 
+    focus: string; 
+    section: string; 
+    host: string; 
+    limit?: number; 
+    privacy: "Public" | "Private" 
+  },
+): GroupRoom => {
+  const room: GroupRoom = {
+    id: `r-${Date.now()}`,
+    title: input.title,
+    focus: input.focus,
+    section: input.section,
+    host: input.host,
+    participants: 1, // host joins by default
+    limit: input.limit,
+    privacy: input.privacy,
+    inviteCode: input.privacy === "Private" ? Math.random().toString(36).substring(2, 8).toUpperCase() : undefined,
+    live: true,
+    when: "Live now",
+  };
+  const map = read<RoomMap>(ROOMS_KEY, {});
+  write(ROOMS_KEY, { ...map, [groupId]: [room, ...(map[groupId] ?? [])] });
+  
+  // Also track the host as a joined participant
+  const joins = read<RoomJoinMap>(ROOM_JOINS_KEY, {});
+  const joinKey = `${groupId}::${room.id}`;
+  write(ROOM_JOINS_KEY, { ...joins, [joinKey]: ["me"] }); // 'me' is session placeholder
+  
+  return room;
+};
+
+export const joinRoom = (groupId: string, roomId: string): boolean => {
+  const joinKey = `${groupId}::${roomId}`;
+  const map = read<RoomJoinMap>(ROOM_JOINS_KEY, {});
+  const current = map[joinKey] ?? [];
+  if (current.includes("me")) return true;
+  
+  const next = ["me", ...current];
+  write(ROOM_JOINS_KEY, { ...map, [joinKey]: next });
+  return true;
+};
+
+export const isRoomJoined = (groupId: string, roomId: string): boolean => {
+  const joinKey = `${groupId}::${roomId}`;
+  return (read<RoomJoinMap>(ROOM_JOINS_KEY, {})[joinKey] ?? []).includes("me");
 };
 
 /* ------------- reactions, comments, hidden posts ------------------ */
