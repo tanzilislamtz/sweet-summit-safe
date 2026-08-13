@@ -1142,18 +1142,30 @@ function Post({
           {meta.map((m) => (
             <div
               key={m.label}
-              className={
+              className={cn(
+                "flex flex-col justify-between rounded-xl border px-3 py-2",
                 kc.dark
-                  ? "rounded-xl border border-cyan-400/20 bg-white/5 px-3 py-2 backdrop-blur-sm"
+                  ? "border-cyan-400/20 bg-white/5 backdrop-blur-sm"
                   : kind === "offering-tutor"
-                  ? "rounded-xl border border-emerald-500/25 bg-white/70 px-3 py-2 shadow-sm dark:bg-white/5"
+                  ? "border-emerald-500/25 bg-white/70 shadow-sm dark:bg-white/5"
                   : kind === "seeking-student"
-                  ? "rounded-xl border border-fuchsia-400/30 bg-white/70 px-3 py-2 shadow-sm dark:bg-white/5"
-                  : "rounded-xl border border-current/15 bg-background/60 px-3 py-2"
-              }
+                  ? "border-fuchsia-400/30 bg-white/70 shadow-sm dark:bg-white/5"
+                  : "border-current/15 bg-background/60"
+              )}
             >
-              <div className={`text-[10px] font-semibold uppercase tracking-wider ${kc.dark ? "text-cyan-300/80" : "opacity-70"} ${!kc.dark ? kc.accent : ""}`}>{m.label}</div>
-              <div className={`mt-0.5 truncate text-sm font-semibold ${kc.dark ? "text-slate-50" : "text-foreground"}`}>{m.value}</div>
+              <div className={cn(
+                "text-[10px] font-semibold uppercase tracking-wider",
+                kc.dark ? "text-cyan-300/80" : "opacity-70",
+                !kc.dark && kc.accent
+              )}>
+                {m.label}
+              </div>
+              <div className={cn(
+                "mt-0.5 break-words text-sm font-semibold leading-tight",
+                kc.dark ? "text-slate-50" : "text-foreground"
+              )}>
+                {m.value}
+              </div>
             </div>
           ))}
         </div>
