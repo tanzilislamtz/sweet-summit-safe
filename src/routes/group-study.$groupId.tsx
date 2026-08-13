@@ -99,6 +99,16 @@ function GroupDetailPage() {
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
+    // Handle invite links for private rooms: /group-study/id?room=CODE
+    const params = new URLSearchParams(window.location.search);
+    const roomCode = params.get("room");
+    if (roomCode) {
+      setTab("Rooms");
+      // In a real app we'd auto-join or highlight the room
+    }
+  }, []);
+
+  useEffect(() => {
     const sync = () => {
       const g = findGroup(groupId);
       setGroup(g ? applyGroupOverrides(g) : undefined);
