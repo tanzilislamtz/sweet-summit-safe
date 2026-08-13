@@ -123,9 +123,13 @@ export const addGroupPost = (
 
 const ROOMS_KEY = "la:groups:rooms";
 const ROOM_JOINS_KEY = "la:groups:room-joins";
+const ROOM_REQUESTS_KEY = "la:groups:room-requests";
+const ROOM_INVITES_KEY = "la:groups:room-invites";
 
 type RoomMap = Record<string, GroupRoom[]>;
 type RoomJoinMap = Record<string, string[]>; // groupId::roomId -> [userIds]
+type RoomRequestMap = Record<string, string[]>; // groupId::roomId -> [userIds]
+type RoomInviteMap = Record<string, string[]>; // groupId::roomId -> [userIds]
 
 export const listGroupRooms = (groupId: string): GroupRoom[] => {
   return read<RoomMap>(ROOMS_KEY, {})[groupId] ?? [];
@@ -177,9 +181,53 @@ export const joinRoom = (groupId: string, roomId: string): boolean => {
   return true;
 };
 
+export const requestRoomAccess = (groupId: string, roomId: string) => {
+  const key = `${groupId}::${roomId}`;
+  const map = read<RoomRequestMap>(ROOM_REQUESTS_KEY, {});
+  const current = map[key] ?? [];
+  if (current.includes("me")) return;
+  write(ROOM_REQUESTS_KEY, { ...map, [key]: ["me", ...current] });
+};
+
+export const listRoomRequests = (groupId: string, roomId: string): string[] => {
+  return read<RoomRequestMap>(ROOM_REQUESTS_KEY, {})[`${groupId}::${roomId}`] ?? [];
+};
+
+export const approveRoomRequest = (groupId: string, roomId: string, userId: string) => {
+  const key = `${groupId}::${roomId}`;
+  
+  // Remove from requests
+  const reqMap = read<RoomRequestMap>(ROOM_REQUESTS_KEY, {});
+  const requests = reqMap[key] ?? [];
+  write(ROOM_REQUESTS_KEY, { ...reqMap, [key]: requests.filter(id => id !== userId) });
+  
+  // Add to joins
+  const joinMap = read<RoomJoinMap>(ROOM_JOINS_KEY, {});
+  const joined = joinMap[key] ?? [];
+  write(ROOM_JOINS_KEY, { ...joinMap, [key]: [userId, ...joined] });
+};
+
+export const inviteToRoom = (groupId: string, roomId: string, userId: string) => {
+  const key = `${groupId}::${roomId}`;
+  const map = read<RoomInviteMap>(ROOM_INVITES_KEY, {});
+  const current = map[key] ?? [];
+  if (current.includes(userId)) return;
+  write(ROOM_INVITES_KEY, { ...map, [key]: [userId, ...current] });
+  
+  // If invited, they automatically get access in this demo
+  const joinMap = read<RoomJoinMap>(ROOM_JOINS_KEY, {});
+  const joined = joinMap[key] ?? [];
+  write(ROOM_JOINS_KEY, { ...joinMap, [key]: [userId, ...joined] });
+};
+
 export const isRoomJoined = (groupId: string, roomId: string): boolean => {
   const joinKey = `${groupId}::${roomId}`;
   return (read<RoomJoinMap>(ROOM_JOINS_KEY, {})[joinKey] ?? []).includes("me");
+};
+
+export const isRoomRequested = (groupId: string, roomId: string): boolean => {
+  const key = `${groupId}::${roomId}`;
+  return (read<RoomRequestMap>(ROOM_REQUESTS_KEY, {})[key] ?? []).includes("me");
 };
 
 /* ------------- reactions, comments, hidden posts ------------------ */

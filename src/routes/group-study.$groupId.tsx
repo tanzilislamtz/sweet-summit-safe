@@ -60,12 +60,17 @@ import {
   hideGroupPost,
   isPostLoved,
   isRoomJoined,
+  isRoomRequested,
   joinRoom,
   listGroupPosts,
   listGroupRooms,
   listHiddenPosts,
   listPostComments,
+  listRoomRequests,
+  requestRoomAccess,
   resolveMembers,
+  approveRoomRequest,
+  inviteToRoom,
   togglePostLove,
   type GroupPostComment,
   type StoredPost,
@@ -993,10 +998,24 @@ function RoomCard({
   groupId: string;
   onTick: () => void;
 }) {
+  const [showManage, setShowManage] = useState(false);
   const isJoined = isRoomJoined(groupId, room.id);
+  const isRequested = isRoomRequested(groupId, room.id);
   const isFull = room.limit ? room.participants >= room.limit : false;
+  const isHost = room.host === (getSession()?.name || "You");
   
   const handleJoin = () => {
+    if (room.privacy === "Private" && !isJoined) {
+      if (isRequested) {
+        toast.info("Your join request is pending approval.");
+      } else {
+        requestRoomAccess(groupId, room.id);
+        onTick();
+        toast.success("Join request sent to the host!");
+      }
+      return;
+    }
+
     if (isFull && !isJoined) {
       toast.error("This room is full.");
       return;
@@ -1044,15 +1063,26 @@ function RoomCard({
       <div className="mt-3 flex gap-2">
         <button 
           onClick={handleJoin}
-          disabled={isFull && !isJoined}
+          disabled={isFull && !isJoined && room.privacy !== "Private"}
           className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition ${
             isJoined 
               ? "bg-muted text-foreground" 
-              : "bg-primary text-primary-foreground hover:brightness-110 disabled:opacity-50"
+              : room.privacy === "Private"
+                ? isRequested ? "bg-muted text-muted-foreground" : "bg-primary/20 text-primary hover:bg-primary/30"
+                : "bg-primary text-primary-foreground hover:brightness-110 disabled:opacity-50"
           }`}
         >
-          {isJoined ? "Open Room" : isFull ? "Room Full" : "Join Room"}
+          {isJoined ? "Open Room" : room.privacy === "Private" ? (isRequested ? "Request Sent" : "Request Access") : isFull ? "Room Full" : "Join Room"}
         </button>
+        {isHost && (
+          <button 
+            onClick={() => setShowManage(true)}
+            className="grid h-8 w-8 place-items-center rounded-lg border border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+            title="Manage Room"
+          >
+            <Settings2 className="h-3.5 w-3.5" />
+          </button>
+        )}
         {room.privacy === "Private" && (
           <button 
             onClick={handleShare}
@@ -1063,7 +1093,138 @@ function RoomCard({
           </button>
         )}
       </div>
+
+      {showManage && (
+        <ManageRoomModal 
+          groupId={groupId} 
+          room={room} 
+          onClose={() => {
+            setShowManage(false);
+            onTick();
+          }} 
+        />
+      )}
     </Panel>
+  );
+}
+
+function ManageRoomModal({ 
+  groupId, 
+  room, 
+  onClose 
+}: { 
+  groupId: string; 
+  room: GroupRoom; 
+  onClose: () => void;
+}) {
+  const [activeTab, setActiveTab] = useState<"requests" | "invite">("requests");
+  const requests = listRoomRequests(groupId, room.id);
+  const group = findGroup(groupId);
+  const members = group ? resolveMembers(group) : [];
+  const [search, setSearch] = useState("");
+  
+  const filteredMembers = members.filter(m => 
+    m.name.toLowerCase().includes(search.toLowerCase()) && 
+    m.name !== (getSession()?.name || "You")
+  );
+
+  return (
+    <div className="fixed inset-0 z-[70] grid place-items-center bg-foreground/40 p-4 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="flex h-[500px] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl"
+      >
+        <div className="flex items-center justify-between border-b border-border p-4">
+          <div className="min-w-0">
+            <h2 className="truncate text-sm font-bold">{room.title}</h2>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Manage Access</p>
+          </div>
+          <button onClick={onClose} className="rounded-lg p-1 hover:bg-muted">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="flex border-b border-border">
+          {(["requests", "invite"] as const).map(t => (
+            <button
+              key={t}
+              onClick={() => setActiveTab(t)}
+              className={`flex-1 py-2.5 text-xs font-bold transition ${
+                activeTab === t ? "border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t === "requests" ? `Requests (${requests.length})` : "Invite Friends"}
+            </button>
+          ))}
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto p-4">
+          {activeTab === "requests" ? (
+            <div className="space-y-3">
+              {requests.map(userId => (
+                <div key={userId} className="flex items-center justify-between gap-3 rounded-xl border border-border p-3">
+                  <div className="flex items-center gap-2.5">
+                    <Avatar initials={userId === "me" ? "U" : userId.charAt(0)} />
+                    <span className="text-xs font-semibold">{userId === "me" ? "You" : userId}</span>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      approveRoomRequest(groupId, room.id, userId);
+                      toast.success("Access approved!");
+                    }}
+                    className="rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:brightness-110"
+                  >
+                    Approve
+                  </button>
+                </div>
+              ))}
+              {requests.length === 0 && (
+                <div className="py-10 text-center">
+                  <Lock className="mx-auto mb-2 h-8 w-8 text-muted-foreground/30" />
+                  <p className="text-xs text-muted-foreground">No pending requests.</p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                <input 
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  placeholder="Search members..."
+                  className="w-full rounded-xl border border-border bg-background py-2 pl-9 pr-3 text-xs outline-none focus:border-primary/50"
+                />
+              </div>
+
+              <div className="space-y-2">
+                {filteredMembers.map(m => (
+                  <div key={m.id} className="flex items-center justify-between gap-3 rounded-xl border border-border p-3">
+                    <div className="flex items-center gap-2.5">
+                      <Avatar initials={m.initials} />
+                      <span className="text-xs font-semibold">{m.name}</span>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        inviteToRoom(groupId, room.id, m.name);
+                        toast.success(`Invited ${m.name}!`);
+                      }}
+                      className="rounded-lg border border-border px-3 py-1.5 text-xs font-bold hover:bg-muted"
+                    >
+                      Invite
+                    </button>
+                  </div>
+                ))}
+                {filteredMembers.length === 0 && (
+                  <p className="py-10 text-center text-xs text-muted-foreground">No members found.</p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </div>
   );
 }
 
