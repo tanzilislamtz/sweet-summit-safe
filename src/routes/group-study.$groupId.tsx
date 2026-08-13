@@ -14,7 +14,12 @@ import {
   Radio,
   Download,
   MessageCircle,
-  
+  Plus,
+  MoreVertical,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  MessageSquare,
   Share2,
   ShieldCheck,
   Settings2,
@@ -42,10 +47,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FavoriteButton } from "@/components/FavoriteButton";
-import type { GroupMember, StudyGroup } from "@/data/groups";
+import type { GroupMember, GroupRoom, StudyGroup } from "@/data/groups";
 import { GROUPS_EVENT, findGroup, isJoined, setJoined } from "@/lib/groups";
 import {
   addGroupPost,
+  addGroupRoom,
   addPostComment,
   applyGroupOverrides,
   canManageGroup,
