@@ -59,7 +59,7 @@ const REPORT_REASONS = [
   "Something else",
 ];
 import { AnimatePresence, motion } from "framer-motion";
-import { CallOverlay } from "@/components/CallOverlay";
+// CallOverlay import handled at root level
 import VoiceMessage from "@/components/VoiceMessage";
 import ChatAttachment from "@/components/ChatAttachment";
 import { fileToAttachment, MAX_ATTACHMENT_BYTES } from "@/lib/attachments";
