@@ -1004,7 +1004,12 @@ function Post({
           )}
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <span className={`truncate text-sm font-semibold ${kc.dark ? "text-slate-50" : "text-foreground"}`}>{author}</span>
+              <Link 
+                to="/profile"
+                className={`truncate text-sm font-semibold hover:underline ${kc.dark ? "text-slate-50" : "text-foreground"}`}
+              >
+                {author}
+              </Link>
               {verified && <CheckCircle2 className={`h-4 w-4 shrink-0 ${kc.dark ? "text-cyan-300" : "text-tutor"}`} />}
               <span className={`ml-1 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${rs.badge}`}>
                 {rs.label}
