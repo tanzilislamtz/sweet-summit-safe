@@ -1161,7 +1161,7 @@ function Post({
                 {m.label}
               </div>
               <div className={cn(
-                "mt-0.5 break-words text-sm font-semibold leading-tight",
+                "mt-0.5 break-words text-sm font-semibold leading-tight first-letter:text-lg",
                 kc.dark ? "text-slate-50" : "text-foreground"
               )}>
                 {m.value}
