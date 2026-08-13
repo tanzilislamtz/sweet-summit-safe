@@ -539,7 +539,9 @@ function Composer({ group }: { group: StudyGroup }) {
   if (!open) {
     return (
       <Panel className="flex items-center gap-3 p-3">
-        <Avatar initials={author.charAt(0).toUpperCase()} />
+        <Link to="/profile" className="transition-opacity hover:opacity-90">
+          <Avatar initials={author.charAt(0).toUpperCase()} />
+        </Link>
         <button
           onClick={() => setOpen(true)}
           className="min-w-0 flex-1 truncate rounded-full bg-muted px-4 py-2 text-left text-xs text-muted-foreground hover:bg-muted/70"
@@ -559,8 +561,15 @@ function Composer({ group }: { group: StudyGroup }) {
   return (
     <Panel className="p-3">
       <div className="flex items-center gap-2">
-        <Avatar initials={author.charAt(0).toUpperCase()} />
-        <span className="min-w-0 flex-1 truncate text-xs font-semibold">{author}</span>
+        <Link to="/profile" className="transition-opacity hover:opacity-90">
+          <Avatar initials={author.charAt(0).toUpperCase()} />
+        </Link>
+        <Link 
+          to="/profile" 
+          className="min-w-0 flex-1 truncate text-xs font-semibold hover:text-primary transition-colors"
+        >
+          {author}
+        </Link>
         <select
           value={section}
           onChange={(e) => setSection(e.target.value)}
@@ -693,10 +702,17 @@ function PostCard({
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <Panel className="p-4">
         <div className="flex items-start gap-2.5">
-          <Avatar initials={post.initials} />
+          <Link to="/profile" className="transition-opacity hover:opacity-90">
+            <Avatar initials={post.initials} />
+          </Link>
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-2">
-              <span className="truncate text-xs font-bold">{post.author}</span>
+              <Link 
+                to="/profile" 
+                className="truncate text-xs font-bold hover:text-primary transition-colors"
+              >
+                {post.author}
+              </Link>
               <Pill>{post.section}</Pill>
               <span className="shrink-0 text-[11px] text-muted-foreground">{post.time}</span>
 
@@ -917,10 +933,17 @@ function PostCard({
                         animate={{ opacity: 1, y: 0 }}
                         className="flex gap-2"
                       >
-                        <Avatar initials={c.author.charAt(0).toUpperCase()} size="xs" />
+                        <Link to="/profile" className="transition-opacity hover:opacity-90">
+                          <Avatar initials={c.author.charAt(0).toUpperCase()} size="xs" />
+                        </Link>
                         <div className="min-w-0 flex-1 rounded-2xl bg-muted/60 px-3 py-2">
                           <div className="flex items-center gap-2 text-xs">
-                            <span className="font-semibold text-foreground">{c.author}</span>
+                            <Link 
+                              to="/profile" 
+                              className="font-semibold text-foreground hover:text-primary transition-colors"
+                            >
+                              {c.author}
+                            </Link>
                             <span className="text-muted-foreground">· {c.time}</span>
                           </div>
                           <p className="mt-0.5 text-sm text-foreground/85">{c.text}</p>
