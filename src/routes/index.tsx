@@ -389,12 +389,20 @@ function AdCard({
                     animate={{ opacity: 1, y: 0 }}
                     className="flex gap-2"
                   >
-                    <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                    <Link 
+                      to="/profile"
+                      className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity"
+                    >
                       {c.author.charAt(0)}
-                    </div>
+                    </Link>
                     <div className="min-w-0 flex-1 rounded-2xl bg-muted/60 px-3 py-2">
                       <div className="flex items-center gap-2 text-xs">
-                        <span className="font-semibold text-foreground">{c.author}</span>
+                        <Link 
+                          to="/profile"
+                          className="font-semibold text-foreground hover:underline"
+                        >
+                          {c.author}
+                        </Link>
                         <span className="text-muted-foreground">· {c.time}</span>
                       </div>
                       <p className="mt-0.5 text-sm text-foreground/85">{c.text}</p>
@@ -461,16 +469,16 @@ function Leaderboard() {
             whileHover={{ y: -3 }}
             className="relative w-40 shrink-0 snap-start overflow-hidden rounded-2xl border border-border bg-surface shadow-sm"
           >
-            <div className="relative aspect-[4/5] overflow-hidden">
-              <img src={e.img} alt={e.name} loading="lazy" className="h-full w-full object-cover" />
-              <span className="absolute left-2 top-2 rounded-lg bg-background/95 px-1.5 py-0.5 text-[10px] font-bold text-primary shadow-sm">
+            <Link to="/profile" className="relative block aspect-[4/5] overflow-hidden group">
+              <img src={e.img} alt={e.name} loading="lazy" className="h-full w-full object-cover transition-transform group-hover:scale-110" />
+              <span className="absolute left-2 top-2 rounded-lg bg-background/95 px-1.5 py-0.5 text-[10px] font-bold text-primary shadow-sm z-10">
                 #{e.rank}
               </span>
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/85 via-foreground/40 to-transparent p-2">
-                <p className="truncate text-xs font-semibold text-background">{e.name}</p>
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/85 via-foreground/40 to-transparent p-2 z-10">
+                <p className="truncate text-xs font-semibold text-background hover:underline">{e.name}</p>
                 <p className="truncate text-[10px] text-background/80">{e.sub}</p>
               </div>
-            </div>
+            </Link>
             <div className="p-2">
               <button
                 className={`w-full rounded-full py-1.5 text-[11px] font-semibold transition ${
@@ -1004,7 +1012,12 @@ function Post({
           )}
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <span className={`truncate text-sm font-semibold ${kc.dark ? "text-slate-50" : "text-foreground"}`}>{author}</span>
+              <Link 
+                to="/profile"
+                className={`truncate text-sm font-semibold hover:underline ${kc.dark ? "text-slate-50" : "text-foreground"}`}
+              >
+                {author}
+              </Link>
               {verified && <CheckCircle2 className={`h-4 w-4 shrink-0 ${kc.dark ? "text-cyan-300" : "text-tutor"}`} />}
               <span className={`ml-1 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${rs.badge}`}>
                 {rs.label}
@@ -1319,12 +1332,20 @@ function Post({
                   animate={{ opacity: 1, y: 0 }}
                   className="flex gap-2"
                 >
-                  <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                  <Link 
+                    to="/profile"
+                    className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity"
+                  >
                     {c.author.charAt(0)}
-                  </div>
+                  </Link>
                   <div className="min-w-0 flex-1 rounded-2xl bg-muted/60 px-3 py-2">
                     <div className="flex items-center gap-2 text-xs">
-                      <span className="font-semibold text-foreground">{c.author}</span>
+                      <Link 
+                        to="/profile"
+                        className="font-semibold text-foreground hover:underline"
+                      >
+                        {c.author}
+                      </Link>
                       <span className="text-muted-foreground">· {c.time}</span>
                     </div>
                     <p className="mt-0.5 text-sm text-foreground/85">{c.text}</p>
@@ -1433,12 +1454,20 @@ function RightRail() {
                 { name: "Meherun Nisa", msg: "Thanks for the feedback!", time: "3h", unread: 0 },
               ].map((m) => (
                 <li key={m.name} className="flex items-center gap-3">
-                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                  <Link 
+                    to="/profile"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
+                  >
                     {m.name.charAt(0)}
-                  </div>
+                  </Link>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="truncate text-sm font-medium text-foreground">{m.name}</span>
+                      <Link 
+                        to="/profile"
+                        className="truncate text-sm font-medium text-foreground hover:underline"
+                      >
+                        {m.name}
+                      </Link>
                       <span className="shrink-0 text-[10px] text-muted-foreground">{m.time}</span>
                     </div>
                     <p className="truncate text-xs text-muted-foreground">{m.msg}</p>
