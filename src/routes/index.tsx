@@ -1143,7 +1143,7 @@ function Post({
             <div
               key={m.label}
               className={cn(
-                "flex flex-col justify-between rounded-xl border px-3 py-2",
+                  "flex flex-col justify-between rounded-xl border px-3 py-1.5",
                 kc.dark
                   ? "border-cyan-400/20 bg-white/5 backdrop-blur-sm"
                   : kind === "offering-tutor"
