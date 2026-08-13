@@ -16,6 +16,8 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { THEME_INIT_SCRIPT } from "../lib/theme";
 import { BottomNav } from "../components/BottomNav";
 import { MessengerDock } from "../components/MessengerDock";
+import { CallOverlay } from "../components/CallOverlay";
+
 
 
 function NotFoundComponent() {
@@ -167,6 +169,8 @@ function RootComponent() {
       </AnimatePresence>
       {!hideBottomNav && <BottomNav />}
       <MessengerDock />
+      <CallOverlay />
+
 
     </QueryClientProvider>
   );
