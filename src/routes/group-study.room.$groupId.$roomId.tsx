@@ -1,4 +1,4 @@
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute, useParams, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -15,13 +15,16 @@ import {
   Layout,
   ArrowLeft,
   Settings,
-  MoreVertical
+  MoreVertical,
+  Minimize2
 } from "lucide-react";
 import { toast } from "sonner";
 import { getSession } from "@/lib/session";
 import { findGroup } from "@/lib/groups";
 import { listGroupRooms } from "@/lib/group-workspace";
 import { cn } from "@/lib/utils";
+import { useCallStore } from "@/lib/call-store";
+
 
 export const Route = createFileRoute("/group-study/room/$groupId/$roomId")({
   component: StudyRoomPage,
@@ -34,18 +37,35 @@ function StudyRoomPage() {
   const [screenSharing, setScreenSharing] = useState(false);
   const [isDeafened, setIsDeafened] = useState(false);
   const [layout, setLayout] = useState<"grid" | "focus">("grid");
+  const setActiveCall = useCallStore(s => s.setActiveCall);
   
   const session = getSession();
   const group = findGroup(groupId);
   const room = listGroupRooms(groupId).find(r => r.id === roomId);
 
   useEffect(() => {
+    if (room && group) {
+      setActiveCall({
+        groupId,
+        roomId,
+        roomTitle: room.title,
+        groupName: group.name,
+        startTime: Date.now()
+      });
+    }
     toast.info("Welcome to the study room!");
-  }, []);
+  }, [room, group, groupId, roomId, setActiveCall]);
+
 
   const handleLeave = () => {
+    setActiveCall(null);
     window.history.back();
   };
+
+  const handleMinimize = () => {
+    window.history.back();
+  };
+
 
   const participants = [
     { id: "me", name: session?.name || "You", initials: session?.name?.charAt(0) || "U", isMe: true, video: videoOn, mic: micOn },
@@ -60,16 +80,18 @@ function StudyRoomPage() {
       <header className="flex h-14 items-center justify-between px-4">
         <div className="flex items-center gap-3">
           <button 
-            onClick={handleLeave}
+            onClick={handleMinimize}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20"
+            title="Minimize"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <Minimize2 className="h-4 w-4" />
           </button>
           <div className="min-w-0">
             <h1 className="truncate text-sm font-bold">{room?.title || "Study Room"}</h1>
             <p className="text-[10px] text-white/50">{group?.name} · Live Now</p>
           </div>
         </div>
+
         
         <div className="flex items-center gap-2">
           <button className="flex h-9 items-center gap-2 rounded-lg bg-white/5 px-3 text-xs font-semibold transition hover:bg-white/10">

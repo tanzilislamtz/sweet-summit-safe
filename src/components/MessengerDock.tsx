@@ -60,7 +60,7 @@ import VoiceMessage from "@/components/VoiceMessage";
 import ChatAttachment from "@/components/ChatAttachment";
 import { fileToAttachment, MAX_ATTACHMENT_BYTES } from "@/lib/attachments";
 import VoiceRecorder from "@/components/VoiceRecorder";
-import CallOverlay from "@/components/CallOverlay";
+// CallOverlay import handled at root level
 
 const REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 
@@ -1147,14 +1147,8 @@ function ChatWindow({ threadId, minimized }: { threadId: string; minimized: bool
         )}
       </AnimatePresence>
 
-      <CallOverlay
-        open={call}
-        kind="audio"
-        name={thread.name}
-        initials={thread.initials}
-        avatarColor={thread.avatarColor}
-        onClose={() => setCall(false)}
-      />
+      {/* Legacy CallOverlay call removed in favor of global CallOverlay */}
+
 
       <DockToast text={toast} />
     </motion.div>
