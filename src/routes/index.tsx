@@ -1454,12 +1454,20 @@ function RightRail() {
                 { name: "Meherun Nisa", msg: "Thanks for the feedback!", time: "3h", unread: 0 },
               ].map((m) => (
                 <li key={m.name} className="flex items-center gap-3">
-                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                  <Link 
+                    to="/profile"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
+                  >
                     {m.name.charAt(0)}
-                  </div>
+                  </Link>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="truncate text-sm font-medium text-foreground">{m.name}</span>
+                      <Link 
+                        to="/profile"
+                        className="truncate text-sm font-medium text-foreground hover:underline"
+                      >
+                        {m.name}
+                      </Link>
                       <span className="shrink-0 text-[10px] text-muted-foreground">{m.time}</span>
                     </div>
                     <p className="truncate text-xs text-muted-foreground">{m.msg}</p>
