@@ -110,9 +110,9 @@ export const posts: PostData[] = [
     tags: ["Math", "Physics", "Chemistry"],
     meta: [
       { label: "Batch", value: "Weekend AM" },
-      { label: "Fee", value: "৳2,500/mo" },
       { label: "Seats", value: "3 left" },
       { label: "Duration", value: "45 min × 6" },
+      { label: "Fee", value: "৳2,500/mo" },
     ],
     stats: { likes: 176, comments: 51, shares: 9 },
   },
