@@ -5,7 +5,7 @@
  *
  * Everything is stored in localStorage so the UI feels real without a backend.
  */
-import type { GroupMember, GroupPost, StudyGroup } from "@/data/groups";
+import type { GroupMember, GroupPost, GroupRoom, StudyGroup } from "@/data/groups";
 import { GROUPS_EVENT, listCreatedGroups } from "@/lib/groups";
 
 export type GroupRole = GroupMember["role"];
