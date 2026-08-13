@@ -1310,14 +1310,8 @@ function ThreadView() {
         )}
       </AnimatePresence>
 
-      <CallOverlay
-        open={call !== null}
-        kind={call ?? "audio"}
-        name={thread.name}
-        initials={thread.initials}
-        avatarColor={thread.avatarColor}
-        onClose={() => setCall(null)}
-      />
+      {/* Legacy CallOverlay call removed in favor of global CallOverlay */}
+
     </div>
   );
 }

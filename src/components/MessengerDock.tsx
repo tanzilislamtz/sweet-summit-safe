@@ -1147,14 +1147,8 @@ function ChatWindow({ threadId, minimized }: { threadId: string; minimized: bool
         )}
       </AnimatePresence>
 
-      <CallOverlay
-        open={call}
-        kind="audio"
-        name={thread.name}
-        initials={thread.initials}
-        avatarColor={thread.avatarColor}
-        onClose={() => setCall(false)}
-      />
+      {/* Legacy CallOverlay call removed in favor of global CallOverlay */}
+
 
       <DockToast text={toast} />
     </motion.div>
